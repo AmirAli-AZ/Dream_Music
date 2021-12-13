@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.MusicsController">
+   <children>
+      <ListView fx:id="list" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#listClick" VBox.vgrow="ALWAYS" />
+      <AnchorPane fx:id="songBar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="248.0" styleClass="animated-gradient" stylesheets="@Themes/light-theme.css">
+         <children>
+            <Slider fx:id="progress" layoutX="8.0" layoutY="7.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+            <ImageView fx:id="img_volume" fitHeight="32.0" fitWidth="32.0" layoutY="65.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@icons/baseline_volume_down_white.png" />
+               </image></ImageView>
+            <Slider fx:id="volume" layoutX="32.0" layoutY="74.0" value="50.0" />
+            <HBox fx:id="hbox" alignment="CENTER" layoutY="24.0" prefHeight="24.0" prefWidth="200.0" spacing="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <children>
+                  <Label fx:id="currentTime" style="-fx-text-fill: white;" text="00:00" />
+                  <ImageView fx:id="rewind" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#rewindClick" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets left="2.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@icons/baseline_replay_5_white.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="play" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#playMusic" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets left="2.0" right="2.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@icons/baseline_play_arrow_white.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="forward" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#forwardClick" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets right="2.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@icons/baseline_forward_5_white.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="totalTime" style="-fx-text-fill: white;" text="00:00" />
+               </children>
+            </HBox>
+            <ImageView fx:id="repeat" fitHeight="32.0" fitWidth="32.0" layoutX="179.0" layoutY="65.0" onMouseClicked="#repeatClick" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@icons/baseline_repeat_white.png" />
+               </image>
+            </ImageView>
+         </children>
+         <padding>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </padding>
+      </AnchorPane>
+   </children>
+</VBox>

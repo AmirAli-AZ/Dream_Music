@@ -1,0 +1,28 @@
+.root{
+-fx-background-color : white;
+}
+.title{
+-fx-font-weight : bold;
+-fx-text-fill : black;
+}
+.list-view{
+-fx-background-insets : 0;
+-fx-padding : 0;
+}
+.left-border{
+-fx-border-style : hidden solid hidden hidden;
+-fx-border-width : 2;
+-fx-border-color : #BDBDBD;
+}
+.list-cell{
+-fx-background-color : white;
+}
+.list-view:focused .list-cell:filled:focused:selected {
+    -fx-background-color:  -fx-focus-color, -fx-cell-focus-inner-border, #3895bc;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
+}
+.animated-gradient{
+-gradient-base : #21dd8f;
+-fx-background-color : linear-gradient(to right, -gradient-base, #2196F3);
+}

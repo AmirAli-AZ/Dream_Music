@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="500.0" prefWidth="760.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.HomeController">
+    <left>
+        <VBox fx:id="items" prefHeight="444.0" prefWidth="137.0" spacing="4.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox fx:id="tab_musics" alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" onMouseClicked="#musics" prefHeight="39.0" prefWidth="137.0">
+                    <children>
+                        <ImageView fx:id="img_music" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" />
+                        <Label fx:id="title1" prefHeight="19.0" prefWidth="105.0" text="Musics">
+                            <HBox.margin>
+                                <Insets left="3.0" />
+                            </HBox.margin>
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </left>
+</BorderPane>
