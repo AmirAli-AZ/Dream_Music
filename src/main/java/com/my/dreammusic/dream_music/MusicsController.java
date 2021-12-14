@@ -193,9 +193,9 @@ public class MusicsController implements Initializable {
                 if (mediaPlayer != null) {
                     if (isPlaying) {
                         mediaPlayer.dispose();
+                        isPlaying = false;
+                        play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
                     }
-                    isPlaying = false;
-                    play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
                     songBarVisibility(false);
                     list.getSelectionModel().clearSelection();
                 }
