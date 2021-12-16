@@ -43,10 +43,10 @@ public class Home extends Application {
             stage.setScene(scene);
             stage.show();
         }else {
-            openFolderConfig(stage);
+            openFolderConfig(stage , true);
         }
     }
-    private void openFolderConfig(Stage stage) throws IOException{
+    private void openFolderConfig(Stage stage , boolean openHome) throws IOException{
         stage.setTitle("Folder Config");
         stage.setOnCloseRequest(e ->{
             Platform.exit();
@@ -55,6 +55,8 @@ public class Home extends Application {
         FXMLLoader loader = new FXMLLoader(Home.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load() , 611 , 288);
         scene.getStylesheets().add(Home.class.getResource("Themes/dialog-theme.css").toExternalForm());
+        FolderConfigController folderConfigController = loader.getController();
+        folderConfigController.setOpenHome(openHome);
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

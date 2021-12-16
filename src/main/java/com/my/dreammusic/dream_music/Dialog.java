@@ -72,8 +72,8 @@ public class Dialog {
             cancel.setMinWidth(60);
             cancel.setMinHeight(30);
             cancel.setOnAction(e ->{
-                listener.onResult(CANCEL);
                 window.close();
+                listener.onResult(CANCEL);
             });
             buttons.getChildren().add(cancel);
         }
@@ -82,8 +82,8 @@ public class Dialog {
         ok.setMinWidth(60);
         ok.setMinHeight(30);
         ok.setOnAction(e ->{
-            listener.onResult(OK);
             window.close();
+            listener.onResult(OK);
         });
         buttons.getChildren().add(ok);
 

@@ -51,8 +51,7 @@ public class HomeController implements Initializable {
     @FXML
     public void musics(MouseEvent mouseEvent) {
         if (!musicsController.isPlaying) {
-            File data = new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
-            if (data.exists()) {
+            if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
                 /*
                 this listener check , if media player listeners is running or no with 0 and 1
                  */
@@ -85,10 +84,23 @@ public class HomeController implements Initializable {
                 @Override
                 public void onResult(int result) {
                     if (result == Dialog.OK){
-                        musicsController.pauseMedia();
-                        musicsController.isPlaying = false;
-                        musicsController.songBarVisibility(false);
-                        musicsController.refresh();
+                        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
+                            musicsController.pauseMedia();
+                            musicsController.isPlaying = false;
+                            musicsController.songBarVisibility(false);
+                            musicsController.refresh();
+                        }else {
+                            musicsController.pauseMedia();
+                            musicsController.isPlaying = false;
+                            musicsController.songBarVisibility(false);
+                            Stage window = (Stage) container.getScene().getWindow();
+                            window.close();
+                            try {
+                                openFolderConfig(new Stage() , true);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
             });

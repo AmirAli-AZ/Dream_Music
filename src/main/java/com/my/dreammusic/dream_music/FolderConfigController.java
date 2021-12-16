@@ -29,7 +29,6 @@ public class FolderConfigController implements Initializable {
 
     private File musicFolder , dreamMusicData;
     private UserData userData = new UserData();
-    private Stage stage = new Stage();
     public boolean openHome = false;
     private Listener listener;
     //result
@@ -84,6 +83,7 @@ public class FolderConfigController implements Initializable {
         window.close();
         if (openHome){
             try {
+                Stage stage = new Stage();
                 stage.setTitle("Dream Music");
                 stage.setOnCloseRequest(e ->{
                     Platform.exit();
@@ -109,6 +109,7 @@ public class FolderConfigController implements Initializable {
         if (listener != null){
             listener.onResult(OK);
         }
+
     }
 
     public String getUserPath(){
