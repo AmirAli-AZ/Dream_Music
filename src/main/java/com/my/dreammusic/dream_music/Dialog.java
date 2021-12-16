@@ -15,15 +15,11 @@ import javafx.stage.Stage;
 
 public class Dialog {
 
-    public interface Listener{
-        void onResult(int result);
-    }
-
     public static final int OK = 1;
     public static final int CANCEL = 0;
     private Listener listener;
     private boolean cancelButton = false;
-    private String title , message;
+    private String title , message , btnCancelText = "Cancel" , btnOkText = "OK";
     private Image image;
 
     public Dialog(Listener listener){
@@ -46,13 +42,21 @@ public class Dialog {
         this.image = image;
     }
 
+    public void setBtnCancelText(String btnCancelText) {
+        this.btnCancelText = btnCancelText;
+    }
+
+    public void setBtnOkText(String btnOkText) {
+        this.btnOkText = btnOkText;
+    }
+
     public void show(){
         Stage window = new Stage();
         window.setTitle(title);
         window.initModality(Modality.APPLICATION_MODAL);
 
         window.setOnCloseRequest(e ->{
-            listener.onResult(OK);
+            listener.onResult(CANCEL);
         });
 
         BorderPane borderPane = new BorderPane();
@@ -63,7 +67,7 @@ public class Dialog {
         buttons.setPadding(new Insets(5 , 5, 5, 5));
 
         if (cancelButton){
-            Button cancel = new Button("Cancel");
+            Button cancel = new Button(btnCancelText);
             cancel.getStyleClass().add("button-style-cancel");
             cancel.setMinWidth(60);
             cancel.setMinHeight(30);
@@ -73,7 +77,7 @@ public class Dialog {
             });
             buttons.getChildren().add(cancel);
         }
-        Button ok = new Button("OK");
+        Button ok = new Button(btnOkText);
         ok.getStyleClass().add("button-style-ok");
         ok.setMinWidth(60);
         ok.setMinHeight(30);

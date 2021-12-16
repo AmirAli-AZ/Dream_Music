@@ -16,7 +16,7 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <Button fx:id="create" layoutX="527.0" layoutY="244.0" maxHeight="35.0" maxWidth="70.0" minHeight="35.0" minWidth="70.0" mnemonicParsing="false" onMouseClicked="#createFolder" prefHeight="35.0" prefWidth="70.0" text="OK" />
+      <Button fx:id="create" layoutX="527.0" layoutY="244.0" maxHeight="35.0" maxWidth="70.0" minHeight="35.0" minWidth="70.0" mnemonicParsing="false" onAction="#createFolder" prefHeight="35.0" prefWidth="70.0" text="OK" />
       <HBox alignment="CENTER" layoutX="15.0" layoutY="122.0" prefHeight="45.0" prefWidth="582.0" spacing="5.0">
          <children>
             <Label text="Path">

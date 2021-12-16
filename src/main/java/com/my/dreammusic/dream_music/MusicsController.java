@@ -10,8 +10,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -45,52 +43,45 @@ import java.util.ResourceBundle;
 public class MusicsController implements Initializable {
 
     @FXML
-    private ListView<Song> list;
+    public ListView<Song> list;
     @FXML
-    private AnchorPane songBar;
+    public AnchorPane songBar;
     @FXML
-    private Slider progress;
+    public Slider progress;
     @FXML
-    private Slider volume;
+    public Slider volume;
     @FXML
-    private Label currentTime;
+    public Label currentTime;
     @FXML
-    private Label totalTime;
+    public Label totalTime;
     @FXML
-    private ImageView rewind;
+    public ImageView rewind;
     @FXML
-    private ImageView play;
+    public ImageView play;
     @FXML
-    private ImageView forward;
+    public ImageView forward;
     @FXML
-    private ImageView img_volume;
+    public ImageView img_volume;
     @FXML
-    private ImageView repeat;
+    public ImageView repeat;
     @FXML
-    private HBox hbox;
+    public HBox hbox;
 
-    private ObservableList<Song> songList;
     private MediaPlayer mediaPlayer;
-    public static boolean isPlaying = false;
+    public boolean isPlaying = false;
     private boolean isChanging = false;
     private boolean repeatMode = false;
     private final Object object = new Object();
     private UserData userData;
+    public static final int OK = 1, CANCEL = 0;
+    private Listener listener;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        try {
-            userData = read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        songBarVisibility(false);
-        songList = FXCollections.observableArrayList();
-        getSongList();
-        list.setItems(songList);
+        loadFolder();
         list.setCellFactory(songListView -> new SongListCell());
+        songBarVisibility(false);
+        getSongList();
 
         ObjectProperty<Color> baseColor = new SimpleObjectProperty<>();
 
@@ -129,10 +120,9 @@ public class MusicsController implements Initializable {
                             totalTime.setText(calculateTime(info.getMedia().getDuration()));
                             progress.setMin(0);
                             progress.setMax(info.getMedia().getDuration().toSeconds());
-                            isPlaying = true;
                             play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
                             mediaPlayer.setVolume(volume.getValue() * 0.01);
-                            mediaPlayer.play();
+                            playMedia();
                         }
                     });
 
@@ -207,12 +197,10 @@ public class MusicsController implements Initializable {
     public void playMusic(MouseEvent mouseEvent) {
         if (mediaPlayer != null) {
             if (isPlaying) {
-                mediaPlayer.pause();
-                isPlaying = false;
+                pauseMedia();
                 play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
             } else {
-                mediaPlayer.play();
-                isPlaying = true;
+                playMedia();
                 play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
             }
         }
@@ -250,11 +238,15 @@ public class MusicsController implements Initializable {
     }
 
     public void createMedia(File file) {
+        if (listener != null){
+            listener.onResult(CANCEL);
+        }
         Media media = new Media(file.toURI().toString());
         MediaPlayer mp = new MediaPlayer(media);
         final Song song = new Song();
         song.setMedia(media);
         song.setPath(file.getAbsolutePath());
+        song.setTitle(getFileName(file));
         try {
             Path path = Paths.get(file.getAbsolutePath());
             FileTime fileTime = Files.getLastModifiedTime(path);
@@ -269,11 +261,16 @@ public class MusicsController implements Initializable {
             public void run() {
                 song.setAlbum((String) mp.getMedia().getMetadata().get("album"));
                 song.setArtist((String) mp.getMedia().getMetadata().get("artist"));
-                song.setTitle((String) mp.getMedia().getMetadata().get("title"));
+                if (mp.getMedia().getMetadata().get("title") != null){
+                    song.setTitle((String) mp.getMedia().getMetadata().get("title"));
+                }
                 if (mp.getMedia().getMetadata().get("image") != null) {
                     song.setImage((Image) mp.getMedia().getMetadata().get("image"));
                 }
-                songList.add(song);
+                list.getItems().add(song);
+                if (listener != null){
+                    listener.onResult(OK);
+                }
 
                 synchronized (object) {
                     object.notify();
@@ -288,6 +285,7 @@ public class MusicsController implements Initializable {
 
     public void getSongList() {
         try {
+            list.getItems().clear();
             File file = new File(userData.getPath());
             File[] files = file.listFiles();
             Arrays.sort(files);
@@ -302,6 +300,7 @@ public class MusicsController implements Initializable {
                         }
                     }
                 }
+
             }
         } catch (InterruptedException interruptedException) {
             interruptedException.printStackTrace();
@@ -312,10 +311,15 @@ public class MusicsController implements Initializable {
     public String getExtension(File file) {
         String name = file.getName();
         int lastIndexOf = name.lastIndexOf('.');
-        if (lastIndexOf == -1) {
-            return "";
-        }
+        if (lastIndexOf == -1) return "";
         return name.substring(lastIndexOf);
+    }
+
+    public String getFileName(File file){
+        String name = file.getName();
+        int lastIndexOf = name.lastIndexOf('.');
+        if (lastIndexOf == -1) return name;
+        return name.substring(0 , lastIndexOf);
     }
 
     public String calculateTime(Duration time) {
@@ -323,7 +327,7 @@ public class MusicsController implements Initializable {
         return String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
     }
 
-    private void songBarVisibility(boolean b) {
+    public void songBarVisibility(boolean b) {
         songBar.setVisible(b);
         songBar.setManaged(b);
         progress.setManaged(b);
@@ -338,7 +342,7 @@ public class MusicsController implements Initializable {
         repeat.setManaged(b);
     }
 
-    private UserData read() throws IOException, ClassNotFoundException {
+    public UserData read() throws IOException, ClassNotFoundException {
         UserData data;
         FileInputStream fileIn = new FileInputStream(getUserPath() + File.separator + "Dream Music" + File.separator + "data.ser");
         ObjectInputStream ob = new ObjectInputStream(fileIn);
@@ -348,4 +352,35 @@ public class MusicsController implements Initializable {
         return data;
     }
 
+    public void playMedia(){
+        if (mediaPlayer != null){
+            mediaPlayer.play();
+            isPlaying = true;
+        }
+    }
+
+    public void pauseMedia(){
+        if (mediaPlayer != null){
+            mediaPlayer.pause();
+            isPlaying = false;
+        }
+    }
+
+    public void refresh(){
+        getSongList();
+    }
+
+    public void loadFolder(){
+        try {
+            userData = read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setListener(Listener listener){
+        this.listener = listener;
+    }
 }

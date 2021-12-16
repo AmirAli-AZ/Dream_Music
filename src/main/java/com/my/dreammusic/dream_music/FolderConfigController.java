@@ -25,11 +25,16 @@ public class FolderConfigController implements Initializable {
     @FXML
     private AnchorPane container;
     @FXML
-    private Button create;
+    public Button create;
 
     private File musicFolder , dreamMusicData;
     private UserData userData = new UserData();
     private Stage stage = new Stage();
+    public boolean openHome = false;
+    private Listener listener;
+    //result
+    public int OK = 1 , CANCEL = 0;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -55,7 +60,7 @@ public class FolderConfigController implements Initializable {
     }
 
     @FXML
-    public void createFolder(MouseEvent mouseEvent){
+    public void createFolder(){
         if (!(path.getText().equals(musicFolder.getAbsolutePath()))){
             if (isValidFolder(path.getText())){
                 musicFolder = new File(path.getText());
@@ -77,28 +82,33 @@ public class FolderConfigController implements Initializable {
         }
         Stage window = (Stage) container.getScene().getWindow();
         window.close();
-        try {
-            stage.setTitle("Dream Music");
-            stage.setOnCloseRequest(e ->{
-                Platform.exit();
-                System.exit(0);
-            });
-            final double width = 760.0;
-            final double height = 500.0;
+        if (openHome){
+            try {
+                stage.setTitle("Dream Music");
+                stage.setOnCloseRequest(e ->{
+                    Platform.exit();
+                    System.exit(0);
+                });
+                final double width = 760.0;
+                final double height = 500.0;
 
-            FXMLLoader loader = new FXMLLoader(FolderConfigController.class.getResource("home.fxml"));
-            Scene scene = new Scene(loader.load(), width , height);
-            scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
+                FXMLLoader loader = new FXMLLoader(FolderConfigController.class.getResource("home.fxml"));
+                Scene scene = new Scene(loader.load(), width , height);
+                scene.getStylesheets().add(FolderConfigController.class.getResource("Themes/light-theme.css").toExternalForm());
 
-            stage.setMinWidth(width);
-            stage.setMinHeight(height);
+                stage.setMinWidth(width);
+                stage.setMinHeight(height);
 
-            stage.setScene(scene);
-            stage.show();
-        }catch (IOException e){
-            e.printStackTrace();
+                stage.setScene(scene);
+                stage.show();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
         }
 
+        if (listener != null){
+            listener.onResult(OK);
+        }
     }
 
     public String getUserPath(){
@@ -110,5 +120,17 @@ public class FolderConfigController implements Initializable {
             return false;
         else
             return new File(s).isDirectory();
+    }
+
+    public void setOpenHome(boolean openHome){
+        this.openHome = openHome;
+    }
+
+    public void setListener(Listener listener){
+        this.listener = listener;
+    }
+
+    public void shutDown(){
+       listener.onResult(CANCEL);
     }
 }

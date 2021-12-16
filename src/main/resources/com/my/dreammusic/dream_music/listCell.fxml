@@ -13,7 +13,7 @@
       <ImageView fx:id="img" fitHeight="42.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true" />
       <VBox prefHeight="14.0" prefWidth="402.0" HBox.hgrow="ALWAYS">
          <children>
-            <Label fx:id="title" prefHeight="17.0" prefWidth="404.0" style="-fx-font-weight: bold;" text="Title" VBox.vgrow="ALWAYS">
+            <Label fx:id="title" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="Title" VBox.vgrow="ALWAYS">
                <font>
                   <Font size="13.0" />
                </font>
@@ -22,7 +22,7 @@
                </VBox.margin>
             </Label>
             <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-            <Label fx:id="date" prefHeight="17.0" prefWidth="402.0" style="-fx-text-fill: #756f6f;" text="Date" VBox.vgrow="ALWAYS">
+            <Label fx:id="date" maxWidth="1.7976931348623157E308" prefHeight="17.0" style="-fx-text-fill: #756f6f;" text="Date" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="2.0" />
                </VBox.margin>
