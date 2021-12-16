@@ -185,7 +185,8 @@ public class HomeController implements Initializable {
 
         stage.setResizable(false);
         stage.setScene(scene);
-        stage.showAndWait();
+        if (openHome)stage.show();
+        else stage.showAndWait();
     }
 
 }
