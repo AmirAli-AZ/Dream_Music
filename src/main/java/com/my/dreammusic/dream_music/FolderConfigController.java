@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class FolderConfigController implements Initializable {
@@ -61,12 +63,14 @@ public class FolderConfigController implements Initializable {
     @FXML
     public void createFolder(){
         if (!(path.getText().equals(musicFolder.getAbsolutePath()))){
-            if (isValidFolder(path.getText())){
-                musicFolder = new File(path.getText());
-            }
+            musicFolder = new File(path.getText());
         }
         if (!musicFolder.exists()){
-            musicFolder.mkdirs();
+            try {
+                Files.createDirectories(Paths.get(musicFolder.getAbsolutePath()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         userData.setPath(musicFolder.getAbsolutePath());
         try {
@@ -114,13 +118,6 @@ public class FolderConfigController implements Initializable {
 
     public String getUserPath(){
         return System.getProperty("user.home");
-    }
-
-    public boolean isValidFolder(String s){
-        if(s.length() == 0)
-            return false;
-        else
-            return new File(s).isDirectory();
     }
 
     public void setOpenHome(boolean openHome){

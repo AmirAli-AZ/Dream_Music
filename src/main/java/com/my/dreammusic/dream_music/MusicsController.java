@@ -288,19 +288,21 @@ public class MusicsController implements Initializable {
             list.getItems().clear();
             File file = new File(userData.getPath());
             File[] files = file.listFiles();
-            Arrays.sort(files);
-            if (files.length > 0) {
-                for (int i = 0; i < files.length; i++) {
-                    if (files[i].isFile()) {
-                        if (getExtension(files[i]).equals(".mp3") || getExtension(files[i]).equals(".wav")) {
-                            createMedia(files[i]);
-                            synchronized (object) {
-                                object.wait(100);
+            if (files != null){
+                Arrays.sort(files);
+                if (files.length > 0) {
+                    for (int i = 0; i < files.length; i++) {
+                        if (files[i].isFile()) {
+                            if (getExtension(files[i]).equals(".mp3") || getExtension(files[i]).equals(".wav")) {
+                                createMedia(files[i]);
+                                synchronized (object) {
+                                    object.wait(100);
+                                }
                             }
                         }
                     }
-                }
 
+                }
             }
         } catch (InterruptedException interruptedException) {
             interruptedException.printStackTrace();

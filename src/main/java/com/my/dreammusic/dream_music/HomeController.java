@@ -52,24 +52,26 @@ public class HomeController implements Initializable {
     public void musics(MouseEvent mouseEvent) {
         if (!musicsController.isPlaying) {
             if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
+                if (musicsController.list.getItems().size() > 0) {
                 /*
                 this listener check , if media player listeners is running or no with 0 and 1
                  */
-                musicsController.setListener(new Listener() {
-                    @Override
-                    public void onResult(int result) {
-                        if (result == MusicsController.OK){
-                            tab_musics.setDisable(false);
-                            // disable listener
-                            musicsController.setListener(null);
-                        }else {
-                            tab_musics.setDisable(true);
+                    musicsController.setListener(new Listener() {
+                        @Override
+                        public void onResult(int result) {
+                            if (result == MusicsController.OK) {
+                                tab_musics.setDisable(false);
+                                // disable listener
+                                musicsController.setListener(null);
+                            } else {
+                                tab_musics.setDisable(true);
+                            }
+                            System.out.println(result);
                         }
-                        System.out.println(result);
-                    }
-                });
-                // handle listener
-                musicsController.refresh();
+                    });
+                    // handle listener
+                    musicsController.refresh();
+                }
             } else {
                 Stage window = (Stage) container.getScene().getWindow();
                 window.close();
