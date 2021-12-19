@@ -255,7 +255,7 @@ public class MusicsController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        song.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_person_black.png")));
+
         mp.setOnReady(new Runnable() {
             @Override
             public void run() {
@@ -264,9 +264,7 @@ public class MusicsController implements Initializable {
                 if (mp.getMedia().getMetadata().get("title") != null){
                     song.setTitle((String) mp.getMedia().getMetadata().get("title"));
                 }
-                if (mp.getMedia().getMetadata().get("image") != null) {
-                    song.setImage((Image) mp.getMedia().getMetadata().get("image"));
-                }
+                song.setImage((Image) mp.getMedia().getMetadata().get("image"));
                 list.getItems().add(song);
                 if (listener != null){
                     listener.onResult(OK);
@@ -355,14 +353,14 @@ public class MusicsController implements Initializable {
     }
 
     public void playMedia(){
-        if (mediaPlayer != null){
+        if (mediaPlayer != null && !isPlaying){
             mediaPlayer.play();
             isPlaying = true;
         }
     }
 
     public void pauseMedia(){
-        if (mediaPlayer != null){
+        if (mediaPlayer != null && isPlaying){
             mediaPlayer.pause();
             isPlaying = false;
         }

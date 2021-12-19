@@ -1,0 +1,32 @@
+.root{
+-fx-background-color : #212121;
+}
+.button-style-ok{
+-fx-background-color : #2196F3;
+-fx-background-radius : 5px;
+-fx-text-fill : white;
+-fx-font-weight : bold;
+-fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
+}
+.button-style-cancel{
+-fx-background-color : white;
+-fx-background-radius : 5px;
+-fx-text-fill : black;
+-fx-font-weight : bold;
+-fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
+}
+.text-field {
+-fx-background-color: -fx-text-box-border, #424242;
+-fx-background-radius: 5px;
+-fx-text-fill : white;
+}
+.text-field:focused {
+-fx-background-color: -fx-focus-color, #212121;
+}
+.label{
+-fx-text-fill : white;
+}
+.message{
+-fx-text-fill : white;
+-fx-font-size: 16px;
+}

@@ -1,5 +1,6 @@
 package com.my.dreammusic.dream_music;
 
+import com.jthemedetecor.OsThemeDetector;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class Home extends Application {
 
@@ -25,6 +27,7 @@ public class Home extends Application {
         }
         File data = new File(dreamMusicData.getAbsolutePath() + File.separator + "data.ser");
         if (data.exists()){
+
             stage.setTitle("Dream Music");
             stage.setOnCloseRequest(e ->{
                 Platform.exit();
@@ -35,11 +38,26 @@ public class Home extends Application {
 
             FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
             Scene scene = new Scene(loader.load(), width , height);
-            scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
+            String light = Home.class.getResource("Themes/light-theme.css").toExternalForm();
+            String dark = Home.class.getResource("Themes/dark-theme.css").toExternalForm();
+            // default theme
+            scene.getStylesheets().add(light);
+
+            final OsThemeDetector detector = OsThemeDetector.getDetector();
+            Consumer<Boolean> darkThemeListener = isDark -> {
+                Platform.runLater(() -> {
+                    if (isDark) {
+                        scene.getStylesheets().set(0 , dark);
+                    } else {
+                        scene.getStylesheets().set(0 , light);
+                    }
+                });
+            };
+            darkThemeListener.accept(detector.isDark());
+            detector.registerListener(darkThemeListener);
 
             stage.setMinWidth(width);
             stage.setMinHeight(height);
-
             stage.setScene(scene);
             stage.show();
         }else {
@@ -50,11 +68,11 @@ public class Home extends Application {
         stage.setTitle("Folder Config");
         FXMLLoader loader = new FXMLLoader(Home.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
-        scene.getStylesheets().add(Home.class.getResource("Themes/dialog-theme.css").toExternalForm());
+        scene.getStylesheets().add(Home.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
 
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);
-
+        controller.setScene(scene);
         stage.setResizable(false);
         stage.setScene(scene);
         if (openHome)stage.show();

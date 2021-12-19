@@ -1,0 +1,61 @@
+.root{
+-fx-background-color : #212121;
+}
+.title{
+-fx-font-weight : bold;
+-fx-text-fill : white;
+}
+.list-view{
+-fx-background-insets : 0;
+-fx-padding : 0;
+}
+.right-border{
+-fx-border-style : hidden solid hidden hidden;
+-fx-border-width : 2;
+-fx-border-color : #403f3f;
+}
+.list-cell{
+-fx-background-color : #212121;
+}
+.list-view{
+-fx-background-color : #212121;
+}
+.cell-text-color {
+-fx-text-fill: white;
+}
+.list-view:focused .list-cell:filled:focused:selected {
+-fx-background-color:  black, black, black;
+-fx-background-insets: 0, 1, 2;
+-fx-background: -fx-accent;
+}
+.animated-gradient{
+-gradient-base : #21dd8f;
+-fx-background-color : linear-gradient(to right, -gradient-base, #2196F3);
+}
+.menu-bar {
+-fx-background-color: #212121;
+}
+.menu-bar .label{
+-fx-text-fill : white;
+}
+.menu-bar .menu-button:hover, .menu-bar .menu-button:focused, .menu-bar .menu-button:showing {
+-fx-background : black;
+-fx-text-fill : white;
+}
+.menu-item .label {
+-fx-text-fill: white;
+}
+.menu-item:focused {
+-fx-background-color: black;
+}
+.menu-item:focused .label {
+-fx-text-fill: white;
+}
+.context-menu {
+-fx-skin : "javafx.scene.control.skin.ContextMenuSkin";
+-fx-background-color: #212121;
+-fx-background-insets: 0, 1, 2;
+-fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;
+-fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;
+-fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em;
+}

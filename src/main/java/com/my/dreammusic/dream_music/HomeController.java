@@ -1,5 +1,7 @@
 package com.my.dreammusic.dream_music;
 
+import com.jthemedetecor.OsThemeDetector;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class HomeController implements Initializable {
 
@@ -27,18 +30,18 @@ public class HomeController implements Initializable {
     @FXML
     private VBox items;
     @FXML
-    private BorderPane container;
+    public BorderPane container;
     @FXML
     private HBox tab_musics;
 
     private MusicsController musicsController;
+    private boolean isDark = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music.png")));
+        //img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
         title1.getStyleClass().add("title");
-        items.getStyleClass().add("left-border");
-
+        items.getStyleClass().add("right-border");
         try {
             FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("musics.fxml"));
             container.setCenter(loader.load());
@@ -46,6 +49,18 @@ public class HomeController implements Initializable {
         }catch (IOException e){
             e.printStackTrace();
         }
+        final OsThemeDetector detector = OsThemeDetector.getDetector();
+        Consumer<Boolean> darkThemeListener = isDark -> {
+            Platform.runLater(() -> {
+                if (isDark){
+                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
+                }else {
+                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
+                }
+            });
+        };
+        darkThemeListener.accept(detector.isDark());
+        detector.registerListener(darkThemeListener);
     }
 
     @FXML
@@ -126,7 +141,7 @@ public class HomeController implements Initializable {
 
                 FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
                 Scene scene = new Scene(loader.load(), 611, 288);
-                scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-theme.css").toExternalForm());
+                scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
 
                 FolderConfigController controller = loader.getController();
                 controller.setOpenHome(false);
@@ -135,8 +150,14 @@ public class HomeController implements Initializable {
                     @Override
                     public void onResult(int result) {
                         if (result == controller.OK){
+                            if (musicsController.isPlaying){
+                                musicsController.pauseMedia();
+                                musicsController.isPlaying = false;
+                                musicsController.songBarVisibility(false);
+                            }
                             musicsController.loadFolder();
                             musicsController.refresh();
+                            controller.setListener(null);
                         }
                     }
                 });
@@ -144,7 +165,7 @@ public class HomeController implements Initializable {
                 stage.setOnCloseRequest(e ->{
                     controller.shutDown();
                 });
-
+                controller.setScene(scene);
                 stage.setResizable(false);
                 stage.setScene(scene);
                 stage.showAndWait();
@@ -160,12 +181,40 @@ public class HomeController implements Initializable {
                         musicsController.songBarVisibility(false);
                         musicsController.isPlaying = false;
                         try {
-                            openFolderConfig(new Stage() , false);
-                            musicsController.loadFolder();
-                            musicsController.refresh();
+                            Stage stage = new Stage();
+                            stage.setTitle("Folder Config");
+
+                            FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
+                            Scene scene = new Scene(loader.load(), 611, 288);
+                            scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+
+                            FolderConfigController controller = loader.getController();
+                            controller.setOpenHome(false);
+
+                            controller.setListener(new Listener() {
+                                @Override
+                                public void onResult(int result) {
+                                    if (result == controller.OK){
+                                        musicsController.loadFolder();
+                                        musicsController.refresh();
+
+                                        controller.setListener(null);
+                                    }
+                                }
+                            });
+
+                            stage.setOnCloseRequest(e ->{
+                                controller.shutDown();
+                            });
+                            controller.setScene(scene);
+                            stage.setResizable(false);
+                            stage.setScene(scene);
+                            stage.show();
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
                     }
                 }
             });
@@ -180,14 +229,15 @@ public class HomeController implements Initializable {
         stage.setTitle("Folder Config");
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
-        scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-theme.css").toExternalForm());
+        scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
 
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);
+        controller.setScene(scene);
 
         stage.setResizable(false);
         stage.setScene(scene);
-        if (openHome)stage.show();
+        if (openHome) stage.show();
         else stage.showAndWait();
     }
 

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: de.jangassen:jfa:1.1.9">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/jangassen/jfa/1.1.9/jfa-1.1.9.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/de/jangassen/jfa/1.1.9/jfa-1.1.9-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/jangassen/jfa/1.1.9/jfa-1.1.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

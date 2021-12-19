@@ -1,9 +1,12 @@
 package com.my.dreammusic.dream_music;
 
+import com.jthemedetecor.OsThemeDetector;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -12,6 +15,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.util.function.Consumer;
 
 public class Dialog {
 
@@ -90,15 +95,33 @@ public class Dialog {
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(60);
         imageView.setFitWidth(60);
-        Text text = new Text(message);
-        text.setStyle("-fx-font-size: 16px;");
+        Label text = new Label(message);
+        text.getStyleClass().add("message");
         vBox.getChildren().addAll(imageView , text);
 
         borderPane.setBottom(buttons);
         borderPane.setCenter(vBox);
 
         Scene scene = new Scene(borderPane , 400 , 250);
-        scene.getStylesheets().add(Dialog.class.getResource("Themes/dialog-theme.css").toExternalForm());
+
+        String light = Dialog.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
+        String dark = Dialog.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
+        // default theme
+        scene.getStylesheets().add(light);
+
+        final OsThemeDetector detector = OsThemeDetector.getDetector();
+        Consumer<Boolean> darkThemeListener = isDark -> {
+            Platform.runLater(() -> {
+                if (isDark) {
+                    scene.getStylesheets().set(0 , dark);
+                } else {
+                    scene.getStylesheets().set(0 , light);
+                }
+            });
+        };
+        darkThemeListener.accept(detector.isDark());
+        detector.registerListener(darkThemeListener);
+
         window.setScene(scene);
         window.setMinWidth(400);
         window.setMinHeight(250);

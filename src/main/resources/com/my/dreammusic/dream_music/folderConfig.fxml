@@ -25,7 +25,7 @@
                </font>
             </Label>
             <TextField fx:id="path" prefHeight="26.0" prefWidth="494.0" />
-            <ImageView fx:id="folderPicker" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#pick" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="img_folderPicker" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#pick" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@icons/baseline_folder_black.png" />
                </image>
