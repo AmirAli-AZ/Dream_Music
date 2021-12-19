@@ -1,4 +1,12 @@
 # Dream Music
 javafx music player for windows
 
-![Screenshot (249)](https://user-images.githubusercontent.com/84965706/146392645-81012b17-1fe6-4819-b7f9-2015e0a1ec04.png)
+# ScreenShots
+
+> light mode
+
+![Screenshot (256)](https://user-images.githubusercontent.com/84965706/146685069-ff27c5fe-76ee-4cc1-8907-e58755d88a51.png)
+
+> dark mode
+
+![Screenshot (257)](https://user-images.githubusercontent.com/84965706/146685086-31afee7f-1593-4049-bb85-08547a45dca6.png)
