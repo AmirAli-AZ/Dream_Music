@@ -15,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -169,13 +170,14 @@ public class MusicsController implements Initializable {
                         public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                             mediaPlayer.setVolume(volume.getValue() * 0.01);
                             long value = t1.longValue();
-                            if (value > 50) {
-                                img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
-                            }
                             if (value == 0) {
                                 img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
-                            } else if (value <= 50) {
-                                img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
+                            }else {
+                                if (value > 50) {
+                                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
+                                }else{
+                                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
+                                }
                             }
                         }
                     });
