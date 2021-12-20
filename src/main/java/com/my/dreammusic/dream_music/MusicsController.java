@@ -75,6 +75,7 @@ public class MusicsController implements Initializable {
     private UserData userData;
     public static final int OK = 1, CANCEL = 0;
     private Listener listener;
+    private int songPosition = 0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -111,6 +112,7 @@ public class MusicsController implements Initializable {
         if (info != null) {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (!isPlaying) {
+                    songPosition = list.getSelectionModel().getSelectedIndex();
                     songBarVisibility(true);
                     mediaPlayer = new MediaPlayer(info.getMedia());
 
@@ -181,13 +183,20 @@ public class MusicsController implements Initializable {
                 //list.getSelectionModel().clearSelection();
             } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 if (mediaPlayer != null) {
+                    int clickedPosition = list.getSelectionModel().getSelectedIndex();
                     if (isPlaying) {
-                        mediaPlayer.dispose();
-                        isPlaying = false;
-                        play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
+                        if (clickedPosition == songPosition){
+                            pauseMedia();
+                            play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
+                            songBarVisibility(false);
+                            list.getSelectionModel().clearSelection();
+                        }
+                    }else {
+                        if (clickedPosition == songPosition){
+                            if (songBar.isVisible()) songBarVisibility(false);
+                            list.getSelectionModel().clearSelection();
+                        }
                     }
-                    songBarVisibility(false);
-                    list.getSelectionModel().clearSelection();
                 }
             }
         }
@@ -330,16 +339,6 @@ public class MusicsController implements Initializable {
     public void songBarVisibility(boolean b) {
         songBar.setVisible(b);
         songBar.setManaged(b);
-        progress.setManaged(b);
-        img_volume.setManaged(b);
-        volume.setManaged(b);
-        hbox.setManaged(b);
-        currentTime.setManaged(b);
-        rewind.setManaged(b);
-        play.setManaged(b);
-        forward.setManaged(b);
-        totalTime.setManaged(b);
-        repeat.setManaged(b);
     }
 
     public UserData read() throws IOException, ClassNotFoundException {
