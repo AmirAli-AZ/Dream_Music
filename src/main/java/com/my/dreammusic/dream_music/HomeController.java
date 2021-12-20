@@ -103,12 +103,10 @@ public class HomeController implements Initializable {
                     if (result == Dialog.OK){
                         if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
                             musicsController.pauseMedia();
-                            musicsController.isPlaying = false;
                             musicsController.songBarVisibility(false);
                             musicsController.refresh();
                         }else {
                             musicsController.pauseMedia();
-                            musicsController.isPlaying = false;
                             musicsController.songBarVisibility(false);
                             Stage window = (Stage) container.getScene().getWindow();
                             window.close();
@@ -152,7 +150,6 @@ public class HomeController implements Initializable {
                         if (result == controller.OK){
                             if (musicsController.isPlaying){
                                 musicsController.pauseMedia();
-                                musicsController.isPlaying = false;
                                 musicsController.songBarVisibility(false);
                             }
                             musicsController.loadFolder();
@@ -179,7 +176,6 @@ public class HomeController implements Initializable {
                     if (result == Dialog.OK){
                         musicsController.pauseMedia();
                         musicsController.songBarVisibility(false);
-                        musicsController.isPlaying = false;
                         try {
                             Stage stage = new Stage();
                             stage.setTitle("Folder Config");
@@ -195,6 +191,10 @@ public class HomeController implements Initializable {
                                 @Override
                                 public void onResult(int result) {
                                     if (result == controller.OK){
+                                        if (musicsController.isPlaying){
+                                            musicsController.pauseMedia();
+                                            musicsController.songBarVisibility(false);
+                                        }
                                         musicsController.loadFolder();
                                         musicsController.refresh();
 
