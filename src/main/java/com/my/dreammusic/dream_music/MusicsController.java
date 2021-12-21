@@ -14,8 +14,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.Slider;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -81,9 +81,18 @@ public class MusicsController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadFolder();
-        list.setCellFactory(songListView -> new SongListCell());
         songBarVisibility(false);
         getSongList();
+        list.setCellFactory(song -> {
+            SongListCell songListCell = new SongListCell();
+            songListCell.setOnMouseClicked(e -> {
+                if (!songListCell.isEmpty()) {
+                    listClick(e);
+                    e.consume();
+                }
+            });
+            return songListCell;
+        });
 
         ObjectProperty<Color> baseColor = new SimpleObjectProperty<>();
 
@@ -94,11 +103,11 @@ public class MusicsController implements Initializable {
         Timeline timeline = new Timeline(keyFrame1, keyFrame2);
 
         baseColor.addListener((obs, oldColor, newColor) -> {
-            if (isPlaying){
+            if (isPlaying) {
                 songBar.setStyle(String.format("-gradient-base: #%02x%02x%02x; ",
-                        (int)(newColor.getRed()* 255),
-                        (int)(newColor.getGreen()* 255),
-                        (int)(newColor.getBlue()* 255)));
+                        (int) (newColor.getRed() * 255),
+                        (int) (newColor.getGreen() * 255),
+                        (int) (newColor.getBlue() * 255)));
             }
         });
 
@@ -107,97 +116,94 @@ public class MusicsController implements Initializable {
         timeline.play();
     }
 
-    @FXML
     public void listClick(MouseEvent mouseEvent) {
         Song info = list.getSelectionModel().getSelectedItem();
-        if (info != null) {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                if (!isPlaying) {
-                    songPosition = list.getSelectionModel().getSelectedIndex();
-                    songBarVisibility(true);
-                    mediaPlayer = new MediaPlayer(info.getMedia());
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+            if (!isPlaying) {
+                songPosition = list.getSelectionModel().getSelectedIndex();
+                songBarVisibility(true);
+                mediaPlayer = new MediaPlayer(info.getMedia());
 
-                    mediaPlayer.setOnReady(new Runnable() {
-                        @Override
-                        public void run() {
-                            totalTime.setText(calculateTime(info.getMedia().getDuration()));
-                            progress.setMin(0);
-                            progress.setMax(info.getMedia().getDuration().toSeconds());
-                            play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
-                            mediaPlayer.setVolume(volume.getValue() * 0.01);
-                            playMedia();
-                        }
-                    });
+                mediaPlayer.setOnReady(new Runnable() {
+                    @Override
+                    public void run() {
+                        totalTime.setText(calculateTime(info.getMedia().getDuration()));
+                        progress.setMin(0);
+                        progress.setMax(info.getMedia().getDuration().toSeconds());
+                        play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
+                        mediaPlayer.setVolume(volume.getValue() * 0.01);
+                        playMedia();
+                    }
+                });
 
-                    mediaPlayer.setOnEndOfMedia(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!repeatMode) {
-                                isPlaying = false;
-                                play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
-                                songBarVisibility(false);
-                                list.getSelectionModel().clearSelection();
-                            } else {
-                                mediaPlayer.seek(Duration.ZERO);
-                            }
-                        }
-                    });
-
-                    mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
-                        @Override
-                        public void changed(ObservableValue<? extends Duration> observableValue, Duration duration, Duration t1) {
-                            if (!isChanging) {
-                                currentTime.setText(calculateTime(t1));
-                                progress.setValue(t1.toSeconds());
-                            }
-                        }
-                    });
-
-                    progress.valueProperty().addListener(new InvalidationListener() {
-                        @Override
-                        public void invalidated(Observable observable) {
-                            if (progress.isValueChanging()) {
-                                isChanging = true;
-                                currentTime.setText(calculateTime(Duration.seconds(progress.getValue())));
-                                mediaPlayer.seek(Duration.seconds(progress.getValue()));
-                            }
-                            isChanging = false;
-                        }
-                    });
-
-                    volume.valueProperty().addListener(new ChangeListener<Number>() {
-                        @Override
-                        public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                            mediaPlayer.setVolume(volume.getValue() * 0.01);
-                            long value = t1.longValue();
-                            if (value == 0) {
-                                img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
-                            }else {
-                                if (value > 50) {
-                                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
-                                }else{
-                                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
-                                }
-                            }
-                        }
-                    });
-                }
-                //list.getSelectionModel().clearSelection();
-            } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                if (mediaPlayer != null) {
-                    int clickedPosition = list.getSelectionModel().getSelectedIndex();
-                    if (isPlaying) {
-                        if (clickedPosition == songPosition){
-                            pauseMedia();
+                mediaPlayer.setOnEndOfMedia(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!repeatMode) {
+                            isPlaying = false;
                             play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
                             songBarVisibility(false);
                             list.getSelectionModel().clearSelection();
+                        } else {
+                            mediaPlayer.seek(Duration.ZERO);
                         }
-                    }else {
-                        if (clickedPosition == songPosition){
-                            if (songBar.isVisible()) songBarVisibility(false);
-                            list.getSelectionModel().clearSelection();
+                    }
+                });
+
+                mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Duration> observableValue, Duration duration, Duration t1) {
+                        if (!isChanging) {
+                            currentTime.setText(calculateTime(t1));
+                            progress.setValue(t1.toSeconds());
                         }
+                    }
+                });
+
+                progress.valueProperty().addListener(new InvalidationListener() {
+                    @Override
+                    public void invalidated(Observable observable) {
+                        if (progress.isValueChanging()) {
+                            isChanging = true;
+                            currentTime.setText(calculateTime(Duration.seconds(progress.getValue())));
+                            mediaPlayer.seek(Duration.seconds(progress.getValue()));
+                        }
+                        isChanging = false;
+                    }
+                });
+
+                volume.valueProperty().addListener(new ChangeListener<Number>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                        mediaPlayer.setVolume(volume.getValue() * 0.01);
+                        long value = t1.longValue();
+                        if (value == 0) {
+                            img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
+                        } else {
+                            if (value > 50) {
+                                img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
+                            } else {
+                                img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
+                            }
+                        }
+                    }
+                });
+            }
+            //list.getSelectionModel().clearSelection();
+        } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            if (mediaPlayer != null) {
+                int clickedPosition = list.getSelectionModel().getSelectedIndex();
+                if (isPlaying) {
+                    if (clickedPosition == songPosition) {
+                        pauseMedia();
+                        play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
+                        songBarVisibility(false);
+                        list.getSelectionModel().clearSelection();
+                    }
+                } else {
+                    if (clickedPosition == songPosition) {
+                        if (songBar.isVisible()) songBarVisibility(false);
+                        list.getSelectionModel().clearSelection();
                     }
                 }
             }
@@ -249,7 +255,7 @@ public class MusicsController implements Initializable {
     }
 
     public void createMedia(File file) {
-        if (listener != null){
+        if (listener != null) {
             listener.onResult(CANCEL);
         }
         Media media = new Media(file.toURI().toString());
@@ -272,12 +278,12 @@ public class MusicsController implements Initializable {
             public void run() {
                 song.setAlbum((String) mp.getMedia().getMetadata().get("album"));
                 song.setArtist((String) mp.getMedia().getMetadata().get("artist"));
-                if (mp.getMedia().getMetadata().get("title") != null){
+                if (mp.getMedia().getMetadata().get("title") != null) {
                     song.setTitle((String) mp.getMedia().getMetadata().get("title"));
                 }
                 song.setImage((Image) mp.getMedia().getMetadata().get("image"));
                 list.getItems().add(song);
-                if (listener != null){
+                if (listener != null) {
                     listener.onResult(OK);
                 }
 
@@ -297,7 +303,7 @@ public class MusicsController implements Initializable {
             list.getItems().clear();
             File file = new File(userData.getPath());
             File[] files = file.listFiles();
-            if (files != null){
+            if (files != null) {
                 Arrays.sort(files);
                 if (files.length > 0) {
                     for (int i = 0; i < files.length; i++) {
@@ -326,11 +332,11 @@ public class MusicsController implements Initializable {
         return name.substring(lastIndexOf);
     }
 
-    public String getFileName(File file){
+    public String getFileName(File file) {
         String name = file.getName();
         int lastIndexOf = name.lastIndexOf('.');
         if (lastIndexOf == -1) return name;
-        return name.substring(0 , lastIndexOf);
+        return name.substring(0, lastIndexOf);
     }
 
     public String calculateTime(Duration time) {
@@ -353,25 +359,25 @@ public class MusicsController implements Initializable {
         return data;
     }
 
-    public void playMedia(){
-        if (mediaPlayer != null && !isPlaying){
+    public void playMedia() {
+        if (mediaPlayer != null && !isPlaying) {
             mediaPlayer.play();
             isPlaying = true;
         }
     }
 
-    public void pauseMedia(){
-        if (mediaPlayer != null && isPlaying){
+    public void pauseMedia() {
+        if (mediaPlayer != null && isPlaying) {
             mediaPlayer.pause();
             isPlaying = false;
         }
     }
 
-    public void refresh(){
+    public void refresh() {
         getSongList();
     }
 
-    public void loadFolder(){
+    public void loadFolder() {
         try {
             userData = read();
         } catch (IOException e) {
@@ -381,7 +387,7 @@ public class MusicsController implements Initializable {
         }
     }
 
-    public void setListener(Listener listener){
+    public void setListener(Listener listener) {
         this.listener = listener;
     }
 }
