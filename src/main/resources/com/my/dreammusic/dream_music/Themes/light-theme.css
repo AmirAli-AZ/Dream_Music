@@ -17,16 +17,22 @@
 .list-cell{
 -fx-background-color : white;
 }
+.list-cell:filled:hover{
+-fx-background-color : #dbdbdb;
+}
 .list-view{
 -fx-background-color : white;
 }
 .cell-text-color {
--fx-text-fill: black;
+-fx-text-fill : black;
 }
 .list-view:focused .list-cell:filled:focused:selected {
 -fx-background-color:  -fx-focus-color, -fx-cell-focus-inner-border, #3895bc;
 -fx-background-insets: 0, 1, 2;
 -fx-background: -fx-accent;
+}
+.list-view:focused .list-cell:filled:focused:selected .cell-text-color{
+-fx-text-fill : white;
 }
 .animated-gradient{
 -gradient-base : #21dd8f;

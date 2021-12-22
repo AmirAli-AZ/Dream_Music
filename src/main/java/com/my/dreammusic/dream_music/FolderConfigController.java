@@ -43,9 +43,11 @@ public class FolderConfigController implements Initializable {
     public final int OK = 1, CANCEL = 0;
     private Scene scene;
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        String light = FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
+        String dark = FolderConfigController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
+
         create.getStyleClass().add("button-style-ok");
         String s = getUserPath() + File.separator + "Music";
         path.setText(s);
@@ -56,17 +58,14 @@ public class FolderConfigController implements Initializable {
             dreamMusicData.mkdirs();
         }
 
-        String light = FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
-        String dark = FolderConfigController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
-
         final OsThemeDetector detector = OsThemeDetector.getDetector();
         Consumer<Boolean> darkThemeListener = isDark -> {
             Platform.runLater(() -> {
                 if (isDark){
-                   getScene().getStylesheets().set(0, dark);
+                   scene.getStylesheets().set(0, dark);
                    img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_white.png")));
                 }else {
-                    getScene().getStylesheets().set(0, light);
+                    scene.getStylesheets().set(0, light);
                     img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_black.png")));
                 }
             });

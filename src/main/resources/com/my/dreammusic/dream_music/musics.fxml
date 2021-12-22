@@ -13,7 +13,7 @@
 <VBox fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.MusicsController">
    <children>
       <ListView fx:id="list" VBox.vgrow="ALWAYS" />
-      <AnchorPane fx:id="songBar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="248.0" styleClass="animated-gradient" stylesheets="@Themes/light-theme.css">
+      <AnchorPane fx:id="songBar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="248.0" styleClass="animated-gradient">
          <children>
             <Slider fx:id="progress" layoutX="8.0" layoutY="7.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
             <ImageView fx:id="img_volume" fitHeight="32.0" fitWidth="32.0" layoutY="65.0" pickOnBounds="true" preserveRatio="true">

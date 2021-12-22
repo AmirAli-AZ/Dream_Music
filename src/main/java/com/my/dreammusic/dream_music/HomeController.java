@@ -35,7 +35,6 @@ public class HomeController implements Initializable {
     private HBox tab_musics;
 
     private MusicsController musicsController;
-    private boolean isDark = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -139,7 +138,7 @@ public class HomeController implements Initializable {
 
                 FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
                 Scene scene = new Scene(loader.load(), 611, 288);
-                scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+                scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
 
                 FolderConfigController controller = loader.getController();
                 controller.setOpenHome(false);
@@ -158,11 +157,10 @@ public class HomeController implements Initializable {
                         }
                     }
                 });
-
+                controller.setScene(scene);
                 stage.setOnCloseRequest(e ->{
                     controller.shutDown();
                 });
-                controller.setScene(scene);
                 stage.setResizable(false);
                 stage.setScene(scene);
                 stage.showAndWait();
@@ -182,7 +180,7 @@ public class HomeController implements Initializable {
 
                             FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
                             Scene scene = new Scene(loader.load(), 611, 288);
-                            scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+                            scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
 
                             FolderConfigController controller = loader.getController();
                             controller.setOpenHome(false);
@@ -202,11 +200,11 @@ public class HomeController implements Initializable {
                                     }
                                 }
                             });
-
+                            controller.setScene(scene);
                             stage.setOnCloseRequest(e ->{
                                 controller.shutDown();
                             });
-                            controller.setScene(scene);
+
                             stage.setResizable(false);
                             stage.setScene(scene);
                             stage.show();
@@ -229,7 +227,7 @@ public class HomeController implements Initializable {
         stage.setTitle("Folder Config");
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
-        scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+        scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
 
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);

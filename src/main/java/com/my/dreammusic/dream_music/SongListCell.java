@@ -2,7 +2,6 @@ package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
 import javafx.application.Platform;
-import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -17,7 +16,7 @@ import javafx.scene.text.FontWeight;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class SongListCell extends ListCell<Song> {
+public class SongListCell extends ListCell<Song> implements Consumer<Boolean> {
 
     @FXML
     private Label title;
@@ -29,11 +28,11 @@ public class SongListCell extends ListCell<Song> {
     private HBox container;
 
     private FXMLLoader loader;
+    private final OsThemeDetector osThemeDetector = OsThemeDetector.getDetector();
 
     @Override
     protected void updateItem(Song song, boolean b) {
         super.updateItem(song, b);
-
         if (b || song == null){
             setText(null);
             setGraphic(null);
@@ -47,7 +46,6 @@ public class SongListCell extends ListCell<Song> {
                     e.printStackTrace();
                 }
             }
-
             title.getStyleClass().add("cell-text-color");
             title.setText(song.getTitle());
             Font font = Font.font(Font.getDefault().getName() , FontWeight.BOLD, FontPosture.REGULAR, 13);
@@ -56,21 +54,22 @@ public class SongListCell extends ListCell<Song> {
             if (song.getImage() != null){
                 img.setImage(song.getImage());
             }else {
-                final OsThemeDetector detector = OsThemeDetector.getDetector();
-                Consumer<Boolean> darkThemeListener = isDark -> {
-                    Platform.runLater(() -> {
-                        if (isDark){
-                            img.setImage(new Image(SongListCell.class.getResourceAsStream("icons/baseline_person_white.png")));
-                        }else {
-                            img.setImage(new Image(SongListCell.class.getResourceAsStream("icons/baseline_person_black.png")));
-                        }
-                    });
-                };
-                darkThemeListener.accept(detector.isDark());
-                detector.registerListener(darkThemeListener);
+                this.accept(osThemeDetector.isDark());
+                osThemeDetector.registerListener(this);
             }
             setText(null);
             setGraphic(container);
         }
+    }
+
+    @Override
+    public void accept(Boolean aBoolean) {
+        Platform.runLater(() ->{
+            if (loader != null) {
+                if (aBoolean)
+                    img.setImage(new Image(SongListCell.class.getResourceAsStream("icons/baseline_person_white.png")));
+                else img.setImage(new Image(SongListCell.class.getResourceAsStream("icons/baseline_person_black.png")));
+            }
+        });
     }
 }

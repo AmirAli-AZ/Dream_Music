@@ -17,17 +17,10 @@ public class Home extends Application {
         launch(args);
     }
 
-    private File dreamMusicData;
-
     @Override
     public void start(Stage stage) throws Exception {
-        dreamMusicData = new File(System.getProperty("user.home") + File.separator + "Dream Music");
-        if (!dreamMusicData.exists()){
-            dreamMusicData.mkdirs();
-        }
-        File data = new File(dreamMusicData.getAbsolutePath() + File.separator + "data.ser");
+        File data = new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
         if (data.exists()){
-
             stage.setTitle("Dream Music");
             stage.setOnCloseRequest(e ->{
                 Platform.exit();
@@ -68,11 +61,12 @@ public class Home extends Application {
         stage.setTitle("Folder Config");
         FXMLLoader loader = new FXMLLoader(Home.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
-        scene.getStylesheets().add(Home.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+        scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
 
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);
         controller.setScene(scene);
+
         stage.setResizable(false);
         stage.setScene(scene);
         if (openHome)stage.show();

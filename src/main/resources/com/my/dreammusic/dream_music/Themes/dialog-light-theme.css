@@ -9,11 +9,17 @@
 -fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
 }
 .button-style-cancel{
--fx-background-color : #9e9e9e;
+-fx-background-color : #b5b5b5;
 -fx-background-radius : 5px;
 -fx-text-fill : black;
 -fx-font-weight : bold;
 -fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
+}
+.button-style-cancel:hover{
+-fx-background-color : #9e9e9e;
+}
+.button-style-ok:hover{
+-fx-background-color : #185d94;
 }
 .text-field {
 -fx-background-color: -fx-text-box-border, #dfe4ed;

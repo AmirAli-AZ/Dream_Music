@@ -4,6 +4,7 @@ import com.jthemedetecor.OsThemeDetector;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;;
 import javafx.scene.control.Label;
@@ -12,7 +13,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -73,6 +73,7 @@ public class Dialog {
 
         if (cancelButton){
             Button cancel = new Button(btnCancelText);
+            cancel.setCursor(Cursor.HAND);
             cancel.getStyleClass().add("button-style-cancel");
             cancel.setMinWidth(60);
             cancel.setMinHeight(30);
@@ -83,6 +84,7 @@ public class Dialog {
             buttons.getChildren().add(cancel);
         }
         Button ok = new Button(btnOkText);
+        ok.setCursor(Cursor.HAND);
         ok.getStyleClass().add("button-style-ok");
         ok.setMinWidth(60);
         ok.setMinHeight(30);
