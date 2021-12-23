@@ -11,7 +11,7 @@
       <ImageView fx:id="img" fitHeight="42.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true" />
       <VBox prefHeight="14.0" prefWidth="402.0" HBox.hgrow="ALWAYS">
          <children>
-            <Label fx:id="title" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="Title" VBox.vgrow="ALWAYS">
+            <Label fx:id="title" maxWidth="1.7976931348623157E308" prefHeight="17.0" styleClass="cell-text-color" text="Title" VBox.vgrow="ALWAYS">
                <font>
                   <Font size="13.0" />
                </font>

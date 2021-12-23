@@ -1,7 +1,5 @@
 package com.my.dreammusic.dream_music;
 
-import com.jthemedetecor.OsThemeDetector;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -14,9 +12,8 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
-public class SongListCell extends ListCell<Song> implements Consumer<Boolean> {
+public class SongListCell extends ListCell<Song>{
 
     @FXML
     private Label title;
@@ -28,7 +25,6 @@ public class SongListCell extends ListCell<Song> implements Consumer<Boolean> {
     private HBox container;
 
     private FXMLLoader loader;
-    private final OsThemeDetector osThemeDetector = OsThemeDetector.getDetector();
 
     @Override
     protected void updateItem(Song song, boolean b) {
@@ -46,7 +42,6 @@ public class SongListCell extends ListCell<Song> implements Consumer<Boolean> {
                     e.printStackTrace();
                 }
             }
-            title.getStyleClass().add("cell-text-color");
             title.setText(song.getTitle());
             Font font = Font.font(Font.getDefault().getName() , FontWeight.BOLD, FontPosture.REGULAR, 13);
             title.setFont(font);
@@ -54,22 +49,10 @@ public class SongListCell extends ListCell<Song> implements Consumer<Boolean> {
             if (song.getImage() != null){
                 img.setImage(song.getImage());
             }else {
-                this.accept(osThemeDetector.isDark());
-                osThemeDetector.registerListener(this);
+                img.setImage(new Image(SongListCell.class.getResourceAsStream("icons/ic_default_music.png")));
             }
             setText(null);
             setGraphic(container);
         }
-    }
-
-    @Override
-    public void accept(Boolean aBoolean) {
-        Platform.runLater(() ->{
-            if (loader != null) {
-                if (aBoolean)
-                    img.setImage(new Image(SongListCell.class.getResourceAsStream("icons/baseline_person_white.png")));
-                else img.setImage(new Image(SongListCell.class.getResourceAsStream("icons/baseline_person_black.png")));
-            }
-        });
     }
 }
