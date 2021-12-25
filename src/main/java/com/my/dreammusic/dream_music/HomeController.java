@@ -60,6 +60,7 @@ public class HomeController implements Initializable {
         };
         darkThemeListener.accept(detector.isDark());
         detector.registerListener(darkThemeListener);
+
     }
 
     @FXML

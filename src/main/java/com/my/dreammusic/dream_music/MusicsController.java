@@ -1,12 +1,11 @@
 package com.my.dreammusic.dream_music;
 
 import javafx.animation.*;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -18,6 +17,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -63,6 +63,8 @@ public class MusicsController implements Initializable {
     public ImageView repeat;
     @FXML
     public HBox hbox;
+    @FXML
+    public VBox container;
 
     private MediaPlayer mediaPlayer;
     public boolean isPlaying = false;
@@ -110,6 +112,32 @@ public class MusicsController implements Initializable {
         timeline.setAutoReverse(true);
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
+
+        progress.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                if (mediaPlayer != null && isChanging) currentTime.setText(calculateTime(Duration.seconds(t1.doubleValue())));
+            }
+        });
+
+        volume.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                if (mediaPlayer != null) {
+                    mediaPlayer.setVolume(volume.getValue() * 0.01);
+                    long value = t1.longValue();
+                    if (value == 0) {
+                        img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
+                    } else {
+                        if (value > 50) {
+                            img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
+                        } else {
+                            img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void listClick(MouseEvent mouseEvent) {
@@ -123,9 +151,9 @@ public class MusicsController implements Initializable {
                 mediaPlayer.setOnReady(new Runnable() {
                     @Override
                     public void run() {
-                        totalTime.setText(calculateTime(info.getMedia().getDuration()));
+                        totalTime.setText(calculateTime(mediaPlayer.getMedia().getDuration()));
                         progress.setMin(0);
-                        progress.setMax(info.getMedia().getDuration().toSeconds());
+                        progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
                         play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
                         mediaPlayer.setVolume(volume.getValue() * 0.01);
                         playMedia();
@@ -136,12 +164,14 @@ public class MusicsController implements Initializable {
                     @Override
                     public void run() {
                         if (!repeatMode) {
-                            isPlaying = false;
-                            play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
-                            songBarVisibility(false);
-                            list.getSelectionModel().clearSelection();
+                            if (!isChanging) {
+                                isPlaying = false;
+                                play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
+                                songBarVisibility(false);
+                                list.getSelectionModel().clearSelection();
+                            }
                         } else {
-                            mediaPlayer.seek(Duration.ZERO);
+                            if (!isChanging) mediaPlayer.seek(Duration.ZERO);
                         }
                     }
                 });
@@ -155,35 +185,6 @@ public class MusicsController implements Initializable {
                         }
                     }
                 });
-
-                progress.valueProperty().addListener(new InvalidationListener() {
-                    @Override
-                    public void invalidated(Observable observable) {
-                        if (progress.isValueChanging()) {
-                            isChanging = true;
-                            currentTime.setText(calculateTime(Duration.seconds(progress.getValue())));
-                            mediaPlayer.seek(Duration.seconds(progress.getValue()));
-                        }
-                        isChanging = false;
-                    }
-                });
-
-                volume.valueProperty().addListener(new ChangeListener<Number>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                        mediaPlayer.setVolume(volume.getValue() * 0.01);
-                        long value = t1.longValue();
-                        if (value == 0) {
-                            img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
-                        } else {
-                            if (value > 50) {
-                                img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
-                            } else {
-                                img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
-                            }
-                        }
-                    }
-                });
             }
             //list.getSelectionModel().clearSelection();
         } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
@@ -193,7 +194,7 @@ public class MusicsController implements Initializable {
                     if (clickedPosition == songPosition) {
                         pauseMedia();
                         play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
-                        songBarVisibility(false);
+                        if (songBar.isVisible()) songBarVisibility(false);
                         list.getSelectionModel().clearSelection();
                     }
                 } else {
@@ -385,5 +386,18 @@ public class MusicsController implements Initializable {
 
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    @FXML
+    public void sliderPressed(Event event){
+        if (mediaPlayer != null) isChanging = true;
+    }
+
+    @FXML
+    public void sliderReleased(Event event){
+        if (mediaPlayer != null){
+            mediaPlayer.seek(Duration.seconds(progress.getValue()));
+            isChanging = false;
+        }
     }
 }

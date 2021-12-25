@@ -26,8 +26,8 @@ public class Home extends Application {
                 Platform.exit();
                 System.exit(0);
             });
-            final double width = 760.0;
-            final double height = 500.0;
+            final double width = 850.0;
+            final double height = 600.0;
 
             FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
             Scene scene = new Scene(loader.load(), width , height);

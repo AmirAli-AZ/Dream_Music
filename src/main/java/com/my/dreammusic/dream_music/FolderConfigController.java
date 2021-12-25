@@ -111,8 +111,8 @@ public class FolderConfigController implements Initializable {
                     Platform.exit();
                     System.exit(0);
                 });
-                final double width = 760.0;
-                final double height = 500.0;
+                final double width = 850.0;
+                final double height = 600.0;
 
                 FXMLLoader loader = new FXMLLoader(FolderConfigController.class.getResource("home.fxml"));
                 Scene scene = new Scene(loader.load(), width, height);
