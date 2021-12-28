@@ -1,18 +1,16 @@
 package com.my.dreammusic.dream_music;
 
+import com.my.dreammusic.dream_music.Utils.NumericField;
 import javafx.animation.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -65,6 +63,8 @@ public class MusicsController implements Initializable {
     public HBox hbox;
     @FXML
     public VBox container;
+    @FXML
+    public ImageView moreOption;
 
     private MediaPlayer mediaPlayer;
     public boolean isPlaying = false;
@@ -75,6 +75,9 @@ public class MusicsController implements Initializable {
     public static final int OK = 1, CANCEL = 0;
     private Listener listener;
     private int songPosition = 0;
+
+    private final Slider rateSlider = new Slider();
+    private final ContextMenu menu = new ContextMenu();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -113,31 +116,26 @@ public class MusicsController implements Initializable {
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
 
-        progress.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                if (mediaPlayer != null && isChanging) currentTime.setText(calculateTime(Duration.seconds(t1.doubleValue())));
-            }
+        progress.valueProperty().addListener((observableValue, number, t1) -> {
+            if (mediaPlayer != null && isChanging) currentTime.setText(calculateTime(Duration.seconds(t1.doubleValue())));
         });
 
-        volume.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.setVolume(volume.getValue() * 0.01);
-                    long value = t1.longValue();
-                    if (value == 0) {
-                        img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
+        volume.valueProperty().addListener((observableValue, number, t1) -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.setVolume(volume.getValue() * 0.01);
+                long value = t1.longValue();
+                if (value == 0) {
+                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
+                } else {
+                    if (value > 50) {
+                        img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
                     } else {
-                        if (value > 50) {
-                            img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
-                        } else {
-                            img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
-                        }
+                        img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
                     }
                 }
             }
         });
+        createMenu();
     }
 
     public void listClick(MouseEvent mouseEvent) {
@@ -148,41 +146,33 @@ public class MusicsController implements Initializable {
                 songBarVisibility(true);
                 mediaPlayer = new MediaPlayer(info.getMedia());
 
-                mediaPlayer.setOnReady(new Runnable() {
-                    @Override
-                    public void run() {
-                        totalTime.setText(calculateTime(mediaPlayer.getMedia().getDuration()));
-                        progress.setMin(0);
-                        progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
-                        play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
-                        mediaPlayer.setVolume(volume.getValue() * 0.01);
-                        playMedia();
-                    }
+                mediaPlayer.setOnReady(() -> {
+                    totalTime.setText(calculateTime(mediaPlayer.getMedia().getDuration()));
+                    progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
+                    play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
+                    volume.setValue(mediaPlayer.getVolume() / 0.01);
+                    rateSlider.setValue(mediaPlayer.getRate() / 0.01);
+                    rateSlider.setMax((mediaPlayer.getRate() * 2) / 0.01);
+                    playMedia();
                 });
 
-                mediaPlayer.setOnEndOfMedia(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!repeatMode) {
-                            if (!isChanging) {
-                                isPlaying = false;
-                                play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
-                                songBarVisibility(false);
-                                list.getSelectionModel().clearSelection();
-                            }
-                        } else {
-                            if (!isChanging) mediaPlayer.seek(Duration.ZERO);
-                        }
-                    }
-                });
-
-                mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Duration> observableValue, Duration duration, Duration t1) {
+                mediaPlayer.setOnEndOfMedia(() -> {
+                    if (!repeatMode) {
                         if (!isChanging) {
-                            currentTime.setText(calculateTime(t1));
-                            progress.setValue(t1.toSeconds());
+                            isPlaying = false;
+                            play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
+                            songBarVisibility(false);
+                            list.getSelectionModel().clearSelection();
                         }
+                    } else {
+                        if (!isChanging) mediaPlayer.seek(Duration.ZERO);
+                    }
+                });
+
+                mediaPlayer.currentTimeProperty().addListener((observableValue, duration, t1) -> {
+                    if (!isChanging) {
+                        currentTime.setText(calculateTime(t1));
+                        progress.setValue(t1.toSeconds());
                     }
                 });
             }
@@ -270,23 +260,20 @@ public class MusicsController implements Initializable {
             e.printStackTrace();
         }
 
-        mp.setOnReady(new Runnable() {
-            @Override
-            public void run() {
-                song.setAlbum((String) mp.getMedia().getMetadata().get("album"));
-                song.setArtist((String) mp.getMedia().getMetadata().get("artist"));
-                if (mp.getMedia().getMetadata().get("title") != null) {
-                    song.setTitle((String) mp.getMedia().getMetadata().get("title"));
-                }
-                song.setImage((Image) mp.getMedia().getMetadata().get("image"));
-                list.getItems().add(song);
-                if (listener != null) {
-                    listener.onResult(OK);
-                }
+        mp.setOnReady(() -> {
+            song.setAlbum((String) mp.getMedia().getMetadata().get("album"));
+            song.setArtist((String) mp.getMedia().getMetadata().get("artist"));
+            if (mp.getMedia().getMetadata().get("title") != null) {
+                song.setTitle((String) mp.getMedia().getMetadata().get("title"));
+            }
+            song.setImage((Image) mp.getMedia().getMetadata().get("image"));
+            list.getItems().add(song);
+            if (listener != null) {
+                listener.onResult(OK);
+            }
 
-                synchronized (object) {
-                    object.notify();
-                }
+            synchronized (object) {
+                object.notify();
             }
         });
     }
@@ -399,5 +386,44 @@ public class MusicsController implements Initializable {
             mediaPlayer.seek(Duration.seconds(progress.getValue()));
             isChanging = false;
         }
+    }
+
+    @FXML
+    public void moreOptionClicked(MouseEvent mouseEvent){
+        if (mouseEvent.getButton() == MouseButton.PRIMARY){
+            if (!menu.isShowing()) {
+                menu.show(moreOption, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            }
+        }
+    }
+
+    private void createMenu(){
+        Menu rate = new Menu("Rate");
+        rateSlider.setMin(25);
+        VBox vBox = new VBox(3);
+        NumericField numericField = new NumericField();
+        numericField.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER){
+                if (numericField.getValue() <= 200 && !(numericField.getValue() < 25))
+                    rateSlider.setValue(numericField.getValue());
+                else
+                    numericField.setValue((int) rateSlider.getValue());
+            }
+        });
+
+        rateSlider.valueProperty().addListener((observableValue, number, t1) -> {
+            if (mediaPlayer != null){
+                double value = t1.doubleValue();
+                mediaPlayer.setRate(value * 0.01);
+                numericField.setValue((int) value);
+            }
+        });
+        vBox.getChildren().addAll(numericField , rateSlider);
+
+        CustomMenuItem rateSettings = new CustomMenuItem(vBox);
+        rateSettings.setHideOnClick(false);
+
+        rate.getItems().add(rateSettings);
+        menu.getItems().add(rate);
     }
 }

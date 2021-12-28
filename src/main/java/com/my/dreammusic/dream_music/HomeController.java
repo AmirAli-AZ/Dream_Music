@@ -35,10 +35,29 @@ public class HomeController implements Initializable {
     private HBox tab_musics;
 
     private MusicsController musicsController;
+    private Scene scene;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
+
+        String light = HomeController.class.getResource("Themes/light-theme.css").toExternalForm();
+        String dark = HomeController.class.getResource("Themes/dark-theme.css").toExternalForm();
+        final OsThemeDetector detector = OsThemeDetector.getDetector();
+        Consumer<Boolean> darkThemeListener = isDark -> {
+            Platform.runLater(() -> {
+                if (isDark){
+                    getScene().getStylesheets().set(0 , dark);
+                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
+                }else {
+                    getScene().getStylesheets().set(0 , light);
+                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
+                }
+            });
+        };
+        darkThemeListener.accept(detector.isDark() && OsThemeDetector.isSupported());
+        detector.registerListener(darkThemeListener);
+
         title1.getStyleClass().add("title");
         items.getStyleClass().add("right-border");
         try {
@@ -48,19 +67,6 @@ public class HomeController implements Initializable {
         }catch (IOException e){
             e.printStackTrace();
         }
-        final OsThemeDetector detector = OsThemeDetector.getDetector();
-        Consumer<Boolean> darkThemeListener = isDark -> {
-            Platform.runLater(() -> {
-                if (isDark){
-                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
-                }else {
-                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
-                }
-            });
-        };
-        darkThemeListener.accept(detector.isDark());
-        detector.registerListener(darkThemeListener);
-
     }
 
     @FXML
@@ -71,18 +77,15 @@ public class HomeController implements Initializable {
                 /*
                 this listener check , if media player listeners is running or no with 0 and 1
                  */
-                    musicsController.setListener(new Listener() {
-                        @Override
-                        public void onResult(int result) {
-                            if (result == MusicsController.OK) {
-                                tab_musics.setDisable(false);
-                                // disable listener
-                                musicsController.setListener(null);
-                            } else {
-                                tab_musics.setDisable(true);
-                            }
-                            System.out.println(result);
+                    musicsController.setListener(result -> {
+                        if (result == MusicsController.OK) {
+                            tab_musics.setDisable(false);
+                            // disable listener
+                            musicsController.setListener(null);
+                        } else {
+                            tab_musics.setDisable(true);
                         }
+                        System.out.println(result);
                     });
                     // handle listener
                     musicsController.refresh();
@@ -97,24 +100,21 @@ public class HomeController implements Initializable {
                 }
             }
         } else {
-            Dialog dialog = new Dialog(new Listener() {
-                @Override
-                public void onResult(int result) {
-                    if (result == Dialog.OK){
-                        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
-                            musicsController.pauseMedia();
-                            musicsController.songBarVisibility(false);
-                            musicsController.refresh();
-                        }else {
-                            musicsController.pauseMedia();
-                            musicsController.songBarVisibility(false);
-                            Stage window = (Stage) container.getScene().getWindow();
-                            window.close();
-                            try {
-                                openFolderConfig(new Stage() , true);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+            Dialog dialog = new Dialog(result -> {
+                if (result == Dialog.OK){
+                    if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
+                        musicsController.pauseMedia();
+                        musicsController.songBarVisibility(false);
+                        musicsController.refresh();
+                    }else {
+                        musicsController.pauseMedia();
+                        musicsController.songBarVisibility(false);
+                        Stage window = (Stage) container.getScene().getWindow();
+                        window.close();
+                        try {
+                            openFolderConfig(new Stage() , true);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -144,18 +144,15 @@ public class HomeController implements Initializable {
                 FolderConfigController controller = loader.getController();
                 controller.setOpenHome(false);
 
-                controller.setListener(new Listener() {
-                    @Override
-                    public void onResult(int result) {
-                        if (result == controller.OK){
-                            if (musicsController.isPlaying){
-                                musicsController.pauseMedia();
-                                musicsController.songBarVisibility(false);
-                            }
-                            musicsController.loadFolder();
-                            musicsController.refresh();
-                            controller.setListener(null);
+                controller.setListener(result -> {
+                    if (result == controller.OK){
+                        if (musicsController.isPlaying){
+                            musicsController.pauseMedia();
+                            musicsController.songBarVisibility(false);
                         }
+                        musicsController.loadFolder();
+                        musicsController.refresh();
+                        controller.setListener(null);
                     }
                 });
                 controller.setScene(scene);
@@ -169,52 +166,46 @@ public class HomeController implements Initializable {
                 e.printStackTrace();
             }
         }else {
-            Dialog dialog = new Dialog(new Listener() {
-                @Override
-                public void onResult(int result) {
-                    if (result == Dialog.OK){
-                        musicsController.pauseMedia();
-                        musicsController.songBarVisibility(false);
-                        try {
-                            Stage stage = new Stage();
-                            stage.setTitle("Folder Config");
+            Dialog dialog = new Dialog(result -> {
+                if (result == Dialog.OK){
+                    musicsController.pauseMedia();
+                    musicsController.songBarVisibility(false);
+                    try {
+                        Stage stage = new Stage();
+                        stage.setTitle("Folder Config");
 
-                            FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
-                            Scene scene = new Scene(loader.load(), 611, 288);
-                            scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
+                        FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
+                        Scene scene = new Scene(loader.load(), 611, 288);
+                        scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
 
-                            FolderConfigController controller = loader.getController();
-                            controller.setOpenHome(false);
+                        FolderConfigController controller = loader.getController();
+                        controller.setOpenHome(false);
 
-                            controller.setListener(new Listener() {
-                                @Override
-                                public void onResult(int result) {
-                                    if (result == controller.OK){
-                                        if (musicsController.isPlaying){
-                                            musicsController.pauseMedia();
-                                            musicsController.songBarVisibility(false);
-                                        }
-                                        musicsController.loadFolder();
-                                        musicsController.refresh();
-
-                                        controller.setListener(null);
-                                    }
+                        controller.setListener(result1 -> {
+                            if (result1 == controller.OK){
+                                if (musicsController.isPlaying){
+                                    musicsController.pauseMedia();
+                                    musicsController.songBarVisibility(false);
                                 }
-                            });
-                            controller.setScene(scene);
-                            stage.setOnCloseRequest(e ->{
-                                controller.shutDown();
-                            });
+                                musicsController.loadFolder();
+                                musicsController.refresh();
 
-                            stage.setResizable(false);
-                            stage.setScene(scene);
-                            stage.show();
+                                controller.setListener(null);
+                            }
+                        });
+                        controller.setScene(scene);
+                        stage.setOnCloseRequest(e ->{
+                            controller.shutDown();
+                        });
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        stage.setResizable(false);
+                        stage.setScene(scene);
+                        stage.show();
 
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+
                 }
             });
             dialog.setTitle("Warning");
@@ -240,4 +231,11 @@ public class HomeController implements Initializable {
         else stage.showAndWait();
     }
 
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
 }

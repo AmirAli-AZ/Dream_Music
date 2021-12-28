@@ -62,3 +62,11 @@
 -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;
 -fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em;
 }
+.text-field {
+-fx-background-color: -fx-text-box-border, #424242;
+-fx-background-radius: 5px;
+-fx-text-fill : white;
+}
+.text-field:focused {
+-fx-background-color: -fx-focus-color, #212121;
+}

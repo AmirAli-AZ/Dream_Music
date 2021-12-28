@@ -11,11 +11,11 @@
       <AnchorPane fx:id="songBar" minHeight="-Infinity" prefHeight="136.0" prefWidth="248.0" styleClass="animated-gradient">
          <children>
             <Slider fx:id="progress" layoutX="12.0" layoutY="14.0" onMousePressed="#sliderPressed" onMouseReleased="#sliderReleased" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-            <ImageView fx:id="img_volume" fitHeight="32.0" fitWidth="32.0" layoutX="6.0" layoutY="98.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="img_volume" fitHeight="28.0" fitWidth="28.0" layoutX="3.0" layoutY="100.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@icons/baseline_volume_down_white.png" />
                </image></ImageView>
-            <Slider fx:id="volume" layoutX="38.0" layoutY="107.0" value="50.0" />
+            <Slider fx:id="volume" layoutX="31.0" layoutY="107.0" value="50.0" />
             <HBox fx:id="hbox" alignment="CENTER" layoutX="6.0" layoutY="52.0" prefHeight="24.0" prefWidth="200.0" spacing="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
                   <Label fx:id="currentTime" style="-fx-text-fill: white;" text="0:00:00" />
@@ -46,9 +46,14 @@
                   <Label fx:id="totalTime" style="-fx-text-fill: white;" text="0:00:00" />
                </children>
             </HBox>
-            <ImageView fx:id="repeat" fitHeight="32.0" fitWidth="32.0" layoutX="178.0" layoutY="98.0" onMouseClicked="#repeatClick" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="repeat" fitHeight="28.0" fitWidth="28.0" layoutX="177.0" layoutY="100.0" onMouseClicked="#repeatClick" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@icons/baseline_repeat_white.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="moreOption" fitHeight="28.0" fitWidth="28.0" layoutX="205.0" layoutY="100.0" onMouseClicked="#moreOptionClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@icons/baseline_more_vert_white.png" />
                </image>
             </ImageView>
          </children>

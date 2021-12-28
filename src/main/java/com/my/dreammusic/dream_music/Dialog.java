@@ -121,7 +121,7 @@ public class Dialog {
                 }
             });
         };
-        darkThemeListener.accept(detector.isDark());
+        darkThemeListener.accept(detector.isDark() && OsThemeDetector.isSupported());
         detector.registerListener(darkThemeListener);
 
         window.setScene(scene);

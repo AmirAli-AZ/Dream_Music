@@ -1,6 +1,5 @@
 package com.my.dreammusic.dream_music;
 
-import com.jthemedetecor.OsThemeDetector;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +8,6 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public class Home extends Application {
 
@@ -22,36 +20,25 @@ public class Home extends Application {
         File data = new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
         if (data.exists()){
             stage.setTitle("Dream Music");
-            stage.setOnCloseRequest(e ->{
-                Platform.exit();
-                System.exit(0);
-            });
+
             final double width = 850.0;
             final double height = 600.0;
 
             FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
             Scene scene = new Scene(loader.load(), width , height);
-            String light = Home.class.getResource("Themes/light-theme.css").toExternalForm();
-            String dark = Home.class.getResource("Themes/dark-theme.css").toExternalForm();
-            // default theme
-            scene.getStylesheets().add(light);
+            scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
 
-            final OsThemeDetector detector = OsThemeDetector.getDetector();
-            Consumer<Boolean> darkThemeListener = isDark -> {
-                Platform.runLater(() -> {
-                    if (isDark) {
-                        scene.getStylesheets().set(0 , dark);
-                    } else {
-                        scene.getStylesheets().set(0 , light);
-                    }
-                });
-            };
-            darkThemeListener.accept(detector.isDark());
-            detector.registerListener(darkThemeListener);
+            HomeController homeController = loader.getController();
+            homeController.setScene(scene);
 
             stage.setMinWidth(width);
             stage.setMinHeight(height);
             stage.setScene(scene);
+
+            stage.setOnCloseRequest(e ->{
+                Platform.exit();
+                System.exit(0);
+            });
             stage.show();
         }else {
             openFolderConfig(stage , true);
