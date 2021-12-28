@@ -1,4 +1,6 @@
 # Dream Music
+[![Chat](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/UdSrdWeSQP)
+
 javafx music player for windows
 
 # ScreenShots
