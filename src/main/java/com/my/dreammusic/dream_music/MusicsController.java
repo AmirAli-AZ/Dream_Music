@@ -33,6 +33,7 @@ import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class MusicsController implements Initializable {
@@ -75,6 +76,7 @@ public class MusicsController implements Initializable {
     public static final int OK = 1, CANCEL = 0;
     private Listener listener;
     private int songPosition = 0;
+    private boolean isRandomPlayer = false;
 
     private final Slider rateSlider = new Slider();
     private final ContextMenu menu = new ContextMenu();
@@ -142,39 +144,7 @@ public class MusicsController implements Initializable {
         Song info = list.getSelectionModel().getSelectedItem();
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             if (!isPlaying) {
-                songPosition = list.getSelectionModel().getSelectedIndex();
-                songBarVisibility(true);
-                mediaPlayer = new MediaPlayer(info.getMedia());
-
-                mediaPlayer.setOnReady(() -> {
-                    totalTime.setText(calculateTime(mediaPlayer.getMedia().getDuration()));
-                    progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
-                    play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
-                    volume.setValue(mediaPlayer.getVolume() / 0.01);
-                    rateSlider.setValue(mediaPlayer.getRate() / 0.01);
-                    rateSlider.setMax((mediaPlayer.getRate() * 2) / 0.01);
-                    playMedia();
-                });
-
-                mediaPlayer.setOnEndOfMedia(() -> {
-                    if (!repeatMode) {
-                        if (!isChanging) {
-                            isPlaying = false;
-                            play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
-                            songBarVisibility(false);
-                            list.getSelectionModel().clearSelection();
-                        }
-                    } else {
-                        if (!isChanging) mediaPlayer.seek(Duration.ZERO);
-                    }
-                });
-
-                mediaPlayer.currentTimeProperty().addListener((observableValue, duration, t1) -> {
-                    if (!isChanging) {
-                        currentTime.setText(calculateTime(t1));
-                        progress.setValue(t1.toSeconds());
-                    }
-                });
+                MediaPlayer(info.getMedia());
             }
             //list.getSelectionModel().clearSelection();
         } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
@@ -182,7 +152,8 @@ public class MusicsController implements Initializable {
                 int clickedPosition = list.getSelectionModel().getSelectedIndex();
                 if (isPlaying) {
                     if (clickedPosition == songPosition) {
-                        pauseMedia();
+                        mediaPlayer.stop();
+                        isPlaying = false;
                         play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
                         if (songBar.isVisible()) songBarVisibility(false);
                         list.getSelectionModel().clearSelection();
@@ -232,12 +203,14 @@ public class MusicsController implements Initializable {
 
     @FXML
     public void repeatClick(MouseEvent mouseEvent) {
-        if (repeatMode) {
-            repeatMode = false;
-            repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png")));
-        } else {
-            repeatMode = true;
-            repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_on_white.png")));
+        if (!isRandomPlayer) {
+            if (repeatMode) {
+                repeatMode = false;
+                repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png")));
+            } else {
+                repeatMode = true;
+                repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_on_white.png")));
+            }
         }
     }
 
@@ -400,8 +373,11 @@ public class MusicsController implements Initializable {
     private void createMenu(){
         Menu rate = new Menu("Rate");
         rateSlider.setMin(25);
+        rateSlider.setMax(200);
+        rateSlider.setValue(100);
         VBox vBox = new VBox(3);
         NumericField numericField = new NumericField();
+        numericField.setValue(100);
         numericField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER){
                 if (numericField.getValue() <= 200 && !(numericField.getValue() < 25))
@@ -422,8 +398,65 @@ public class MusicsController implements Initializable {
 
         CustomMenuItem rateSettings = new CustomMenuItem(vBox);
         rateSettings.setHideOnClick(false);
-
         rate.getItems().add(rateSettings);
-        menu.getItems().add(rate);
+
+        MenuItem randomPlayer = new MenuItem("Random Player : Off");
+        randomPlayer.setOnAction(e ->{
+            if (isRandomPlayer){
+                isRandomPlayer = false;
+                randomPlayer.setText("Random Player : Off");
+            } else{
+                isRandomPlayer = true;
+                randomPlayer.setText("Random Player : On");
+            }
+        });
+
+        menu.getItems().addAll(rate , randomPlayer);
+    }
+
+    private void MediaPlayer(Media media){
+        songPosition = list.getSelectionModel().getSelectedIndex();
+        if (!songBar.isVisible()) songBarVisibility(true);
+        mediaPlayer = new MediaPlayer(media);
+
+        mediaPlayer.setOnReady(() -> {
+            totalTime.setText(calculateTime(mediaPlayer.getMedia().getDuration()));
+            progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
+            play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_pause_white.png")));
+            mediaPlayer.setRate(rateSlider.getValue() * 0.01);
+            playMedia();
+        });
+
+        mediaPlayer.setOnEndOfMedia(() -> {
+            if (!repeatMode) {
+                if (!isChanging) {
+                    if (!isRandomPlayer) {
+                        isPlaying = false;
+                        play.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_play_arrow_white.png")));
+                        songBarVisibility(false);
+                        list.getSelectionModel().clearSelection();
+                    }else {
+                        isPlaying = false;
+                        int randomPosition = pickRandom(0 , list.getItems().size() - 1);
+                        list.getSelectionModel().select(randomPosition);
+                        MediaPlayer(list.getItems().get(randomPosition).getMedia());
+                    }
+                }
+            } else {
+                if (!isChanging && !isRandomPlayer) mediaPlayer.seek(Duration.ZERO);
+            }
+        });
+
+        mediaPlayer.currentTimeProperty().addListener((observableValue, duration, t1) -> {
+            if (!isChanging) {
+                currentTime.setText(calculateTime(t1));
+                progress.setValue(t1.toSeconds());
+            }
+        });
+    }
+
+    private int pickRandom(int min , int max){
+        Random random = new Random();
+        return random.nextInt(max + 1 - min) + min;
     }
 }
