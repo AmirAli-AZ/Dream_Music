@@ -7,8 +7,8 @@ javafx music player for windows
 
 > light mode
 
-![Screenshot (256)](https://user-images.githubusercontent.com/84965706/146685069-ff27c5fe-76ee-4cc1-8907-e58755d88a51.png)
+![Screenshot (285)](https://user-images.githubusercontent.com/84965706/147654875-933613b6-b7ef-41e2-bafd-60d727623cf9.png)
 
 > dark mode
 
-![Screenshot (257)](https://user-images.githubusercontent.com/84965706/146685086-31afee7f-1593-4049-bb85-08547a45dca6.png)
+![Screenshot (286)](https://user-images.githubusercontent.com/84965706/147654888-1dcc9f2c-ffa1-4eb8-8809-4f748c465342.png)
