@@ -36,3 +36,20 @@
 -fx-text-fill : white;
 -fx-font-size: 16px;
 }
+.label{
+-fx-text-fill : white;
+}
+.context-menu {
+-fx-skin : "javafx.scene.control.skin.ContextMenuSkin";
+-fx-background-color: #212121;
+-fx-background-radius: 5px;
+}
+.menu-item .label {
+-fx-text-fill: white;
+}
+.menu-item:focused {
+-fx-background-color: black;
+}
+.menu-item:focused .label {
+-fx-text-fill: white;
+}

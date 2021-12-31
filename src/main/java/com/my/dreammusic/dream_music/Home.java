@@ -29,7 +29,6 @@ public class Home extends Application {
             scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
 
             HomeController homeController = loader.getController();
-            homeController.setScene(scene);
 
             stage.setMinWidth(width);
             stage.setMinHeight(height);
@@ -52,7 +51,6 @@ public class Home extends Application {
 
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);
-        controller.setScene(scene);
 
         stage.setResizable(false);
         stage.setScene(scene);

@@ -17,8 +17,12 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class HomeController implements Initializable {
@@ -46,11 +50,11 @@ public class HomeController implements Initializable {
         final OsThemeDetector detector = OsThemeDetector.getDetector();
         Consumer<Boolean> darkThemeListener = isDark -> {
             Platform.runLater(() -> {
-                if (isDark){
-                    getScene().getStylesheets().set(0 , dark);
+                if (isDark) {
+                    container.getScene().getStylesheets().set(0, dark);
                     img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
-                }else {
-                    getScene().getStylesheets().set(0 , light);
+                } else {
+                    container.getScene().getStylesheets().set(0, light);
                     img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
                 }
             });
@@ -64,7 +68,7 @@ public class HomeController implements Initializable {
             FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("musics.fxml"));
             container.setCenter(loader.load());
             musicsController = loader.getController();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -94,25 +98,25 @@ public class HomeController implements Initializable {
                 Stage window = (Stage) container.getScene().getWindow();
                 window.close();
                 try {
-                    openFolderConfig(new Stage() , true);
+                    openFolderConfig(new Stage(), true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         } else {
             Dialog dialog = new Dialog(result -> {
-                if (result == Dialog.OK){
+                if (result == Dialog.OK) {
                     if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
                         musicsController.pauseMedia();
                         musicsController.songBarVisibility(false);
                         musicsController.refresh();
-                    }else {
+                    } else {
                         musicsController.pauseMedia();
                         musicsController.songBarVisibility(false);
                         Stage window = (Stage) container.getScene().getWindow();
                         window.close();
                         try {
-                            openFolderConfig(new Stage() , true);
+                            openFolderConfig(new Stage(), true);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -132,7 +136,7 @@ public class HomeController implements Initializable {
 
     @FXML
     public void folderConfigAction() {
-        if (!musicsController.isPlaying){
+        if (!musicsController.isPlaying) {
             try {
                 Stage stage = new Stage();
                 stage.setTitle("Folder Config");
@@ -145,8 +149,8 @@ public class HomeController implements Initializable {
                 controller.setOpenHome(false);
 
                 controller.setListener(result -> {
-                    if (result == controller.OK){
-                        if (musicsController.isPlaying){
+                    if (result == controller.OK) {
+                        if (musicsController.isPlaying) {
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
                         }
@@ -155,8 +159,8 @@ public class HomeController implements Initializable {
                         controller.setListener(null);
                     }
                 });
-                controller.setScene(scene);
-                stage.setOnCloseRequest(e ->{
+
+                stage.setOnCloseRequest(e -> {
                     controller.shutDown();
                 });
                 stage.setResizable(false);
@@ -165,9 +169,9 @@ public class HomeController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else {
+        } else {
             Dialog dialog = new Dialog(result -> {
-                if (result == Dialog.OK){
+                if (result == Dialog.OK) {
                     musicsController.pauseMedia();
                     musicsController.songBarVisibility(false);
                     try {
@@ -182,8 +186,8 @@ public class HomeController implements Initializable {
                         controller.setOpenHome(false);
 
                         controller.setListener(result1 -> {
-                            if (result1 == controller.OK){
-                                if (musicsController.isPlaying){
+                            if (result1 == controller.OK) {
+                                if (musicsController.isPlaying) {
                                     musicsController.pauseMedia();
                                     musicsController.songBarVisibility(false);
                                 }
@@ -193,8 +197,8 @@ public class HomeController implements Initializable {
                                 controller.setListener(null);
                             }
                         });
-                        controller.setScene(scene);
-                        stage.setOnCloseRequest(e ->{
+
+                        stage.setOnCloseRequest(e -> {
                             controller.shutDown();
                         });
 
@@ -215,7 +219,20 @@ public class HomeController implements Initializable {
         }
     }
 
-    public void openFolderConfig(Stage stage , boolean openHome) throws IOException {
+    @FXML
+    public void downloadAction() {
+        try {
+            if (isConnected()) {
+                showDownloader(true);
+            } else {
+                showNoConnectionDialog();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void openFolderConfig(Stage stage, boolean openHome) throws IOException {
         stage.setTitle("Folder Config");
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
@@ -223,7 +240,6 @@ public class HomeController implements Initializable {
 
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);
-        controller.setScene(scene);
 
         stage.setResizable(false);
         stage.setScene(scene);
@@ -231,11 +247,68 @@ public class HomeController implements Initializable {
         else stage.showAndWait();
     }
 
-    public void setScene(Scene scene) {
-        this.scene = scene;
+    public boolean isConnected() {
+        try {
+            final URL url = new URL("http://www.google.com");
+            final URLConnection conn = url.openConnection();
+            conn.connect();
+            conn.getInputStream().close();
+            return true;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            return false;
+        }
     }
 
-    public Scene getScene() {
-        return scene;
+    private void showNoConnectionDialog() {
+        Dialog dialog = new Dialog(result -> {
+            if (result == Dialog.OK) {
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(() -> {
+                            if (isConnected()) {
+                                try {
+                                    showDownloader(false);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }else {
+                                showNoConnectionDialog();
+                            }
+                        });
+                    }
+                }, 900);
+
+            }
+        });
+        dialog.setTitle("No Connection");
+        dialog.setMessage("Check your internet connection");
+        dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
+        dialog.setBtnOkText("Try Again");
+        dialog.show();
+    }
+
+    public void showDownloader(boolean showAndWait) throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Downloader");
+        FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("downloaderUI.fxml"));
+        Scene scene = new Scene(loader.load(), 600, 400);
+        scene.getStylesheets().add(FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+        DownloaderUIController downloaderUIController = loader.getController();
+        stage.setOnCloseRequest(e -> {
+            if (downloaderUIController.thread != null &&
+                    downloaderUIController.downloader != null &&
+                    downloaderUIController.thread.isAlive()) {
+                downloaderUIController.downloader.exit();
+            }
+        });
+        stage.setMinHeight(400);
+        stage.setMinWidth(600);
+        stage.setScene(scene);
+        if (showAndWait) stage.showAndWait();
+        else stage.show();
     }
 }

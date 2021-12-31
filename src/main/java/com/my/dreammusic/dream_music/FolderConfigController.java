@@ -57,11 +57,11 @@ public class FolderConfigController implements Initializable {
         Consumer<Boolean> darkThemeListener = isDark -> {
             Platform.runLater(() -> {
                 if (isDark){
-                    getScene().getStylesheets().set(0, dark);
+                    container.getScene().getStylesheets().set(0, dark);
                     isDarkMode = true;
                     img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_white.png")));
                 }else {
-                    getScene().getStylesheets().set(0, light);
+                    container.getScene().getStylesheets().set(0, light);
                     isDarkMode = false;
                     img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_black.png")));
                 }
@@ -143,13 +143,6 @@ public class FolderConfigController implements Initializable {
         }
     }
 
-    public void setScene(Scene scene) {
-        this.scene = scene;
-    }
-
-    public Scene getScene() {
-        return scene;
-    }
 
     private boolean isValidPath(String path){
         if (path.length() == 0 || path == null){
@@ -176,7 +169,6 @@ public class FolderConfigController implements Initializable {
             scene.getStylesheets().add(FolderConfigController.class.getResource("Themes/light-theme.css").toExternalForm());
 
             HomeController homeController = loader.getController();
-            homeController.setScene(scene);
 
             stage.setMinWidth(width);
             stage.setMinHeight(height);
