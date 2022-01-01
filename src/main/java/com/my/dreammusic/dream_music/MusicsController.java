@@ -408,6 +408,11 @@ public class MusicsController implements Initializable {
             } else{
                 isRandomPlayer = true;
                 randomPlayer.setText("Random Player : On");
+                // disable repeat mode if it's on
+                if (repeatMode){
+                    repeatMode = false;
+                    repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png")));
+                }
             }
         });
 
