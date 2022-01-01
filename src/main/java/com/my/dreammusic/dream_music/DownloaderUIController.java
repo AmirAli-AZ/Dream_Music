@@ -15,14 +15,11 @@ import javafx.scene.layout.HBox;
 import org.apache.commons.io.FilenameUtils;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -89,7 +86,7 @@ public class DownloaderUIController implements Initializable {
     public void downloadClick() {
         String url = urlInput.getText();
         if (isConnected()) {
-            if (FilenameUtils.getExtension(url).equals("mp3") || FilenameUtils.getExtension(url).equals("wav")) {
+            if (isURLSupport(url)) {
                 try {
                     showNotification("Download Started", "Music Download Started", TrayIcon.MessageType.INFO);
                 } catch (AWTException e) {
@@ -205,5 +202,15 @@ public class DownloaderUIController implements Initializable {
         dialog.setImage(new Image(DownloaderUIController.class.getResourceAsStream("icons/ic_warning.png")));
         dialog.setBtnOkText("Try Again");
         dialog.show();
+    }
+
+    public boolean isURLSupport(String s){
+        try {
+            URL url = new URL(s);
+            boolean isURLFile = !("file".equals(url.getProtocol()) && new File(url.toURI()).isDirectory());
+            return ((FilenameUtils.getExtension(s).equals("mp3") || FilenameUtils.getExtension(s).equals("wav")) && isURLFile);
+        } catch (MalformedURLException | URISyntaxException e) {
+            return false;
+        }
     }
 }

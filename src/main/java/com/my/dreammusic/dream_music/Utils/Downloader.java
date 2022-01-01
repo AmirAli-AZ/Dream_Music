@@ -36,7 +36,10 @@ public class Downloader extends Task<Void> {
                 fileURL = resourceUrl;
                 String path = downloadPath.getAbsolutePath() + File.separator + getFileName();
                 int i = 0;
-                String name = path.substring(0, path.lastIndexOf('.'));
+                int lastIndex = path.lastIndexOf('.');
+                String name = path + "Test";
+                if (lastIndex != -1)
+                    name = path.substring(0 , lastIndex);
                 while (true) {
                     if (new File(path).exists()) {
                         i++;
@@ -87,7 +90,6 @@ public class Downloader extends Task<Void> {
                     updateProgress(downloadedFileSize, completeFileSize);
                     bout.write(data, 0, x);
                 }
-                bout.close();
                 if (exit && file.exists()) {
                     file.delete();
                 }
