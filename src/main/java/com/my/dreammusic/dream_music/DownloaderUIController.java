@@ -15,12 +15,12 @@ import javafx.scene.layout.HBox;
 import org.apache.commons.io.FilenameUtils;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ResourceBundle;
@@ -86,11 +86,16 @@ public class DownloaderUIController implements Initializable {
     }
 
     @FXML
-    public void downloadAction() {
+    public void downloadClick() {
         String url = urlInput.getText();
         if (isConnected()) {
-            if (isUrlSupport(url)) {
-                if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()){
+            if (FilenameUtils.getExtension(url).equals("mp3") || FilenameUtils.getExtension(url).equals("wav")) {
+                try {
+                    showNotification("Download Started", "Music Download Started", TrayIcon.MessageType.INFO);
+                } catch (AWTException e) {
+                    e.printStackTrace();
+                }
+                if (!new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()){
                     userData = new UserData();
                     userData.setPath(System.getProperty("user.home"));
                 }
@@ -144,15 +149,6 @@ public class DownloaderUIController implements Initializable {
         }
     }
 
-    public boolean isURL(String s) {
-        try {
-            URL url = new URL(s);
-            return true;
-        } catch (MalformedURLException e) {
-            return false;
-        }
-    }
-
     private void showNotification(String title, String message, TrayIcon.MessageType type) throws AWTException {
         if (SystemTray.isSupported()) {
             SystemTray tray = SystemTray.getSystemTray();
@@ -182,10 +178,9 @@ public class DownloaderUIController implements Initializable {
             final URL url = new URL("http://www.google.com");
             final URLConnection conn = url.openConnection();
             conn.connect();
-            conn.getInputStream().close();
             return true;
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            return false;
         } catch (IOException e) {
             return false;
         }
@@ -210,18 +205,5 @@ public class DownloaderUIController implements Initializable {
         dialog.setImage(new Image(DownloaderUIController.class.getResourceAsStream("icons/ic_warning.png")));
         dialog.setBtnOkText("Try Again");
         dialog.show();
-    }
-
-    public boolean isUrlSupport(String url){
-        try {
-            URL url1 = new URL(url);
-            boolean isURLFile = !("file".equals(url1.getProtocol()) && new File(url1.toURI()).isDirectory());
-            if (isURLFile){
-                return (FilenameUtils.getExtension(url).equals("mp3") || FilenameUtils.getExtension(url).equals("wav"));
-            }
-        } catch (MalformedURLException | URISyntaxException e) {
-           return false;
-        }
-        return false;
     }
 }

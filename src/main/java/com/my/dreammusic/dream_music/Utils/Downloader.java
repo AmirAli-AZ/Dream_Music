@@ -13,7 +13,9 @@ public class Downloader extends Task<Void> {
 
     public interface DownloaderListener {
         void onProgress(int progress);
+
         void onFailed();
+
         void onCompleted();
     }
 
@@ -34,12 +36,12 @@ public class Downloader extends Task<Void> {
                 fileURL = resourceUrl;
                 String path = downloadPath.getAbsolutePath() + File.separator + getFileName();
                 int i = 0;
-                String name = path.substring(0 , path.lastIndexOf('.'));
-                while (true){
-                    if (new File(path).exists()){
+                String name = path.substring(0, path.lastIndexOf('.'));
+                while (true) {
+                    if (new File(path).exists()) {
                         i++;
                         path = name + i + "." + getExtension();
-                    }else {
+                    } else {
                         break;
                     }
                 }
@@ -72,9 +74,9 @@ public class Downloader extends Task<Void> {
             HttpURLConnection httpURLConnection = (HttpURLConnection) (fileURL.openConnection());
             long completeFileSize = httpURLConnection.getContentLength();
 
-            try(BufferedInputStream in = new BufferedInputStream(httpURLConnection.getInputStream());
-                FileOutputStream fos = new FileOutputStream(file);
-                BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);) {
+            try (BufferedInputStream in = new BufferedInputStream(httpURLConnection.getInputStream());
+                 FileOutputStream fos = new FileOutputStream(file);
+                 BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);) {
                 byte[] data = new byte[1024];
                 long downloadedFileSize = 0;
                 int x;
@@ -86,12 +88,11 @@ public class Downloader extends Task<Void> {
                     bout.write(data, 0, x);
                 }
                 bout.close();
-                in.close();
                 if (exit && file.exists()) {
                     file.delete();
                 }
             }
-        }else {
+        } else {
             listener.onFailed();
         }
 
@@ -105,10 +106,12 @@ public class Downloader extends Task<Void> {
 
     @Override
     protected void failed() {
+        if (file != null && file.exists()) file.delete();
+
         listener.onFailed();
     }
 
-    public void exit(){
+    public void exit() {
         this.exit = true;
     }
 }
