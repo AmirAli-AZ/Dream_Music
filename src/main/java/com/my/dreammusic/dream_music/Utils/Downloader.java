@@ -103,7 +103,7 @@ public class Downloader extends Task<Void> {
 
     @Override
     protected void succeeded() {
-        if (!exit) listener.onCompleted();
+        if (!exit && fileURL != null) listener.onCompleted();
     }
 
     @Override

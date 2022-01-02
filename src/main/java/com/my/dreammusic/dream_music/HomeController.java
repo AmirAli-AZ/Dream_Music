@@ -221,15 +221,20 @@ public class HomeController implements Initializable {
 
     @FXML
     public void downloadAction() {
-        try {
-            if (isConnected()) {
-                showDownloader(true);
-            } else {
-                showNoConnectionDialog();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Thread thread = new Thread(() -> {
+            Platform.runLater(() -> {
+                if (isConnected()) {
+                    try {
+                        showDownloader(true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    showNoConnectionDialog();
+                }
+            });
+        });
+        thread.start();
     }
 
     public void openFolderConfig(Stage stage, boolean openHome) throws IOException {
@@ -263,24 +268,20 @@ public class HomeController implements Initializable {
     private void showNoConnectionDialog() {
         Dialog dialog = new Dialog(result -> {
             if (result == Dialog.OK) {
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Platform.runLater(() -> {
-                            if (isConnected()) {
-                                try {
-                                    showDownloader(false);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }else {
-                                showNoConnectionDialog();
+                Thread thread = new Thread(() -> {
+                    Platform.runLater(() -> {
+                        if (isConnected()) {
+                            try {
+                                showDownloader(true);
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        });
-                    }
-                }, 900);
-
+                        } else {
+                            showNoConnectionDialog();
+                        }
+                    });
+                });
+                thread.start();
             }
         });
         dialog.setTitle("No Connection");
