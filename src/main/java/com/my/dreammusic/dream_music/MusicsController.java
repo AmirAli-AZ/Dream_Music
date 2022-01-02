@@ -73,13 +73,14 @@ public class MusicsController implements Initializable {
     private boolean repeatMode = false;
     private final Object object = new Object();
     private UserData userData;
-    public static final int OK = 1, CANCEL = 0;
+    public  static final int OK = 1, CANCEL = 0;
     private Listener listener;
     private int songPosition = 0;
     private boolean isRandomPlayer = false;
 
     private final Slider rateSlider = new Slider();
     private final ContextMenu menu = new ContextMenu();
+    private final NumericField numericField = new NumericField();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -224,6 +225,7 @@ public class MusicsController implements Initializable {
         song.setMedia(media);
         song.setPath(file.getAbsolutePath());
         song.setTitle(getFileName(file));
+        song.setDate("");
         try {
             Path path = Paths.get(file.getAbsolutePath());
             FileTime fileTime = Files.getLastModifiedTime(path);
@@ -366,6 +368,7 @@ public class MusicsController implements Initializable {
         if (mouseEvent.getButton() == MouseButton.PRIMARY){
             if (!menu.isShowing()) {
                 menu.show(moreOption, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                numericField.setValue((int) rateSlider.getValue());
             }
         }
     }
@@ -376,8 +379,21 @@ public class MusicsController implements Initializable {
         rateSlider.setMax(200);
         rateSlider.setValue(100);
         VBox vBox = new VBox(3);
-        NumericField numericField = new NumericField();
+
+        ContextMenu textFieldOptions= new ContextMenu();
+        MenuItem defaultValue = new MenuItem("Default Value");
+        defaultValue.setOnAction(e ->{
+            if(rateSlider.getValue() == 100){
+                if (numericField.getValue() != 100)
+                    numericField.setValue((int) rateSlider.getValue());
+            } else {
+                rateSlider.setValue(100);
+            }
+        });
+        textFieldOptions.getItems().add(defaultValue);
+        numericField.setContextMenu(textFieldOptions);
         numericField.setValue(100);
+
         numericField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER){
                 if (numericField.getValue() <= 200 && !(numericField.getValue() < 25))

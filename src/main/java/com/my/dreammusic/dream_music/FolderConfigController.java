@@ -161,17 +161,12 @@ public class FolderConfigController implements Initializable {
             Stage stage = new Stage();
             stage.setTitle("Dream Music");
 
-            final double width = 850.0;
-            final double height = 600.0;
-
             FXMLLoader loader = new FXMLLoader(FolderConfigController.class.getResource("home.fxml"));
-            Scene scene = new Scene(loader.load(), width, height);
+            Scene scene = new Scene(loader.load(), Home.width, Home.height);
             scene.getStylesheets().add(FolderConfigController.class.getResource("Themes/light-theme.css").toExternalForm());
 
-            HomeController homeController = loader.getController();
-
-            stage.setMinWidth(width);
-            stage.setMinHeight(height);
+            stage.setMinWidth(Home.width);
+            stage.setMinHeight(Home.height);
             stage.setScene(scene);
 
             stage.setOnCloseRequest(e -> {
