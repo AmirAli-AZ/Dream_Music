@@ -90,9 +90,9 @@ public class Downloader extends Task<Void> {
                     updateProgress(downloadedFileSize, completeFileSize);
                     bout.write(data, 0, x);
                 }
-                if (exit && file.exists()) {
-                    file.delete();
-                }
+            }
+            if (exit && file.exists()) {
+                file.delete();
             }
         } else {
             listener.onFailed();
