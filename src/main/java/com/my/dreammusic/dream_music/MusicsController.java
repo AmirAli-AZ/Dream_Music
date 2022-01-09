@@ -570,6 +570,11 @@ public class MusicsController implements Initializable {
 
             setScene(scene);
             setResizable(false);
+            getIcons().addAll(
+                    new Image(getClass().getResourceAsStream("icons/icon64x64.png")),
+                    new Image(getClass().getResourceAsStream("icons/icon32x32.png")),
+                    new Image(getClass().getResourceAsStream("icons/icon16x16.png"))
+            );
             setAnimation();
         }
 
