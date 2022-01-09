@@ -20,8 +20,6 @@ import java.util.function.Consumer;
 
 public class Dialog {
 
-    public static final int OK = 1;
-    public static final int CANCEL = 0;
     private Listener listener;
     private boolean cancelButton = false;
     private String title , message , btnCancelText = "Cancel" , btnOkText = "OK";
@@ -61,7 +59,7 @@ public class Dialog {
         window.initModality(Modality.APPLICATION_MODAL);
 
         window.setOnCloseRequest(e ->{
-            listener.onResult(CANCEL);
+            if (listener != null) listener.onResult(Listener.CANCEL);
         });
 
         BorderPane borderPane = new BorderPane();
@@ -79,7 +77,7 @@ public class Dialog {
             cancel.setMinHeight(30);
             cancel.setOnAction(e ->{
                 window.close();
-                listener.onResult(CANCEL);
+                if (listener != null) listener.onResult(Listener.CANCEL);
             });
             buttons.getChildren().add(cancel);
         }
@@ -90,7 +88,7 @@ public class Dialog {
         ok.setMinHeight(30);
         ok.setOnAction(e ->{
             window.close();
-            listener.onResult(OK);
+            if (listener != null) listener.onResult(Listener.OK);
         });
         buttons.getChildren().add(ok);
 
@@ -128,6 +126,11 @@ public class Dialog {
         window.setMinWidth(400);
         window.setMinHeight(250);
         window.setResizable(false);
+        window.getIcons().addAll(
+                new Image(Dialog.class.getResourceAsStream("icons/icon64x64.png")),
+                new Image(Dialog.class.getResourceAsStream("icons/icon32x32.png")),
+                new Image(Dialog.class.getResourceAsStream("icons/icon16x16.png"))
+        );
         window.showAndWait();
     }
 }

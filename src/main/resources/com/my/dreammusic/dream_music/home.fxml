@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.HomeController">
+<BorderPane fx:id="borderLayout" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.HomeController">
     <left>
         <VBox fx:id="items" prefHeight="444.0" prefWidth="137.0" spacing="4.0" BorderPane.alignment="CENTER">
             <children>
@@ -39,18 +39,27 @@
         <menus>
           <Menu fx:id="file" mnemonicParsing="false" text="File">
                <items>
-                  <MenuItem fx:id="folderConfig" mnemonicParsing="false" onAction="#folderConfigAction" text="Folder Config">
+                  <MenuItem mnemonicParsing="false" onAction="#folderConfigAction" text="Folder Config">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="ANY" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem fx:id="download" mnemonicParsing="false" onAction="#downloadAction" text="Download">
+                  <MenuItem mnemonicParsing="false" onAction="#downloadAction" text="Downloader">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="ANY" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
                </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Media">
+              <items>
+                <MenuItem  mnemonicParsing="false" onAction="#miniPlayerAction" text="Mini Player">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="ANY" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+              </items>
+            </Menu>
         </menus>
          <cursor>
             <Cursor fx:constant="DEFAULT" />

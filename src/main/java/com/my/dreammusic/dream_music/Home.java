@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -21,6 +22,11 @@ public class Home extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         File data = new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
+        stage.getIcons().addAll(
+                new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
+                new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),
+                new Image(Home.class.getResourceAsStream("icons/icon16x16.png"))
+        );
         if (data.exists()){
             stage.setTitle("Dream Music");
             FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
@@ -50,6 +56,9 @@ public class Home extends Application {
         controller.setOpenHome(openHome);
 
         stage.setResizable(false);
+        stage.setOnCloseRequest(e ->{
+            controller.removeTrayIcon();
+        });
         stage.setScene(scene);
         stage.show();
     }

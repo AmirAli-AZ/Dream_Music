@@ -83,7 +83,11 @@ public class Downloader extends Task<Void> {
                 byte[] data = new byte[1024];
                 long downloadedFileSize = 0;
                 int x;
-                while ((x = in.read(data, 0, 1024)) >= 0 && !exit) {
+                while ((x = in.read(data, 0, 1024)) >= 0) {
+                    if (exit){
+                        cancel();
+                        break;
+                    }
                     downloadedFileSize += x;
                     final int currentProgress = (int) ((((double) downloadedFileSize) / ((double) completeFileSize)) * 100d);
                     listener.onProgress(currentProgress);

@@ -68,3 +68,6 @@
 .text-field:focused {
 -fx-background-color: -fx-focus-color, white;
 }
+.white-color{
+-fx-text-fill : white;
+}

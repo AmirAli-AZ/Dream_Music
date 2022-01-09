@@ -43,10 +43,8 @@ public class FolderConfigController implements Initializable {
     private UserData userData = new UserData();
     public boolean openHome = false;
     private Listener listener;
-    //result
-    public final int OK = 1, CANCEL = 0;
-    private Scene scene;
-    private boolean isDarkMode = false;
+    private SystemTray tray;
+    private TrayIcon trayIcon;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -58,11 +56,10 @@ public class FolderConfigController implements Initializable {
             Platform.runLater(() -> {
                 if (isDark){
                     container.getScene().getStylesheets().set(0, dark);
-                    isDarkMode = true;
                     img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_white.png")));
                 }else {
                     container.getScene().getStylesheets().set(0, light);
-                    isDarkMode = false;
+
                     img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_black.png")));
                 }
             });
@@ -79,15 +76,25 @@ public class FolderConfigController implements Initializable {
         if (!dreamMusicData.exists()) {
             dreamMusicData.mkdirs();
         }
+
+        if(SystemTray.isSupported()){
+            tray = SystemTray.getSystemTray();
+            java.awt.Image image = Toolkit.getDefaultToolkit().createImage(DownloaderUIController.class.getResource("icons/icon64x64.png"));
+            trayIcon = new TrayIcon(image, "Dream Music");
+            trayIcon.setImageAutoSize(true);
+            trayIcon.addActionListener(e -> {
+                removeTrayIcon();
+            });
+        }
     }
 
     @FXML
     public void pick(MouseEvent mouseEvent) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(new File(getUserPath()));
-        File file = directoryChooser.showDialog(container.getScene().getWindow());
-        if (file != null) {
-            musicFolder = file;
+        File dir = directoryChooser.showDialog(container.getScene().getWindow());
+        if (dir != null) {
+            musicFolder = dir;
             path.setText(musicFolder.getAbsolutePath());
         }
     }
@@ -101,11 +108,7 @@ public class FolderConfigController implements Initializable {
                     musicFolder = new File(path.getText());
                 }else {
                     path.setText(musicFolder.getAbsolutePath());
-                    try {
-                        showNotification("Invalid Path" , "you typed a wrong path" , TrayIcon.MessageType.WARNING);
-                    } catch (AWTException e) {
-                        e.printStackTrace();
-                    }
+                    showNotification("Invalid Path", "you typed a wrong path" , TrayIcon.MessageType.WARNING);
                     wrongPath = true;
                 }
             }
@@ -114,10 +117,11 @@ public class FolderConfigController implements Initializable {
                     Files.createDirectories(Paths.get(musicFolder.getAbsolutePath()));
                 }
                 writeData();
+                removeTrayIcon();
                 ((Stage)container.getScene().getWindow()).close();
                 openHome(openHome);
                 if (listener != null) {
-                    listener.onResult(OK);
+                    listener.onResult(Listener.OK);
                 }
             }
         } catch (IOException e) {
@@ -138,9 +142,7 @@ public class FolderConfigController implements Initializable {
     }
 
     public void shutDown() {
-        if (listener != null){
-            listener.onResult(CANCEL);
-        }
+        if (listener != null) listener.onResult(Listener.CANCEL);
     }
 
 
@@ -186,17 +188,21 @@ public class FolderConfigController implements Initializable {
         ob.close();
         fileOut.close();
     }
-    private void showNotification(String title, String message, TrayIcon.MessageType type) throws AWTException {
+
+    private void showNotification(String title, String message, TrayIcon.MessageType type) {
         if (SystemTray.isSupported()) {
-            SystemTray tray = SystemTray.getSystemTray();
-            java.awt.Image image = Toolkit.getDefaultToolkit().createImage(FolderConfigController.class.getResource("icons/icon.png"));
-            TrayIcon trayIcon = new TrayIcon(image, "Tray Notification");
-            trayIcon.setImageAutoSize(true);
-            trayIcon.setToolTip("Dream Music");
-            tray.add(trayIcon);
-            trayIcon.displayMessage(title, message, type);
-        } else {
-            System.err.println("System tray not supported!");
+            try {
+                if (tray.getTrayIcons().length == 0) tray.add(trayIcon);
+                trayIcon.displayMessage(title, message, type);
+            }catch (AWTException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void removeTrayIcon(){
+        if (SystemTray.isSupported() && tray.getTrayIcons().length > 0){
+            tray.remove(trayIcon);
         }
     }
 }
