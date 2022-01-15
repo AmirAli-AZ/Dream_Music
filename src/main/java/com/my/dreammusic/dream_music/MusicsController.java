@@ -1,5 +1,6 @@
 package com.my.dreammusic.dream_music;
 
+import com.google.gson.Gson;
 import com.my.dreammusic.dream_music.Utils.NumericField;
 import javafx.animation.*;
 import javafx.beans.property.ObjectProperty;
@@ -9,7 +10,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -17,22 +17,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,9 +36,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MusicsController implements Initializable {
 
@@ -59,11 +53,7 @@ public class MusicsController implements Initializable {
     @FXML
     public Label totalTime;
     @FXML
-    public ImageView rewind;
-    @FXML
     public ImageView play;
-    @FXML
-    public ImageView forward;
     @FXML
     public ImageView img_volume;
     @FXML
@@ -75,7 +65,7 @@ public class MusicsController implements Initializable {
     @FXML
     public ImageView moreOption;
 
-    public MediaPlayer mediaPlayer;
+    protected MediaPlayer mediaPlayer;
     public boolean isPlaying = false;
     private boolean isChanging = false;
     private boolean repeatMode = false;
@@ -86,6 +76,7 @@ public class MusicsController implements Initializable {
     private boolean isRandomPlayer = false;
     private final Image playImage = new Image(getClass().getResourceAsStream("icons/baseline_play_arrow_white.png"));
     private final Image pauseImage = new Image(getClass().getResourceAsStream("icons/baseline_pause_white.png"));
+    private Stage mainStage;
 
     private final Slider rateSlider = new Slider();
     private final ContextMenu menu = new ContextMenu();
@@ -170,17 +161,11 @@ public class MusicsController implements Initializable {
                         play.setImage(playImage);
                         if (songBar.isVisible()) songBarVisibility(false);
                         list.getSelectionModel().clearSelection();
-                        if (miniPlayer != null && miniPlayer.isShowing()) {
-                            miniPlayer.close();
-                        }
                     }
                 } else {
                     if (clickedPosition == songPosition) {
                         if (songBar.isVisible()) songBarVisibility(false);
                         list.getSelectionModel().clearSelection();
-                        if (miniPlayer != null && miniPlayer.isShowing()) {
-                            miniPlayer.close();
-                        }
                     }
                 }
             }
@@ -189,46 +174,34 @@ public class MusicsController implements Initializable {
 
     @FXML
     public void playMusic(MouseEvent mouseEvent) {
-        if (mediaPlayer != null) {
+        if (mediaPlayer != null && mouseEvent.getButton() == MouseButton.PRIMARY) {
             if (isPlaying) {
                 pauseMedia();
                 play.setImage(playImage);
-                if (miniPlayer != null && miniPlayer.isShowing()) {
-                    miniPlayer.setImage(playImage);
-                }
             } else {
                 playMedia();
                 play.setImage(pauseImage);
-                if (miniPlayer != null && miniPlayer.isShowing()) {
-                    miniPlayer.setImage(pauseImage);
-                }
             }
         }
     }
 
     @FXML
     public void rewindClick(MouseEvent mouseEvent) {
-        if (mediaPlayer != null) {
-            double newValue = mediaPlayer.getCurrentTime().toSeconds() - 5;
-            if (newValue >= 0) {
-                mediaPlayer.seek(Duration.seconds(newValue));
-            }
+        if (mouseEvent.getButton() == MouseButton.PRIMARY){
+            rewindMedia();
         }
     }
 
     @FXML
     public void forwardClick(MouseEvent mouseEvent) {
-        if (mediaPlayer != null) {
-            double newValue = mediaPlayer.getCurrentTime().toSeconds() + 5;
-            if (newValue <= mediaPlayer.getMedia().getDuration().toSeconds()) {
-                mediaPlayer.seek(Duration.seconds(newValue));
-            }
+        if (mouseEvent.getButton() == MouseButton.PRIMARY){
+            forwardMedia();
         }
     }
 
     @FXML
     public void repeatClick(MouseEvent mouseEvent) {
-        if (!isRandomPlayer) {
+        if (!isRandomPlayer && mouseEvent.getButton() == MouseButton.PRIMARY) {
             if (repeatMode) {
                 repeatMode = false;
                 repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png")));
@@ -248,7 +221,7 @@ public class MusicsController implements Initializable {
         final Song song = new Song();
         song.setMedia(media);
         song.setPath(file.getAbsolutePath());
-        song.setTitle(getFileName(file));
+        song.setTitle(FilenameUtils.getBaseName(file.getAbsolutePath()));
         song.setDate("");
         try {
             Path path = Paths.get(file.getAbsolutePath());
@@ -291,7 +264,8 @@ public class MusicsController implements Initializable {
                 if (files.length > 0) {
                     for (int i = 0; i < files.length; i++) {
                         if (files[i].isFile()) {
-                            if (getExtension(files[i]).equals(".mp3") || getExtension(files[i]).equals(".wav")) {
+                            if (FilenameUtils.getExtension(files[i].getAbsolutePath()).equals("mp3") ||
+                                    FilenameUtils.getExtension(files[i].getAbsolutePath()).equals("wav")) {
                                 createMedia(files[i]);
                                 synchronized (object) {
                                     object.wait(100);
@@ -308,20 +282,6 @@ public class MusicsController implements Initializable {
         System.gc();
     }
 
-    public String getExtension(File file) {
-        String name = file.getName();
-        int lastIndexOf = name.lastIndexOf('.');
-        if (lastIndexOf == -1) return "";
-        return name.substring(lastIndexOf);
-    }
-
-    public String getFileName(File file) {
-        String name = file.getName();
-        int lastIndexOf = name.lastIndexOf('.');
-        if (lastIndexOf == -1) return name;
-        return name.substring(0, lastIndexOf);
-    }
-
     public String calculateTime(Duration time) {
         long s = (long) time.toSeconds();
         return String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
@@ -332,13 +292,11 @@ public class MusicsController implements Initializable {
         songBar.setManaged(b);
     }
 
-    public UserData read() throws IOException, ClassNotFoundException {
-        UserData data;
-        FileInputStream fileIn = new FileInputStream(getUserPath() + File.separator + "Dream Music" + File.separator + "data.ser");
-        ObjectInputStream ob = new ObjectInputStream(fileIn);
-        data = (UserData) ob.readObject();
-        ob.close();
-        fileIn.close();
+    public UserData read() throws IOException {
+        Gson gson = new Gson();
+        Reader reader = Files.newBufferedReader(Paths.get(getUserPath() + File.separator + "Dream Music" + File.separator + "data.json"));
+        UserData data = gson.fromJson(reader , UserData.class);
+        reader.close();
         return data;
     }
 
@@ -364,8 +322,6 @@ public class MusicsController implements Initializable {
         try {
             userData = read();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -456,10 +412,21 @@ public class MusicsController implements Initializable {
             }
         });
 
-        menu.getItems().addAll(rate, randomPlayer);
+        SeparatorMenuItem separator = new SeparatorMenuItem();
+        MenuItem exit = new MenuItem("Exit");
+        exit.setOnAction(e ->{
+            if (mediaPlayer != null){
+                mediaPlayer.stop();
+                isPlaying = false;
+                songBarVisibility(false);
+                list.getSelectionModel().clearSelection();
+            }
+        });
+
+        menu.getItems().addAll(rate, randomPlayer , separator ,  exit);
     }
 
-    private void MediaPlayer(Media media) {
+    public void MediaPlayer(Media media) {
         songPosition = list.getSelectionModel().getSelectedIndex();
         if (!songBar.isVisible()) songBarVisibility(true);
         mediaPlayer = new MediaPlayer(media);
@@ -469,19 +436,26 @@ public class MusicsController implements Initializable {
             progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
             play.setImage(pauseImage);
             mediaPlayer.setRate(rateSlider.getValue() * 0.01);
-            playMedia();
+            mediaPlayer.play();
+            isPlaying = true;
         });
 
         mediaPlayer.setOnEndOfMedia(() -> {
             if (!repeatMode) {
                 if (!isChanging) {
                     if (!isRandomPlayer) {
-                        isPlaying = false;
-                        play.setImage(playImage);
-                        songBarVisibility(false);
-                        list.getSelectionModel().clearSelection();
-                        if (miniPlayer != null && miniPlayer.isShowing()) {
-                            miniPlayer.close();
+                        if (miniPlayer != null && miniPlayer.isShowing()){
+                            mediaPlayer.seek(Duration.ZERO);
+                            pauseMedia();
+                            currentTime.setText("0:00:00");
+                            play.setImage(playImage);
+                            miniPlayer.setImage(playImage);
+                            progress.setValue(0);
+                        }else {
+                            isPlaying = false;
+                            play.setImage(playImage);
+                            songBarVisibility(false);
+                            list.getSelectionModel().clearSelection();
                         }
                     } else {
                         isPlaying = false;
@@ -515,30 +489,35 @@ public class MusicsController implements Initializable {
     public class MiniPlayer extends Stage {
 
         private static final double height = 200, width = 400;
-        private final VBox root = new VBox(10);
-        private final HBox controller = new HBox(3);
+        private final BorderPane root = new BorderPane();
         private final Label mediaName = new Label();
         private final ImageView play2 = new ImageView();
-        private final Label currentTime2 = new Label("0:00:00");
-        private final Label totalTime2 = new Label("0:00:00");
+        private double xOffset , yOffset;
 
         public MiniPlayer() {
-            setTitle("Mini Player");
+            initStyle(StageStyle.UNDECORATED);
             setMinHeight(height);
             setMinWidth(width);
 
+            mediaName.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(mediaName , Priority.ALWAYS);
             mediaName.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 16));
-            mediaName.getStyleClass().add("white-color");
-            totalTime2.getStyleClass().add("white-color");
-            totalTime2.textProperty().bind(totalTime.textProperty());
-            currentTime2.textProperty().bind(currentTime.textProperty());
-            currentTime2.getStyleClass().add("white-color");
+            mediaName.setStyle("-fx-text-fill : white;");
 
+            Label totalTime2 = new Label("0:00:00");
+            totalTime2.setStyle("-fx-text-fill : white;");
+            totalTime2.textProperty().bind(totalTime.textProperty());
+
+            Label currentTime2 = new Label("0:00:00");
+            currentTime2.textProperty().bind(currentTime.textProperty());
+            currentTime2.setStyle("-fx-text-fill : white;");
+
+            play2.setPickOnBounds(true);
             play2.setImage(isPlaying ? pauseImage : playImage);
-            play2.setFitWidth(40);
-            play2.setFitHeight(40);
+            play2.setFitWidth(35);
+            play2.setFitHeight(35);
             play2.setOnMouseClicked(e -> {
-                if (mediaPlayer != null) {
+                if (mediaPlayer != null && e.getButton() == MouseButton.PRIMARY) {
                     if (!isPlaying) {
                         if (songBar.isVisible()) {
                             playMedia();
@@ -554,14 +533,62 @@ public class MusicsController implements Initializable {
                     }
                 }
             });
+
+            ImageView forwardButton = new ImageView(new Image(getClass().getResourceAsStream("icons/baseline_skip_next_white.png")));
+            forwardButton.setPickOnBounds(true);
+            forwardButton.setFitHeight(35);
+            forwardButton.setFitWidth(35);
+            forwardButton.setOnMouseClicked(e ->{
+                if (e.getButton() == MouseButton.PRIMARY) {
+                    forwardMedia();
+                    if (play2.getImage().equals(playImage)) play2.setImage(pauseImage);
+                }
+            });
+
+            ImageView rewindButton = new ImageView(new Image(getClass().getResourceAsStream("icons/baseline_skip_previous_white.png")));
+            rewindButton.setPickOnBounds(true);
+            rewindButton.setFitHeight(35);
+            rewindButton.setFitWidth(35);
+            rewindButton.setOnMouseClicked(e ->{
+                if (e.getButton() == MouseButton.PRIMARY) {
+                    rewindMedia();
+                    if (play2.getImage().equals(playImage)) play2.setImage(pauseImage);
+                }
+            });
+
+            ImageView close = new ImageView(new Image(getClass().getResourceAsStream("icons/baseline_close_white.png")));
+            close.setPickOnBounds(true);
+            close.setFitHeight(24);
+            close.setFitWidth(24);
+            close.setOnMouseClicked(e ->{
+                getMainStage().show();
+                close();
+            });
+
+            HBox controller = new HBox(3);
             controller.setPadding(new Insets(10, 10, 10, 10));
             controller.setAlignment(Pos.CENTER);
-            VBox.setVgrow(controller , Priority.ALWAYS);
-            controller.getChildren().addAll(currentTime2, play2, totalTime2);
+            controller.getChildren().addAll(currentTime2 , rewindButton, play2 , forwardButton, totalTime2);
 
             root.getStyleClass().add("animated-gradient");
             root.setPadding(new Insets(6, 6, 6, 6));
-            root.getChildren().addAll(mediaName, controller);
+
+            HBox top = new HBox(5);
+            top.setOnMousePressed(e ->{
+                xOffset = getX() - e.getScreenX();
+                yOffset = getY() - e.getScreenY();
+            });
+
+            top.setOnMouseDragged(e ->{
+                setX(e.getScreenX() + xOffset);
+                setY(e.getScreenY() + yOffset);
+            });
+
+            top.setAlignment(Pos.CENTER_LEFT);
+            top.getChildren().addAll(mediaName , close);
+
+            root.setTop(top);
+            root.setCenter(controller);
 
             Scene scene = new Scene(root, width, height);
 
@@ -569,12 +596,15 @@ public class MusicsController implements Initializable {
             scene.getStylesheets().add(light);
 
             setScene(scene);
-            setResizable(false);
             getIcons().addAll(
                     new Image(getClass().getResourceAsStream("icons/icon64x64.png")),
                     new Image(getClass().getResourceAsStream("icons/icon32x32.png")),
                     new Image(getClass().getResourceAsStream("icons/icon16x16.png"))
             );
+            setOnCloseRequest(e ->{
+                getMainStage().show();
+                close();
+            });
             setAnimation();
         }
 
@@ -614,6 +644,65 @@ public class MusicsController implements Initializable {
         miniPlayer = new MiniPlayer();
         miniPlayer.setMediaTitle(list.getItems().get(songPosition).getTitle());
         miniPlayer.show();
+    }
+
+    public void setMainStage(Stage mainStage){
+        this.mainStage = mainStage;
+    }
+
+    public Stage getMainStage(){
+        return mainStage;
+    }
+
+    public void forwardMedia(){
+        if (mediaPlayer != null) {
+            int index = songPosition;
+            int size = list.getItems().size();
+            if (size >= 2){
+                mediaPlayer.stop();
+                if (index == size - 1){
+                    index = 0;
+                    list.getSelectionModel().select(index);
+                    MediaPlayer(list.getItems().get(index).getMedia());
+                    if (miniPlayer != null && miniPlayer.isShowing()){
+                        miniPlayer.setMediaTitle(list.getItems().get(index).getTitle());
+                    }
+                }else {
+                    list.getSelectionModel().select(index + 1);
+                    MediaPlayer(list.getItems().get(index + 1).getMedia());
+                    if (miniPlayer != null && miniPlayer.isShowing()){
+                        miniPlayer.setMediaTitle(list.getItems().get(index + 1).getTitle());
+                    }
+                }
+            }else {
+                mediaPlayer.seek(mediaPlayer.getMedia().getDuration());
+            }
+        }
+    }
+
+    public void rewindMedia(){
+        if (mediaPlayer != null) {
+            int index = songPosition;
+            int size = list.getItems().size();
+            if (size >= 2){
+                mediaPlayer.stop();
+                if (index == 0){
+                    list.getSelectionModel().select(size - 1);
+                    MediaPlayer(list.getItems().get(size - 1).getMedia());
+                    if (miniPlayer != null && miniPlayer.isShowing()){
+                        miniPlayer.setMediaTitle(list.getItems().get(size - 1).getTitle());
+                    }
+                }else {
+                    list.getSelectionModel().select(index - 1);
+                    MediaPlayer(list.getItems().get(index - 1).getMedia());
+                    if (miniPlayer != null && miniPlayer.isShowing()){
+                        miniPlayer.setMediaTitle(list.getItems().get(index - 1).getTitle());
+                    }
+                }
+            }else {
+                mediaPlayer.seek(Duration.ZERO);
+            }
+        }
     }
 
 }

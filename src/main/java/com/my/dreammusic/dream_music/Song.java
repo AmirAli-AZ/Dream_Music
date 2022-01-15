@@ -4,16 +4,16 @@ import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 
 public class Song {
-    private String title , artist ,album , path , date;
+    private String title = "Music" ,
+            artist = "unknown" ,
+            album = "album" ,
+            path = "path" ,
+            date = "date";
+
     private Image image;
     private Media media;
 
     public Song() {
-        this.artist = "unknown";
-        this.title = "Music";
-        this.album = "album";
-        this.date = "";
-        this.path = "";
     }
 
     public Song(String title, String artist, String album, String path , String date, Image image , Media media) {

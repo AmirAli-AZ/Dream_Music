@@ -5,10 +5,6 @@
 -fx-font-weight : bold;
 -fx-text-fill : black;
 }
-.list-view{
--fx-background-insets : 0;
--fx-padding : 0;
-}
 .right-border{
 -fx-border-style : hidden solid hidden hidden;
 -fx-border-width : 2;
@@ -22,6 +18,8 @@
 }
 .list-view{
 -fx-background-color : white;
+-fx-background-insets : 0;
+-fx-padding : 0;
 }
 .cell-text-color {
 -fx-text-fill : black;
@@ -67,7 +65,4 @@
 }
 .text-field:focused {
 -fx-background-color: -fx-focus-color, white;
-}
-.white-color{
--fx-text-fill : white;
 }

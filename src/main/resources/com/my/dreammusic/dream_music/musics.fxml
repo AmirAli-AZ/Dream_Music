@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.MusicsController">
+<VBox fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.MusicsController">
    <children>
       <ListView fx:id="list" VBox.vgrow="ALWAYS" />
       <AnchorPane fx:id="songBar" minHeight="-Infinity" prefHeight="136.0" prefWidth="248.0" styleClass="animated-gradient">
@@ -24,7 +29,7 @@
                         <Insets left="2.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@icons/baseline_replay_5_white.png" />
+                        <Image url="@icons/baseline_skip_previous_white.png" />
                      </image>
                   </ImageView>
                   <ImageView fx:id="play" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#playMusic" pickOnBounds="true" preserveRatio="true">
@@ -40,7 +45,7 @@
                         <Insets right="2.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@icons/baseline_forward_5_white.png" />
+                        <Image url="@icons/baseline_skip_next_white.png" />
                      </image>
                   </ImageView>
                   <Label fx:id="totalTime" style="-fx-text-fill: white;" text="0:00:00" />

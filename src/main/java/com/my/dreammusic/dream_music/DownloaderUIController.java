@@ -1,5 +1,6 @@
 package com.my.dreammusic.dream_music;
 
+import com.google.gson.Gson;
 import com.jthemedetecor.OsThemeDetector;
 import com.my.dreammusic.dream_music.Utils.Downloader;
 import javafx.application.Platform;
@@ -12,14 +13,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.DirectoryChooser;
 import org.apache.commons.io.FilenameUtils;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -45,7 +46,7 @@ public class DownloaderUIController implements Initializable {
 
     private UserData userData;
     public Thread thread;
-    public Downloader downloader;
+    protected Downloader downloader;
     private SystemTray tray;
     private TrayIcon trayIcon;
 
@@ -70,15 +71,12 @@ public class DownloaderUIController implements Initializable {
         progress.prefWidthProperty().bind(hbox1.widthProperty());
         hbox1.setVisible(false);
 
-        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
+        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json").exists()) {
             try {
                 userData = read();
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            userData = new UserData();
-            userData.setPath(System.getProperty("user.home"));
         }
         if(SystemTray.isSupported()){
             tray = SystemTray.getSystemTray();
@@ -95,9 +93,13 @@ public class DownloaderUIController implements Initializable {
     public void downloadClick() {
         String url = urlInput.getText();
         if (isURLSupport(url)) {
-            if (!new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
-                userData = new UserData();
-                userData.setPath(System.getProperty("user.home"));
+            if (userData == null || !new File(userData.getPath()).exists()){
+                DirectoryChooser chooser = new DirectoryChooser();
+                chooser.setTitle("Pick Download Location");
+                chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+                File file = chooser.showDialog(container.getScene().getWindow());
+                if (file != null) userData = new UserData(file.getAbsolutePath());
+                else return;
             }
             hbox1.setVisible(true);
             downloadButton.setDisable(true);
@@ -134,13 +136,11 @@ public class DownloaderUIController implements Initializable {
         }
     }
 
-    public UserData read() throws IOException, ClassNotFoundException {
-        UserData data;
-        FileInputStream fileIn = new FileInputStream(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
-        ObjectInputStream ob = new ObjectInputStream(fileIn);
-        data = (UserData) ob.readObject();
-        ob.close();
-        fileIn.close();
+    public UserData read() throws IOException {
+        Gson gson = new Gson();
+        Reader reader = Files.newBufferedReader(Paths.get(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json"));
+        UserData data = gson.fromJson(reader , UserData.class);
+        reader.close();
         return data;
     }
 

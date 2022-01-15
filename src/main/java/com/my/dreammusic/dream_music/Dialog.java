@@ -131,6 +131,6 @@ public class Dialog {
                 new Image(Dialog.class.getResourceAsStream("icons/icon32x32.png")),
                 new Image(Dialog.class.getResourceAsStream("icons/icon16x16.png"))
         );
-        window.showAndWait();
+        window.show();
     }
 }

@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -15,9 +15,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -63,6 +63,7 @@ public class HomeController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("musics.fxml"));
                 borderLayout.setCenter(loader.load());
                 musicsController = loader.getController();
+                musicsController.setMainStage((Stage) borderLayout.getScene().getWindow());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -73,24 +74,22 @@ public class HomeController implements Initializable {
     public void musics(MouseEvent mouseEvent) {
         if (musicsController != null) {
             if (!musicsController.isPlaying) {
-                if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
-                    if (musicsController.list.getItems().size() > 0) {
+                if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json").exists()) {
                 /*
                 this listener check , if media player listeners is running or no with 0 and 1
                  */
-                        musicsController.setListener(result -> {
-                            if (result == Listener.OK) {
-                                tab_musics.setDisable(false);
-                                // disable listener
-                                musicsController.setListener(null);
-                            } else {
-                                tab_musics.setDisable(true);
-                            }
-                            System.out.println(result);
-                        });
-                        // handle listener
-                        musicsController.refresh();
-                    }
+                    musicsController.setListener(result -> {
+                        if (result == Listener.OK) {
+                            tab_musics.setDisable(false);
+                            // disable listener
+                            musicsController.setListener(null);
+                        } else {
+                            tab_musics.setDisable(true);
+                        }
+                        System.out.println(result);
+                    });
+                    // handle listener
+                    musicsController.refresh();
                 } else {
                     Stage window = (Stage) borderLayout.getScene().getWindow();
                     window.close();
@@ -103,17 +102,11 @@ public class HomeController implements Initializable {
             } else {
                 Dialog dialog = new Dialog(result -> {
                     if (result == Listener.OK) {
-                        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
+                        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json").exists()) {
                             musicsController.pauseMedia();
-                            if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()) {
-                                musicsController.miniPlayer.close();
-                            }
                             musicsController.songBarVisibility(false);
                             musicsController.refresh();
                         } else {
-                            if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()) {
-                                musicsController.miniPlayer.close();
-                            }
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
                             Stage window = (Stage) borderLayout.getScene().getWindow();
@@ -140,106 +133,48 @@ public class HomeController implements Initializable {
     @FXML
     public void folderConfigAction() {
         if (musicsController != null) {
-            if (!musicsController.isPlaying) {
-                try {
-                    Stage stage = new Stage();
-                    stage.setTitle("Folder Config");
+            try {
+                Stage stage = new Stage();
+                stage.setTitle("Folder Config");
 
-                    FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
-                    Scene scene = new Scene(loader.load(), 611, 288);
-                    scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
+                FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
+                Scene scene = new Scene(loader.load(), 611, 288);
+                scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
 
-                    FolderConfigController controller = loader.getController();
-                    controller.setOpenHome(false);
+                FolderConfigController controller = loader.getController();
+                controller.setOpenHome(false);
 
-                    controller.setListener(result -> {
-                        if (result == Listener.OK) {
-                            if (musicsController.isPlaying) {
-                                if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()) {
-                                    musicsController.miniPlayer.close();
-                                }
-                                musicsController.pauseMedia();
-                                musicsController.songBarVisibility(false);
-                            }
-                            musicsController.loadFolder();
-                            musicsController.refresh();
-                            controller.setListener(null);
-                        }
-                    });
-
-                    stage.setOnCloseRequest(e -> {
-                        controller.removeTrayIcon();
-                        controller.shutDown();
-                    });
-                    stage.setResizable(false);
-                    stage.setScene(scene);
-                    stage.getIcons().addAll(
-                            new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
-                            new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
-                            new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
-                    );
-                    stage.showAndWait();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Dialog dialog = new Dialog(result -> {
+                controller.setListener(result -> {
                     if (result == Listener.OK) {
-                        if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()) {
+                        if (musicsController.isPlaying) {
+                            musicsController.mediaPlayer.stop();
+                            musicsController.isPlaying = false;
+                        }
+                        musicsController.songBarVisibility(false);
+                        musicsController.loadFolder();
+                        musicsController.refresh();
+                        if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()){
+                            ((Stage)borderLayout.getScene().getWindow()).show();
                             musicsController.miniPlayer.close();
                         }
-                        musicsController.pauseMedia();
-                        musicsController.songBarVisibility(false);
-                        try {
-                            Stage stage = new Stage();
-                            stage.setTitle("Folder Config");
-
-                            FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
-                            Scene scene = new Scene(loader.load(), 611, 288);
-                            scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
-
-                            FolderConfigController controller = loader.getController();
-                            controller.setOpenHome(false);
-
-                            controller.setListener(result1 -> {
-                                if (result1 == Listener.OK) {
-                                    if (musicsController.isPlaying) {
-                                        if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()) {
-                                            musicsController.miniPlayer.close();
-                                        }
-                                        musicsController.pauseMedia();
-                                        musicsController.songBarVisibility(false);
-                                    }
-                                    musicsController.loadFolder();
-                                    musicsController.refresh();
-
-                                    controller.setListener(null);
-                                }
-                            });
-
-                            stage.setOnCloseRequest(e -> {
-                                controller.removeTrayIcon();
-                                controller.shutDown();
-                            });
-
-                            stage.setResizable(false);
-                            stage.setScene(scene);
-                            stage.getIcons().addAll(
-                                    new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
-                                    new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
-                                    new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
-                            );
-                            stage.show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
+                        controller.setListener(null);
                     }
                 });
-                dialog.setTitle("Warning");
-                dialog.setMessage("Music is playing , pause music.");
-                dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
-                dialog.show();
+
+                stage.setOnCloseRequest(e -> {
+                    controller.removeTrayIcon();
+                    controller.shutDown();
+                });
+                stage.setResizable(false);
+                stage.setScene(scene);
+                stage.getIcons().addAll(
+                        new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
+                        new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
+                        new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+                );
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -254,9 +189,11 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    public void miniPlayerAction(){
-        if (musicsController != null && musicsController.isPlaying){
+    public void miniPlayerAction() {
+        if (musicsController != null && musicsController.isPlaying || Objects.requireNonNull(musicsController).songBar.isVisible()) {
             musicsController.createMiniPlayer();
+            Stage stage = (Stage) borderLayout.getScene().getWindow();
+            stage.hide();
         }
     }
 
@@ -271,7 +208,7 @@ public class HomeController implements Initializable {
 
         stage.setResizable(false);
         stage.setScene(scene);
-        stage.setOnCloseRequest(e ->{
+        stage.setOnCloseRequest(e -> {
             controller.removeTrayIcon();
         });
         stage.getIcons().addAll(
@@ -279,8 +216,7 @@ public class HomeController implements Initializable {
                 new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
                 new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
         );
-        if (openHome) stage.show();
-        else stage.showAndWait();
+        stage.show();
     }
 
     private void showDownloader() throws IOException {
@@ -290,7 +226,7 @@ public class HomeController implements Initializable {
         Scene scene = new Scene(loader.load(), 600, 400);
         scene.getStylesheets().add(FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
         DownloaderUIController downloaderUIController = loader.getController();
-        stage.setOnCloseRequest(e ->{
+        stage.setOnCloseRequest(e -> {
             if (downloaderUIController.downloader != null &&
                     !downloaderUIController.downloader.isCancelled()) {
                 downloaderUIController.downloader.exit();
@@ -305,7 +241,7 @@ public class HomeController implements Initializable {
                 new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
                 new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
         );
-        stage.showAndWait();
+        stage.show();
     }
 
 }

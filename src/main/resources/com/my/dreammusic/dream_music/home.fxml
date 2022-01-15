@@ -53,7 +53,7 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Media">
               <items>
-                <MenuItem  mnemonicParsing="false" onAction="#miniPlayerAction" text="Mini Player">
+                <MenuItem mnemonicParsing="false" onAction="#miniPlayerAction" text="Mini Player">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="ANY" shortcut="UP" />
                      </accelerator>

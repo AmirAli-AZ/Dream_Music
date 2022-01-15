@@ -21,7 +21,7 @@ public class Home extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        File data = new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
+        File data = new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json");
         stage.getIcons().addAll(
                 new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
                 new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),

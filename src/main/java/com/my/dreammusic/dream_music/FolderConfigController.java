@@ -1,5 +1,6 @@
 package com.my.dreammusic.dream_music;
 
+import com.google.gson.Gson;
 import com.jthemedetecor.OsThemeDetector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -17,10 +18,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -147,7 +145,7 @@ public class FolderConfigController implements Initializable {
 
 
     private boolean isValidPath(String path){
-        if (path.length() == 0 || path == null){
+        if (path.length() == 0){
             return false;
         }
         try {
@@ -175,18 +173,21 @@ public class FolderConfigController implements Initializable {
                 Platform.exit();
                 System.exit(0);
             });
+            stage.getIcons().addAll(
+                    new Image(FolderConfigController.class.getResourceAsStream("icons/icon64x64.png")),
+                    new Image(FolderConfigController.class.getResourceAsStream("icons/icon32x32.png")),
+                    new Image(FolderConfigController.class.getResourceAsStream("icons/icon16x16.png"))
+            );
             stage.show();
         }
     }
 
     private void writeData() throws IOException{
         userData.setPath(musicFolder.getAbsolutePath());
-        File data = new File(dreamMusicData.getAbsolutePath() + File.separator + "data.ser");
-        FileOutputStream fileOut = new FileOutputStream(data);
-        ObjectOutputStream ob = new ObjectOutputStream(fileOut);
-        ob.writeObject(userData);
-        ob.close();
-        fileOut.close();
+        Writer writer = new FileWriter(dreamMusicData.getAbsolutePath() + File.separator + "data.json");
+        Gson gson = new Gson();
+        gson.toJson(userData , writer);
+        writer.close();
     }
 
     private void showNotification(String title, String message, TrayIcon.MessageType type) {
