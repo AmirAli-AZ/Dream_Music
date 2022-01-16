@@ -74,7 +74,7 @@ public class HomeController implements Initializable {
     public void musics(MouseEvent mouseEvent) {
         if (musicsController != null) {
             if (!musicsController.isPlaying) {
-                if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json").exists()) {
+                if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
                 /*
                 this listener check , if media player listeners is running or no with 0 and 1
                  */
@@ -102,7 +102,7 @@ public class HomeController implements Initializable {
             } else {
                 Dialog dialog = new Dialog(result -> {
                     if (result == Listener.OK) {
-                        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json").exists()) {
+                        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
                             musicsController.refresh();

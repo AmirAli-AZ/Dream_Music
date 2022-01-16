@@ -1,6 +1,5 @@
 package com.my.dreammusic.dream_music;
 
-import com.google.gson.Gson;
 import com.jthemedetecor.OsThemeDetector;
 import com.my.dreammusic.dream_music.Utils.Downloader;
 import javafx.application.Platform;
@@ -19,8 +18,6 @@ import org.apache.commons.io.FilenameUtils;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -71,10 +68,10 @@ public class DownloaderUIController implements Initializable {
         progress.prefWidthProperty().bind(hbox1.widthProperty());
         hbox1.setVisible(false);
 
-        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json").exists()) {
+        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
             try {
                 userData = read();
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -136,12 +133,13 @@ public class DownloaderUIController implements Initializable {
         }
     }
 
-    public UserData read() throws IOException {
-        Gson gson = new Gson();
-        Reader reader = Files.newBufferedReader(Paths.get(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.json"));
-        UserData data = gson.fromJson(reader , UserData.class);
-        reader.close();
-        return data;
+    public UserData read() throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        UserData userData = (UserData) objectInputStream.readObject();
+        fileInputStream.close();
+        objectInputStream.close();
+        return userData;
     }
 
     public boolean isURLSupport(String s) {

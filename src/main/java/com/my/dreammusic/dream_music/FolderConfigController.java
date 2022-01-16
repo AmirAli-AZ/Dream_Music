@@ -1,6 +1,5 @@
 package com.my.dreammusic.dream_music;
 
-import com.google.gson.Gson;
 import com.jthemedetecor.OsThemeDetector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -38,7 +37,7 @@ public class FolderConfigController implements Initializable {
     private ImageView img_folderPicker;
 
     private File musicFolder, dreamMusicData;
-    private UserData userData = new UserData();
+    private final UserData userData = new UserData();
     public boolean openHome = false;
     private Listener listener;
     private SystemTray tray;
@@ -184,10 +183,11 @@ public class FolderConfigController implements Initializable {
 
     private void writeData() throws IOException{
         userData.setPath(musicFolder.getAbsolutePath());
-        Writer writer = new FileWriter(dreamMusicData.getAbsolutePath() + File.separator + "data.json");
-        Gson gson = new Gson();
-        gson.toJson(userData , writer);
-        writer.close();
+        FileOutputStream outputStream = new FileOutputStream(dreamMusicData.getAbsolutePath() + File.separator + "data.ser");
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(userData);
+        outputStream.close();
+        objectOutputStream.close();
     }
 
     private void showNotification(String title, String message, TrayIcon.MessageType type) {
