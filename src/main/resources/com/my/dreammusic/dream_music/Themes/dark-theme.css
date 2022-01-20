@@ -40,20 +40,19 @@
 -fx-text-fill : white;
 }
 .menu-bar .menu-button:hover, .menu-bar .menu-button:focused, .menu-bar .menu-button:showing {
--fx-background : black;
+-fx-background : #363636;
 -fx-text-fill : white;
 }
 .menu-item .label {
 -fx-text-fill: white;
 }
 .menu-item:focused {
--fx-background-color: black;
+-fx-background-color: #363636;
 }
 .menu-item:focused .label {
 -fx-text-fill: white;
 }
 .context-menu {
--fx-skin : "javafx.scene.control.skin.ContextMenuSkin";
 -fx-background-color: #212121;
 -fx-background-radius: 5px;
 }

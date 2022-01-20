@@ -104,23 +104,25 @@ public class Dialog {
 
         Scene scene = new Scene(borderPane , 400 , 250);
 
-        String light = Dialog.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
-        String dark = Dialog.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
-        // default theme
-        scene.getStylesheets().add(light);
+        if (OsThemeDetector.isSupported()) {
+            String light = Dialog.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
+            String dark = Dialog.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
+            // default theme
+            scene.getStylesheets().add(light);
 
-        final OsThemeDetector detector = OsThemeDetector.getDetector();
-        Consumer<Boolean> darkThemeListener = isDark -> {
-            Platform.runLater(() -> {
-                if (isDark) {
-                    scene.getStylesheets().set(0 , dark);
-                } else {
-                    scene.getStylesheets().set(0 , light);
-                }
-            });
-        };
-        darkThemeListener.accept(detector.isDark() && OsThemeDetector.isSupported());
-        detector.registerListener(darkThemeListener);
+            final OsThemeDetector detector = OsThemeDetector.getDetector();
+            Consumer<Boolean> darkThemeListener = isDark -> {
+                Platform.runLater(() -> {
+                    if (isDark) {
+                        scene.getStylesheets().set(0, dark);
+                    } else {
+                        scene.getStylesheets().set(0, light);
+                    }
+                });
+            };
+            darkThemeListener.accept(detector.isDark());
+            detector.registerListener(darkThemeListener);
+        }
 
         window.setScene(scene);
         window.setMinWidth(400);

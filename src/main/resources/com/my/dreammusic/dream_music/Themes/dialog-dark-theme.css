@@ -40,7 +40,6 @@
 -fx-text-fill : white;
 }
 .context-menu {
--fx-skin : "javafx.scene.control.skin.ContextMenuSkin";
 -fx-background-color: #212121;
 -fx-background-radius: 5px;
 }
@@ -48,7 +47,7 @@
 -fx-text-fill: white;
 }
 .menu-item:focused {
--fx-background-color: black;
+-fx-background-color: #363636;
 }
 .menu-item:focused .label {
 -fx-text-fill: white;

@@ -1,6 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,24 +46,26 @@ public class FolderConfigController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        String light = FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
-        String dark = FolderConfigController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
+        if (OsThemeDetector.isSupported()) {
+            String light = FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
+            String dark = FolderConfigController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
 
-        final OsThemeDetector detector = OsThemeDetector.getDetector();
-        Consumer<Boolean> darkThemeListener = isDark -> {
-            Platform.runLater(() -> {
-                if (isDark){
-                    container.getScene().getStylesheets().set(0, dark);
-                    img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_white.png")));
-                }else {
-                    container.getScene().getStylesheets().set(0, light);
+            final OsThemeDetector detector = OsThemeDetector.getDetector();
+            Consumer<Boolean> darkThemeListener = isDark -> {
+                Platform.runLater(() -> {
+                    if (isDark) {
+                        container.getScene().getStylesheets().set(0, dark);
+                        img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_white.png")));
+                    } else {
+                        container.getScene().getStylesheets().set(0, light);
 
-                    img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_black.png")));
-                }
-            });
-        };
-        darkThemeListener.accept(detector.isDark() && OsThemeDetector.isSupported());
-        detector.registerListener(darkThemeListener);
+                        img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_black.png")));
+                    }
+                });
+            };
+            darkThemeListener.accept(detector.isDark());
+            detector.registerListener(darkThemeListener);
+        }
 
         create.getStyleClass().add("button-style-ok");
         String s = getUserPath() + File.separator + "Music";

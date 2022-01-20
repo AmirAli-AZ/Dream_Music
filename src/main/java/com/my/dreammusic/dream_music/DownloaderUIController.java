@@ -49,21 +49,22 @@ public class DownloaderUIController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        String light = DownloaderUIController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
-        String dark = DownloaderUIController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
-        final OsThemeDetector detector = OsThemeDetector.getDetector();
-        Consumer<Boolean> darkThemeListener = isDark -> {
-            Platform.runLater(() -> {
-                if (isDark) {
-                    container.getScene().getStylesheets().set(0, dark);
-                } else {
-                    container.getScene().getStylesheets().set(0, light);
-                }
-            });
-        };
-        darkThemeListener.accept(detector.isDark() && OsThemeDetector.isSupported());
-        detector.registerListener(darkThemeListener);
+        if (OsThemeDetector.isSupported()) {
+            String light = DownloaderUIController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
+            String dark = DownloaderUIController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
+            final OsThemeDetector detector = OsThemeDetector.getDetector();
+            Consumer<Boolean> darkThemeListener = isDark -> {
+                Platform.runLater(() -> {
+                    if (isDark) {
+                        container.getScene().getStylesheets().set(0, dark);
+                    } else {
+                        container.getScene().getStylesheets().set(0, light);
+                    }
+                });
+            };
+            darkThemeListener.accept(detector.isDark());
+            detector.registerListener(darkThemeListener);
+        }
 
         progress.prefWidthProperty().bind(hbox1.widthProperty());
         hbox1.setVisible(false);

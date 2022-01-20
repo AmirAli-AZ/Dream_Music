@@ -40,7 +40,6 @@
 -fx-text-fill : black;
 }
 .context-menu {
--fx-skin : "javafx.scene.control.skin.ContextMenuSkin";
 -fx-background-color: white;
 -fx-background-radius: 5px;
 }

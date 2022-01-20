@@ -4,6 +4,7 @@ import java.io.*;
 
 public class UserData implements Serializable {
     private String path;
+    private int notSupportDarkCount;
 
     public UserData(String path){
         this.path = path;
@@ -19,13 +20,23 @@ public class UserData implements Serializable {
         return path;
     }
 
+    public void setNotSupportDarkCount(int notSupportDarkCount) {
+        this.notSupportDarkCount = notSupportDarkCount;
+    }
+
+    public int getNotSupportDarkCount() {
+        return notSupportDarkCount;
+    }
+
     @Serial
     private void readObject(ObjectInputStream objectInputStream) throws IOException {
         this.path = objectInputStream.readUTF();
+        this.notSupportDarkCount = objectInputStream.read();
     }
 
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.writeUTF(path);
+        outputStream.write(notSupportDarkCount);
     }
 }

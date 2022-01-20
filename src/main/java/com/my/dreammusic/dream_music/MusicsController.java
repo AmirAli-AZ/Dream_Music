@@ -65,14 +65,14 @@ public class MusicsController implements Initializable {
     public ImageView moreOption;
 
     protected MediaPlayer mediaPlayer;
-    public boolean isPlaying = false;
-    private boolean isChanging = false;
-    private boolean repeatMode = false;
+    public boolean isPlaying;
+    private boolean isChanging;
+    private boolean repeatMode;
     private final Object object = new Object();
     private UserData userData;
     private Listener listener;
-    private int songPosition = 0;
-    private boolean isRandomPlayer = false;
+    private int songPosition;
+    private boolean isRandomPlayer;
     private final Image playImage = new Image(getClass().getResourceAsStream("icons/baseline_play_arrow_white.png"));
     private final Image pauseImage = new Image(getClass().getResourceAsStream("icons/baseline_pause_white.png"));
     private Stage mainStage;

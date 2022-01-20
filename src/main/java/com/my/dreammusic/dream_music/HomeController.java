@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.Objects;
@@ -38,22 +39,24 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        String light = HomeController.class.getResource("Themes/light-theme.css").toExternalForm();
-        String dark = HomeController.class.getResource("Themes/dark-theme.css").toExternalForm();
-        final OsThemeDetector detector = OsThemeDetector.getDetector();
-        Consumer<Boolean> darkThemeListener = isDark -> {
-            Platform.runLater(() -> {
-                if (isDark) {
-                    borderLayout.getScene().getStylesheets().set(0, dark);
-                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
-                } else {
-                    borderLayout.getScene().getStylesheets().set(0, light);
-                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
-                }
-            });
-        };
-        darkThemeListener.accept(detector.isDark() && OsThemeDetector.isSupported());
-        detector.registerListener(darkThemeListener);
+        if (OsThemeDetector.isSupported()) {
+            String light = HomeController.class.getResource("Themes/light-theme.css").toExternalForm();
+            String dark = HomeController.class.getResource("Themes/dark-theme.css").toExternalForm();
+            final OsThemeDetector detector = OsThemeDetector.getDetector();
+            Consumer<Boolean> darkThemeListener = isDark -> {
+                Platform.runLater(() -> {
+                    if (isDark) {
+                        borderLayout.getScene().getStylesheets().set(0, dark);
+                        img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
+                    } else {
+                        borderLayout.getScene().getStylesheets().set(0, light);
+                        img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
+                    }
+                });
+            };
+            darkThemeListener.accept(detector.isDark());
+            detector.registerListener(darkThemeListener);
+        }
 
         title1.getStyleClass().add("title");
         items.getStyleClass().add("right-border");
@@ -64,6 +67,25 @@ public class HomeController implements Initializable {
                 borderLayout.setCenter(loader.load());
                 musicsController = loader.getController();
                 musicsController.setMainStage((Stage) borderLayout.getScene().getWindow());
+
+                if (!OsThemeDetector.isSupported()){
+                    try {
+                        UserData data = raed();
+                        if (data.getNotSupportDarkCount() == 0){
+                            Dialog dialog = new Dialog(null);
+                            dialog.setTitle("Warning");
+                            dialog.setMessage("Your Device Not Support Dark Theme");
+                            dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
+                            dialog.setBtnOkText("OK");
+                            dialog.show();
+
+                            data.setNotSupportDarkCount(1);
+                            write(data);
+                        }
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -197,6 +219,28 @@ public class HomeController implements Initializable {
         }
     }
 
+    @FXML
+    public void openGithubPage() throws URISyntaxException, IOException {
+        Desktop.getDesktop().browse(new URI("https://github.com/AmirAli-AZ/Dream_Music"));
+    }
+
+    @FXML
+    public void openAbout() throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("About");
+        FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("about.fxml"));
+        Scene scene = new Scene(loader.load() , 810 , 575);
+        stage.setScene(scene);
+        stage.getIcons().addAll(
+                new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
+                new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
+                new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+        );
+        stage.setMinHeight(575);
+        stage.setMinWidth(810);
+        stage.show();
+    }
+
     public void openFolderConfig(Stage stage, boolean openHome) throws IOException {
         stage.setTitle("Folder Config");
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
@@ -242,6 +286,23 @@ public class HomeController implements Initializable {
                 new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
         );
         stage.show();
+    }
+
+    private UserData raed() throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        UserData data = (UserData) objectInputStream.readObject();
+        fileInputStream.close();
+        objectInputStream.close();
+        return data;
+    }
+
+    private void write(UserData data) throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(data);
+        fileOutputStream.close();
+        objectOutputStream.close();
     }
 
 }

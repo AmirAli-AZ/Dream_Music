@@ -60,6 +60,12 @@
                   </MenuItem>
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#openGithubPage" text="Github Page" />
+                  <MenuItem mnemonicParsing="false" onAction="#openAbout" text="About" />
+              </items>
+            </Menu>
         </menus>
          <cursor>
             <Cursor fx:constant="DEFAULT" />
