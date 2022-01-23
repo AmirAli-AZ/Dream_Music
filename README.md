@@ -14,12 +14,8 @@ Features :
 - system dark mode
 - mini player
 
-# ScreenShots
+## ScreenShots
 
-> light mode
-
-![Screenshot (330)](https://user-images.githubusercontent.com/84965706/149656142-f1e530bb-92da-48de-a1ef-f3505384b192.png)
-
-> dark mode
-
-![Screenshot (331)](https://user-images.githubusercontent.com/84965706/149656150-eddca0be-aebc-4df7-8640-d62159a70b82.png)
+| Light Mode | Dark Mode |
+| ---------- | ----------|
+| ![Screenshot (339)](https://user-images.githubusercontent.com/84965706/150679742-5c6a2eb2-9cca-4b1d-bed3-21a921f732fc.png) | ![Screenshot (340)](https://user-images.githubusercontent.com/84965706/150679747-91af6612-30d7-461a-a1eb-c90999196730.png)|
