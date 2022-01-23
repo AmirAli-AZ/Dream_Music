@@ -1,7 +1,18 @@
-# Dream Music
+Javafx music player that has almost the basic features of a music player
+Written by [Amir Ali Azimi](https://github.com/AmirAli-AZ)
+
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/UdSrdWeSQP)
 
-javafx music player for windows
+Features :
+- music volume
+- music loop
+- forward
+- rewind
+- music rate
+- random player
+- music downloader
+- system dark mode
+- mini player
 
 # ScreenShots
 
