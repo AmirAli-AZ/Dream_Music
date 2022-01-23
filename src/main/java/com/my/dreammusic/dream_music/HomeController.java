@@ -221,7 +221,7 @@ public class HomeController implements Initializable {
 
     @FXML
     public void openGithubPage() throws URISyntaxException, IOException {
-        Desktop.getDesktop().browse(new URI("https://github.com/AmirAli-AZ/Dream_Music"));
+        Desktop.getDesktop().browse(new URI("https://amirali-az.github.io/Dream_Music"));
     }
 
     @FXML
