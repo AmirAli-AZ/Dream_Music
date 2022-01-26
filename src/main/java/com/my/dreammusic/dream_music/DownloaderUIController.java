@@ -1,7 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
-import com.my.dreammusic.dream_music.Utils.Downloader;
+import com.my.dreammusic.dream_music.utils.Downloader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -69,13 +69,10 @@ public class DownloaderUIController implements Initializable {
         progress.prefWidthProperty().bind(hbox1.widthProperty());
         hbox1.setVisible(false);
 
-        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
-            try {
-                userData = read();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
+        UserDataManager manager = new UserDataManager();
+        UserData d = manager.read();
+        if (d != null) userData = d;
+
         if(SystemTray.isSupported()){
             tray = SystemTray.getSystemTray();
             Image image = Toolkit.getDefaultToolkit().createImage(DownloaderUIController.class.getResource("icons/icon64x64.png"));
@@ -132,15 +129,6 @@ public class DownloaderUIController implements Initializable {
         } else {
             showNotification("Invalid data", "Please enter valid URL or mp3 / wav expansion" , TrayIcon.MessageType.WARNING);
         }
-    }
-
-    public UserData read() throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
-        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-        UserData userData = (UserData) objectInputStream.readObject();
-        fileInputStream.close();
-        objectInputStream.close();
-        return userData;
     }
 
     public boolean isURLSupport(String s) {

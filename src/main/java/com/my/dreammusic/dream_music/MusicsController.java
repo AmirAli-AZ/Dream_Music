@@ -1,6 +1,6 @@
 package com.my.dreammusic.dream_music;
 
-import com.my.dreammusic.dream_music.Utils.NumericField;
+import com.my.dreammusic.dream_music.utils.NumericField;
 import javafx.animation.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -261,11 +261,11 @@ public class MusicsController implements Initializable {
             if (files != null) {
                 Arrays.sort(files);
                 if (files.length > 0) {
-                    for (int i = 0; i < files.length; i++) {
-                        if (files[i].isFile()) {
-                            if (FilenameUtils.getExtension(files[i].getAbsolutePath()).equals("mp3") ||
-                                    FilenameUtils.getExtension(files[i].getAbsolutePath()).equals("wav")) {
-                                createMedia(files[i]);
+                    for (File value : files) {
+                        if (value.isFile()) {
+                            if (FilenameUtils.getExtension(value.getAbsolutePath()).equals("mp3") ||
+                                    FilenameUtils.getExtension(value.getAbsolutePath()).equals("wav")) {
+                                createMedia(value);
                                 synchronized (object) {
                                     object.wait(100);
                                 }
@@ -291,15 +291,6 @@ public class MusicsController implements Initializable {
         songBar.setManaged(b);
     }
 
-    public UserData read() throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(getUserPath() + File.separator + "Dream Music" + File.separator + "data.ser");
-        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-        UserData userData = (UserData) objectInputStream.readObject();
-        fileInputStream.close();
-        objectInputStream.close();
-        return userData;
-    }
-
     public void playMedia() {
         if (mediaPlayer != null && !isPlaying) {
             mediaPlayer.play();
@@ -319,11 +310,8 @@ public class MusicsController implements Initializable {
     }
 
     public void loadFolder() {
-        try {
-            userData = read();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        UserDataManager manager = new UserDataManager();
+        userData = manager.read();
     }
 
     public void setListener(Listener listener) {

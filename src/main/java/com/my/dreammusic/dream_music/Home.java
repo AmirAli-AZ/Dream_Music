@@ -21,13 +21,12 @@ public class Home extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        File data = new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
         stage.getIcons().addAll(
                 new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
                 new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),
                 new Image(Home.class.getResourceAsStream("icons/icon16x16.png"))
         );
-        if (data.exists()){
+        if (new File(UserDataManager.serFilePath).exists()){
             stage.setTitle("Dream Music");
             FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
             Scene scene = new Scene(loader.load(), width , height);

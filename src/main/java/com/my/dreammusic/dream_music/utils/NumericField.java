@@ -1,4 +1,4 @@
-package com.my.dreammusic.dream_music.Utils;
+package com.my.dreammusic.dream_music.utils;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -15,7 +15,7 @@ public class NumericField extends TextField {
 
     public int getValue(){
         String s = getText();
-        if (s.length() != 0 || s != null) return Integer.parseInt(s);
+        if (s.length() > 0) return Integer.parseInt(s);
         else return 0;
     }
 

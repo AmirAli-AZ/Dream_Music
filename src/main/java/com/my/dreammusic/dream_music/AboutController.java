@@ -3,6 +3,12 @@ package com.my.dreammusic.dream_music;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.w3c.dom.Node;
@@ -47,6 +53,37 @@ public class AboutController implements Initializable {
                 }
             }
         });
+        createContextMenu(webview);
         engine.load(page);
+    }
+
+    private void createContextMenu(WebView webview){
+        ContextMenu menu = new ContextMenu();
+
+        Label l1 = new Label("Copy");
+        l1.setWrapText(true);
+        l1.setMinWidth(80);
+        MenuItem item1 = new MenuItem();
+        item1.setGraphic(l1);
+        item1.setOnAction(e ->{
+            String selection = (String) webview.getEngine()
+                    .executeScript("window.getSelection().toString()");
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(selection);
+            clipboard.setContent(content);
+        });
+
+        menu.getItems().add(item1);
+
+        webview.setOnMouseClicked(e ->{
+            String selection = (String) webview.getEngine()
+                    .executeScript("window.getSelection().toString()");
+            if (e.getButton() == MouseButton.SECONDARY){
+                if (selection.length() > 0) menu.show(webview , e.getScreenX() , e.getScreenY());
+            }else {
+                menu.hide();
+            }
+        });
     }
 }

@@ -1,4 +1,4 @@
-package com.my.dreammusic.dream_music.Utils;
+package com.my.dreammusic.dream_music.utils;
 
 import javafx.concurrent.Task;
 import org.apache.commons.io.FilenameUtils;
@@ -21,7 +21,7 @@ public class Downloader extends Task<Void> {
 
     private URL fileURL;
     private File file, downloadPath;
-    private DownloaderListener listener;
+    private final DownloaderListener listener;
     private boolean exit = false;
 
     public Downloader(DownloaderListener listener) {

@@ -1,7 +1,6 @@
 package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
-import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,12 +36,13 @@ public class FolderConfigController implements Initializable {
     @FXML
     private ImageView img_folderPicker;
 
-    private File musicFolder, dreamMusicData;
+    private File musicFolder;
     private final UserData userData = new UserData();
     public boolean openHome = false;
     private Listener listener;
     private SystemTray tray;
     private TrayIcon trayIcon;
+    private UserDataManager manager;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -70,12 +70,9 @@ public class FolderConfigController implements Initializable {
         create.getStyleClass().add("button-style-ok");
         String s = getUserPath() + File.separator + "Music";
         path.setText(s);
-
         musicFolder = new File(s);
-        dreamMusicData = new File(getUserPath() + File.separator + "Dream Music");
-        if (!dreamMusicData.exists()) {
-            dreamMusicData.mkdirs();
-        }
+
+        manager = new UserDataManager();
 
         if(SystemTray.isSupported()){
             tray = SystemTray.getSystemTray();
@@ -116,7 +113,8 @@ public class FolderConfigController implements Initializable {
                 if (!musicFolder.exists()) {
                     Files.createDirectories(Paths.get(musicFolder.getAbsolutePath()));
                 }
-                writeData();
+                userData.setPath(musicFolder.getAbsolutePath());
+                manager.write(userData);
                 removeTrayIcon();
                 ((Stage)container.getScene().getWindow()).close();
                 openHome(openHome);
@@ -182,15 +180,6 @@ public class FolderConfigController implements Initializable {
             );
             stage.show();
         }
-    }
-
-    private void writeData() throws IOException{
-        userData.setPath(musicFolder.getAbsolutePath());
-        FileOutputStream outputStream = new FileOutputStream(dreamMusicData.getAbsolutePath() + File.separator + "data.ser");
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        objectOutputStream.writeObject(userData);
-        outputStream.close();
-        objectOutputStream.close();
     }
 
     private void showNotification(String title, String message, TrayIcon.MessageType type) {

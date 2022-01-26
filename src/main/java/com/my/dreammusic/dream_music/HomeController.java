@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -68,22 +69,20 @@ public class HomeController implements Initializable {
                 musicsController = loader.getController();
                 musicsController.setMainStage((Stage) borderLayout.getScene().getWindow());
 
-                if (!OsThemeDetector.isSupported()){
-                    try {
-                        UserData data = raed();
-                        if (data.getNotSupportDarkCount() == 0){
-                            Dialog dialog = new Dialog(null);
-                            dialog.setTitle("Warning");
-                            dialog.setMessage("Your Device Not Support Dark Theme");
-                            dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
-                            dialog.setBtnOkText("OK");
-                            dialog.show();
+                if (!OsThemeDetector.isSupported()) {
+                    UserDataManager manager = new UserDataManager();
+                    UserData data = manager.read();
 
-                            data.setNotSupportDarkCount(1);
-                            write(data);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                    if (data.getNotSupportDarkCount() == 0) {
+                        Dialog dialog = new Dialog(null);
+                        dialog.setTitle("Warning");
+                        dialog.setMessage("Your Device Not Support Dark Theme");
+                        dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
+                        dialog.setBtnOkText("OK");
+                        dialog.show();
+
+                        data.setNotSupportDarkCount(1);
+                        manager.write(data);
                     }
                 }
             } catch (IOException e) {
@@ -94,9 +93,9 @@ public class HomeController implements Initializable {
 
     @FXML
     public void musics(MouseEvent mouseEvent) {
-        if (musicsController != null) {
+        if (musicsController != null && mouseEvent.getButton() == MouseButton.PRIMARY) {
             if (!musicsController.isPlaying) {
-                if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
+                if (new File(UserDataManager.serFilePath).exists()) {
                 /*
                 this listener check , if media player listeners is running or no with 0 and 1
                  */
@@ -124,7 +123,7 @@ public class HomeController implements Initializable {
             } else {
                 Dialog dialog = new Dialog(result -> {
                     if (result == Listener.OK) {
-                        if (new File(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser").exists()) {
+                        if (new File(UserDataManager.folderPath).exists()) {
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
                             musicsController.refresh();
@@ -153,61 +152,53 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    public void folderConfigAction() {
+    public void folderConfigAction() throws IOException {
         if (musicsController != null) {
-            try {
-                Stage stage = new Stage();
-                stage.setTitle("Folder Config");
+            Stage stage = new Stage();
+            stage.setTitle("Folder Config");
 
-                FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
-                Scene scene = new Scene(loader.load(), 611, 288);
-                scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
+            FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
+            Scene scene = new Scene(loader.load(), 611, 288);
+            scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
 
-                FolderConfigController controller = loader.getController();
-                controller.setOpenHome(false);
+            FolderConfigController controller = loader.getController();
+            controller.setOpenHome(false);
 
-                controller.setListener(result -> {
-                    if (result == Listener.OK) {
-                        if (musicsController.isPlaying) {
-                            musicsController.mediaPlayer.stop();
-                            musicsController.isPlaying = false;
-                        }
-                        musicsController.songBarVisibility(false);
-                        musicsController.loadFolder();
-                        musicsController.refresh();
-                        if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()){
-                            ((Stage)borderLayout.getScene().getWindow()).show();
-                            musicsController.miniPlayer.close();
-                        }
-                        controller.setListener(null);
+            controller.setListener(result -> {
+                if (result == Listener.OK) {
+                    if (musicsController.isPlaying) {
+                        musicsController.mediaPlayer.stop();
+                        musicsController.isPlaying = false;
                     }
-                });
+                    musicsController.songBarVisibility(false);
+                    musicsController.loadFolder();
+                    musicsController.refresh();
+                    if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()) {
+                        ((Stage) borderLayout.getScene().getWindow()).show();
+                        musicsController.miniPlayer.close();
+                    }
+                    controller.setListener(null);
+                }
+            });
 
-                stage.setOnCloseRequest(e -> {
-                    controller.removeTrayIcon();
-                    controller.shutDown();
-                });
-                stage.setResizable(false);
-                stage.setScene(scene);
-                stage.getIcons().addAll(
-                        new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
-                        new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
-                        new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
-                );
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            stage.setOnCloseRequest(e -> {
+                controller.removeTrayIcon();
+                controller.shutDown();
+            });
+            stage.setResizable(false);
+            stage.setScene(scene);
+            stage.getIcons().addAll(
+                    new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
+                    new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
+                    new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+            );
+            stage.show();
         }
     }
 
     @FXML
-    public void downloadAction() {
-        try {
-            showDownloader();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void downloadAction() throws IOException {
+        showDownloader();
     }
 
     @FXML
@@ -229,7 +220,7 @@ public class HomeController implements Initializable {
         Stage stage = new Stage();
         stage.setTitle("About");
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("about.fxml"));
-        Scene scene = new Scene(loader.load() , 810 , 575);
+        Scene scene = new Scene(loader.load(), 810, 575);
         stage.setScene(scene);
         stage.getIcons().addAll(
                 new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
@@ -287,22 +278,4 @@ public class HomeController implements Initializable {
         );
         stage.show();
     }
-
-    private UserData raed() throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
-        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-        UserData data = (UserData) objectInputStream.readObject();
-        fileInputStream.close();
-        objectInputStream.close();
-        return data;
-    }
-
-    private void write(UserData data) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(System.getProperty("user.home") + File.separator + "Dream Music" + File.separator + "data.ser");
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(data);
-        fileOutputStream.close();
-        objectOutputStream.close();
-    }
-
 }
