@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderLayout" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.HomeController">
+<BorderPane fx:id="borderLayout" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.HomeController">
     <left>
         <VBox fx:id="items" prefHeight="444.0" prefWidth="137.0" spacing="4.0" BorderPane.alignment="CENTER">
             <children>

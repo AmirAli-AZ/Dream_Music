@@ -484,6 +484,7 @@ public class MusicsController implements Initializable {
 
         public MiniPlayer() {
             initStyle(StageStyle.UNDECORATED);
+            setTitle("Mini Player");
             setMinHeight(height);
             setMinWidth(width);
 

@@ -21,13 +21,13 @@ public class Home extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        stage.setTitle("Dream Music");
         stage.getIcons().addAll(
                 new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
                 new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),
                 new Image(Home.class.getResourceAsStream("icons/icon16x16.png"))
         );
         if (new File(UserDataManager.serFilePath).exists()){
-            stage.setTitle("Dream Music");
             FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
             Scene scene = new Scene(loader.load(), width , height);
             scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
@@ -46,7 +46,6 @@ public class Home extends Application {
         }
     }
     public void openFolderConfig(Stage stage , boolean openHome) throws IOException {
-        stage.setTitle("Folder Config");
         FXMLLoader loader = new FXMLLoader(Home.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
         scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
