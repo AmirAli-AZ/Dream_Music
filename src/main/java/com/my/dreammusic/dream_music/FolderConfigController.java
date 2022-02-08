@@ -11,6 +11,8 @@ import javafx.scene.control.TextField;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
@@ -74,7 +76,7 @@ public class FolderConfigController implements Initializable {
 
         manager = new UserDataManager();
 
-        if(SystemTray.isSupported()){
+        if (SystemTray.isSupported()) {
             tray = SystemTray.getSystemTray();
             java.awt.Image image = Toolkit.getDefaultToolkit().createImage(DownloaderUIController.class.getResource("icons/icon64x64.png"));
             trayIcon = new TrayIcon(image, "Dream Music");
@@ -97,34 +99,8 @@ public class FolderConfigController implements Initializable {
     }
 
     @FXML
-    public void createFolder() {
-        try {
-            boolean wrongPath = false;
-            if (!(path.getText().equals(musicFolder.getAbsolutePath()))) {
-                if (isValidPath(path.getText())) {
-                    musicFolder = new File(path.getText());
-                }else {
-                    path.setText(musicFolder.getAbsolutePath());
-                    showNotification("Invalid Path", "you typed a wrong path" , TrayIcon.MessageType.WARNING);
-                    wrongPath = true;
-                }
-            }
-            if (!wrongPath){
-                if (!musicFolder.exists()) {
-                    Files.createDirectories(Paths.get(musicFolder.getAbsolutePath()));
-                }
-                userData.setPath(musicFolder.getAbsolutePath());
-                manager.write(userData);
-                removeTrayIcon();
-                ((Stage)container.getScene().getWindow()).close();
-                openHome(openHome);
-                if (listener != null) {
-                    listener.onResult(Listener.OK);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void createFolder() throws IOException {
+        createNewData();
     }
 
     public String getUserPath() {
@@ -144,19 +120,19 @@ public class FolderConfigController implements Initializable {
     }
 
 
-    private boolean isValidPath(String path){
-        if (path.length() == 0){
+    private boolean isValidPath(String path) {
+        if (path.length() == 0) {
             return false;
         }
         try {
             Paths.get(path);
-        }catch (InvalidPathException | NullPointerException e){
+        } catch (InvalidPathException | NullPointerException e) {
             return false;
         }
         return true;
     }
 
-    private void openHome(boolean b) throws IOException{
+    private void openHome(boolean b) throws IOException {
         if (b) {
             Stage stage = new Stage();
             stage.setTitle("Dream Music");
@@ -187,15 +163,47 @@ public class FolderConfigController implements Initializable {
             try {
                 if (tray.getTrayIcons().length == 0) tray.add(trayIcon);
                 trayIcon.displayMessage(title, message, type);
-            }catch (AWTException e){
+            } catch (AWTException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void removeTrayIcon(){
-        if (SystemTray.isSupported() && tray.getTrayIcons().length > 0){
+    public void removeTrayIcon() {
+        if (SystemTray.isSupported() && tray.getTrayIcons().length > 0) {
             tray.remove(trayIcon);
+        }
+    }
+
+    public void pathKeyPressed(KeyEvent event) throws IOException {
+        if (event.getCode() == KeyCode.ENTER) {
+            createNewData();
+        }
+    }
+
+    private void createNewData() throws IOException {
+        boolean wrongPath = false;
+        if (!(path.getText().equals(musicFolder.getAbsolutePath()))) {
+            if (isValidPath(path.getText())) {
+                musicFolder = new File(path.getText());
+            } else {
+                path.setText(musicFolder.getAbsolutePath());
+                showNotification("Invalid Path", "you typed a wrong path", TrayIcon.MessageType.WARNING);
+                wrongPath = true;
+            }
+        }
+        if (!wrongPath) {
+            if (!musicFolder.exists()) {
+                Files.createDirectories(Paths.get(musicFolder.getAbsolutePath()));
+            }
+            userData.setPath(musicFolder.getAbsolutePath());
+            manager.write(userData);
+            removeTrayIcon();
+            ((Stage) container.getScene().getWindow()).close();
+            openHome(openHome);
+            if (listener != null) {
+                listener.onResult(Listener.OK);
+            }
         }
     }
 }

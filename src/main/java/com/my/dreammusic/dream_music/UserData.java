@@ -6,8 +6,9 @@ public class UserData implements Serializable {
     private String path;
     private int notSupportDarkCount;
 
-    public UserData(String path){
+    public UserData(String path , int notSupportDarkCount){
         this.path = path;
+        this.notSupportDarkCount = notSupportDarkCount;
     }
 
     public UserData(){}

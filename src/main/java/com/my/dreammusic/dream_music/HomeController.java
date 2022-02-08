@@ -19,7 +19,6 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -112,8 +111,7 @@ public class HomeController implements Initializable {
                     // handle listener
                     musicsController.refresh();
                 } else {
-                    Stage window = (Stage) borderLayout.getScene().getWindow();
-                    window.close();
+                    ((Stage)borderLayout.getScene().getWindow()).close();
                     try {
                         openFolderConfig(new Stage(), true);
                     } catch (IOException e) {
@@ -130,8 +128,7 @@ public class HomeController implements Initializable {
                         } else {
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
-                            Stage window = (Stage) borderLayout.getScene().getWindow();
-                            window.close();
+                            ((Stage)borderLayout.getScene().getWindow()).close();
                             try {
                                 openFolderConfig(new Stage(), true);
                             } catch (IOException e) {
@@ -173,7 +170,7 @@ public class HomeController implements Initializable {
                     musicsController.songBarVisibility(false);
                     musicsController.loadFolder();
                     musicsController.refresh();
-                    if (musicsController.miniPlayer != null && musicsController.miniPlayer.isShowing()) {
+                    if (musicsController.miniPlayer != null && musicsController.isMiniPlayerOpen) {
                         ((Stage) borderLayout.getScene().getWindow()).show();
                         musicsController.miniPlayer.close();
                     }
@@ -203,10 +200,9 @@ public class HomeController implements Initializable {
 
     @FXML
     public void miniPlayerAction() {
-        if (musicsController != null && musicsController.isPlaying || Objects.requireNonNull(musicsController).songBar.isVisible()) {
+        if (musicsController != null && musicsController.isPlaying || musicsController.songBar.isVisible()) {
             musicsController.createMiniPlayer();
-            Stage stage = (Stage) borderLayout.getScene().getWindow();
-            stage.hide();
+            borderLayout.getScene().getWindow().hide();
         }
     }
 

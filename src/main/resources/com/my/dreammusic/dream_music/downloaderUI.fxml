@@ -12,7 +12,7 @@
 
 <AnchorPane fx:id="container" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.DownloaderUIController">
    <children>
-      <TextField fx:id="urlInput" layoutX="14.0" layoutY="14.0"  onDragDropped="#handleDragDropped" onDragOver="#handleDragOver" promptText="URL" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <TextField fx:id="urlInput" layoutX="14.0" layoutY="14.0" onDragDropped="#handleDragDropped" onDragOver="#handleDragOver" onKeyPressed="#urlInputKeyPressed" promptText="URL" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
       <HBox fx:id="hbox1" layoutX="10.0" layoutY="48.0" prefHeight="100.0" prefWidth="200.0" spacing="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <ProgressBar fx:id="progress" prefHeight="18.0" prefWidth="541.0" progress="0.0" HBox.hgrow="ALWAYS" />

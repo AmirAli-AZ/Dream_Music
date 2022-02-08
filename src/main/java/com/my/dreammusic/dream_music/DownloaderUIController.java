@@ -86,49 +86,7 @@ public class DownloaderUIController implements Initializable {
 
     @FXML
     public void downloadClick() {
-        String url = urlInput.getText();
-        if (isURLSupport(url)) {
-            if (userData == null || !new File(userData.getPath()).exists()){
-                DirectoryChooser chooser = new DirectoryChooser();
-                chooser.setTitle("Pick Download Location");
-                chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-                File file = chooser.showDialog(container.getScene().getWindow());
-                if (file != null) userData = new UserData(file.getAbsolutePath());
-                else return;
-            }
-            hbox1.setVisible(true);
-            downloadButton.setDisable(true);
-            downloader = new Downloader(new Downloader.DownloaderListener() {
-                @Override
-                public void onProgress(int progress) {
-                    Platform.runLater(() -> {
-                        percentage.setText(progress + "%");
-                    });
-                }
-
-                @Override
-                public void onFailed() {
-                    downloadButton.setDisable(false);
-                    hbox1.setVisible(false);
-                    showNotification("Download Failed", "Music Download Failed", TrayIcon.MessageType.ERROR);
-                }
-
-                @Override
-                public void onCompleted() {
-                    hbox1.setVisible(false);
-                    downloadButton.setDisable(false);
-                    showNotification("Download Completed", "Music Downloaded", TrayIcon.MessageType.INFO);
-                }
-            });
-            downloader.setDownloadPath(new File(userData.getPath()));
-            downloader.setFileURL(url);
-            progress.progressProperty().bind(downloader.progressProperty());
-            thread = new Thread(downloader);
-            thread.setDaemon(true);
-            thread.start();
-        } else {
-            showNotification("Invalid data", "Please enter valid URL or mp3 / wav expansion" , TrayIcon.MessageType.WARNING);
-        }
+        download(urlInput.getText());
     }
 
     public boolean isURLSupport(String s) {
@@ -174,6 +132,61 @@ public class DownloaderUIController implements Initializable {
     public void removeTrayIcon(){
         if (SystemTray.isSupported() && tray.getTrayIcons().length > 0){
             tray.remove(trayIcon);
+        }
+    }
+
+    @FXML
+    public void urlInputKeyPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            download(event.getText());
+        }
+    }
+
+    private void download(String url){
+        if (isURLSupport(url)) {
+            if (userData == null || !new File(userData.getPath()).exists()){
+                DirectoryChooser chooser = new DirectoryChooser();
+                chooser.setTitle("Pick Download Location");
+                chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+                File file = chooser.showDialog(container.getScene().getWindow());
+                if (file != null){
+                    userData = new UserData();
+                    userData.setPath(file.getAbsolutePath());
+                }
+                else return;
+            }
+            hbox1.setVisible(true);
+            downloadButton.setDisable(true);
+            downloader = new Downloader(new Downloader.DownloaderListener() {
+                @Override
+                public void onProgress(int progress) {
+                    Platform.runLater(() -> {
+                        percentage.setText(progress + "%");
+                    });
+                }
+
+                @Override
+                public void onFailed() {
+                    downloadButton.setDisable(false);
+                    hbox1.setVisible(false);
+                    showNotification("Download Failed", "Music Download Failed", TrayIcon.MessageType.ERROR);
+                }
+
+                @Override
+                public void onCompleted() {
+                    hbox1.setVisible(false);
+                    downloadButton.setDisable(false);
+                    showNotification("Download Completed", "Music Downloaded", TrayIcon.MessageType.INFO);
+                }
+            });
+            downloader.setDownloadPath(new File(userData.getPath()));
+            downloader.setFileURL(url);
+            progress.progressProperty().bind(downloader.progressProperty());
+            thread = new Thread(downloader);
+            thread.setDaemon(true);
+            thread.start();
+        } else {
+            showNotification("Invalid data", "Please enter valid URL or mp3 / wav expansion" , TrayIcon.MessageType.WARNING);
         }
     }
 }

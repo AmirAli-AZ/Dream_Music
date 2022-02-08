@@ -27,12 +27,10 @@ public class UserDataManager {
     }
 
     public UserData read(){
-        UserData data = null;
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(serFilePath))) {
-            data = (UserData) ois.readObject();
+            return (UserData) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            return null;
         }
-        return data;
     }
 }

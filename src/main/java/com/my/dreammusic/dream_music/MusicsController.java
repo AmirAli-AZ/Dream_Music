@@ -4,6 +4,8 @@ import com.my.dreammusic.dream_music.utils.NumericField;
 import javafx.animation.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -65,7 +67,9 @@ public class MusicsController implements Initializable {
     public ImageView moreOption;
 
     protected MediaPlayer mediaPlayer;
+    protected MiniPlayer miniPlayer;
     public boolean isPlaying;
+    public boolean isMiniPlayerOpen;
     private boolean isChanging;
     private boolean repeatMode;
     private final Object object = new Object();
@@ -81,12 +85,13 @@ public class MusicsController implements Initializable {
     private final ContextMenu menu = new ContextMenu();
     private final NumericField numericField = new NumericField();
 
-    public MiniPlayer miniPlayer;
+    private final StringProperty currentTimeProperty = new SimpleStringProperty("0:00:00");
+    private final StringProperty totalTimeProperty = new SimpleStringProperty("0:00:00");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        loadFolder();
         songBarVisibility(false);
+        loadFolder();
         getSongList();
         list.setCellFactory(song -> {
             SongListCell songListCell = new SongListCell();
@@ -121,8 +126,9 @@ public class MusicsController implements Initializable {
         timeline.play();
 
         progress.valueProperty().addListener((observableValue, number, t1) -> {
-            if (mediaPlayer != null && isChanging)
-                currentTime.setText(calculateTime(Duration.seconds(t1.doubleValue())));
+            if (mediaPlayer != null && isChanging) {
+                currentTimeProperty.set(calculateTime(Duration.seconds(t1.doubleValue())));
+            }
         });
 
         volume.valueProperty().addListener((observableValue, number, t1) -> {
@@ -131,25 +137,24 @@ public class MusicsController implements Initializable {
                 long value = t1.longValue();
                 if (value == 0) {
                     img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
+                } else if (value > 50) {
+                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
                 } else {
-                    if (value > 50) {
-                        img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
-                    } else {
-                        img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
-                    }
+                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
                 }
             }
         });
+        totalTime.textProperty().bind(totalTimeProperty);
+        currentTime.textProperty().bind(currentTimeProperty);
         createMenu();
     }
 
     public void listClick(MouseEvent mouseEvent) {
+        // get selected item
         Song info = list.getSelectionModel().getSelectedItem();
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            if (!isPlaying) {
-                MediaPlayer(info.getMedia());
-            }
-            //list.getSelectionModel().clearSelection();
+            if (!isPlaying) createMediaPlayer(info.getMedia());
+            // list.getSelectionModel().clearSelection();
         } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
             if (mediaPlayer != null) {
                 int clickedPosition = list.getSelectionModel().getSelectedIndex();
@@ -186,14 +191,14 @@ public class MusicsController implements Initializable {
 
     @FXML
     public void rewindClick(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == MouseButton.PRIMARY){
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             rewindMedia();
         }
     }
 
     @FXML
     public void forwardClick(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == MouseButton.PRIMARY){
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             forwardMedia();
         }
     }
@@ -333,11 +338,9 @@ public class MusicsController implements Initializable {
 
     @FXML
     public void moreOptionClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            if (!menu.isShowing()) {
-                menu.show(moreOption, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-                numericField.setValue((int) rateSlider.getValue());
-            }
+        if (mouseEvent.getButton() == MouseButton.PRIMARY && !menu.isShowing()) {
+            menu.show(moreOption, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            numericField.setValue((int) rateSlider.getValue());
         }
     }
 
@@ -402,8 +405,8 @@ public class MusicsController implements Initializable {
 
         SeparatorMenuItem separator = new SeparatorMenuItem();
         MenuItem exit = new MenuItem("Exit");
-        exit.setOnAction(e ->{
-            if (mediaPlayer != null){
+        exit.setOnAction(e -> {
+            if (mediaPlayer != null) {
                 mediaPlayer.stop();
                 isPlaying = false;
                 songBarVisibility(false);
@@ -411,49 +414,45 @@ public class MusicsController implements Initializable {
             }
         });
 
-        menu.getItems().addAll(rate, randomPlayer , separator ,  exit);
+        menu.getItems().addAll(rate, randomPlayer, separator, exit);
     }
 
-    public void MediaPlayer(Media media) {
+    public void createMediaPlayer(Media media) {
         songPosition = list.getSelectionModel().getSelectedIndex();
         if (!songBar.isVisible()) songBarVisibility(true);
         mediaPlayer = new MediaPlayer(media);
 
         mediaPlayer.setOnReady(() -> {
-            totalTime.setText(calculateTime(mediaPlayer.getMedia().getDuration()));
+            totalTimeProperty.set(calculateTime(mediaPlayer.getMedia().getDuration()));
             progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
             play.setImage(pauseImage);
             mediaPlayer.setRate(rateSlider.getValue() * 0.01);
-            mediaPlayer.play();
-            isPlaying = true;
+            playMedia();
         });
 
         mediaPlayer.setOnEndOfMedia(() -> {
             if (!repeatMode) {
-                if (!isChanging) {
-                    if (!isRandomPlayer) {
-                        if (miniPlayer != null && miniPlayer.isShowing()){
-                            mediaPlayer.seek(Duration.ZERO);
-                            pauseMedia();
-                            currentTime.setText("0:00:00");
-                            play.setImage(playImage);
-                            miniPlayer.setImage(playImage);
-                            progress.setValue(0);
-                        }else {
-                            isPlaying = false;
-                            play.setImage(playImage);
-                            songBarVisibility(false);
-                            list.getSelectionModel().clearSelection();
-                        }
+                if (!isRandomPlayer && !isChanging) {
+                    if (isMiniPlayerOpen) {
+                        mediaPlayer.seek(Duration.ZERO);
+                        pauseMedia();
+                        currentTimeProperty.set("0:00:00");
+                        play.setImage(playImage);
+                        progress.setValue(0);
                     } else {
                         isPlaying = false;
-                        int randomPosition = pickRandom(0, list.getItems().size() - 1);
-                        list.getSelectionModel().select(randomPosition);
-                        if (miniPlayer != null && miniPlayer.isShowing()) {
-                            miniPlayer.setMediaTitle(list.getItems().get(randomPosition).getTitle());
-                        }
-                        MediaPlayer(list.getItems().get(randomPosition).getMedia());
+                        play.setImage(playImage);
+                        songBarVisibility(false);
+                        list.getSelectionModel().clearSelection();
                     }
+                } else {
+                    isPlaying = false;
+                    int randomPosition = pickRandom(0, list.getItems().size() - 1);
+                    list.getSelectionModel().select(randomPosition);
+                    if (isMiniPlayerOpen) {
+                        miniPlayer.setMediaTitle(list.getItems().get(randomPosition).getTitle());
+                    }
+                    createMediaPlayer(list.getItems().get(randomPosition).getMedia());
                 }
             } else {
                 if (!isChanging && !isRandomPlayer) mediaPlayer.seek(Duration.ZERO);
@@ -462,7 +461,8 @@ public class MusicsController implements Initializable {
 
         mediaPlayer.currentTimeProperty().addListener((observableValue, duration, t1) -> {
             if (!isChanging) {
-                currentTime.setText(calculateTime(t1));
+                //currentTime.setText(calculateTime(t1));
+                currentTimeProperty.set(calculateTime(t1));
                 progress.setValue(t1.toSeconds());
             }
         });
@@ -479,8 +479,8 @@ public class MusicsController implements Initializable {
         private static final double height = 200, width = 400;
         private final BorderPane root = new BorderPane();
         private final Label mediaName = new Label();
-        private final ImageView play2 = new ImageView();
-        private double xOffset , yOffset;
+        public final ImageView play2 = new ImageView();
+        private double xOffset, yOffset;
 
         public MiniPlayer() {
             initStyle(StageStyle.UNDECORATED);
@@ -489,20 +489,19 @@ public class MusicsController implements Initializable {
             setMinWidth(width);
 
             mediaName.setMaxWidth(Double.MAX_VALUE);
-            HBox.setHgrow(mediaName , Priority.ALWAYS);
-            mediaName.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 16));
-            mediaName.setStyle("-fx-text-fill : white;");
+            HBox.setHgrow(mediaName, Priority.ALWAYS);
+            mediaName.setStyle("-fx-text-fill : white; -fx-font-weight : bold; -fx-font-size : 16px;");
 
-            Label totalTime2 = new Label("0:00:00");
+            Label totalTime2 = new Label();
+            totalTime2.textProperty().bind(totalTimeProperty);
             totalTime2.setStyle("-fx-text-fill : white;");
-            totalTime2.textProperty().bind(totalTime.textProperty());
 
-            Label currentTime2 = new Label("0:00:00");
-            currentTime2.textProperty().bind(currentTime.textProperty());
+            Label currentTime2 = new Label();
+            currentTime2.textProperty().bind(currentTimeProperty);
             currentTime2.setStyle("-fx-text-fill : white;");
 
-            play2.setPickOnBounds(true);
             play2.setImage(isPlaying ? pauseImage : playImage);
+            play2.setPickOnBounds(true);
             play2.setFitWidth(35);
             play2.setFitHeight(35);
             play2.setOnMouseClicked(e -> {
@@ -527,7 +526,7 @@ public class MusicsController implements Initializable {
             forwardButton.setPickOnBounds(true);
             forwardButton.setFitHeight(35);
             forwardButton.setFitWidth(35);
-            forwardButton.setOnMouseClicked(e ->{
+            forwardButton.setOnMouseClicked(e -> {
                 if (e.getButton() == MouseButton.PRIMARY) {
                     forwardMedia();
                     if (play2.getImage().equals(playImage)) play2.setImage(pauseImage);
@@ -538,7 +537,7 @@ public class MusicsController implements Initializable {
             rewindButton.setPickOnBounds(true);
             rewindButton.setFitHeight(35);
             rewindButton.setFitWidth(35);
-            rewindButton.setOnMouseClicked(e ->{
+            rewindButton.setOnMouseClicked(e -> {
                 if (e.getButton() == MouseButton.PRIMARY) {
                     rewindMedia();
                     if (play2.getImage().equals(playImage)) play2.setImage(pauseImage);
@@ -549,32 +548,33 @@ public class MusicsController implements Initializable {
             close.setPickOnBounds(true);
             close.setFitHeight(24);
             close.setFitWidth(24);
-            close.setOnMouseClicked(e ->{
+            close.setOnMouseClicked(e -> {
                 getMainStage().show();
+                isMiniPlayerOpen = false;
                 close();
             });
 
             HBox controller = new HBox(3);
             controller.setPadding(new Insets(10, 10, 10, 10));
             controller.setAlignment(Pos.CENTER);
-            controller.getChildren().addAll(currentTime2 , rewindButton, play2 , forwardButton, totalTime2);
+            controller.getChildren().addAll(currentTime2, rewindButton, play2, forwardButton, totalTime2);
 
             root.getStyleClass().add("animated-gradient");
             root.setPadding(new Insets(6, 6, 6, 6));
 
             HBox top = new HBox(5);
-            top.setOnMousePressed(e ->{
+            top.setOnMousePressed(e -> {
                 xOffset = getX() - e.getScreenX();
                 yOffset = getY() - e.getScreenY();
             });
 
-            top.setOnMouseDragged(e ->{
+            top.setOnMouseDragged(e -> {
                 setX(e.getScreenX() + xOffset);
                 setY(e.getScreenY() + yOffset);
             });
 
             top.setAlignment(Pos.CENTER_LEFT);
-            top.getChildren().addAll(mediaName , close);
+            top.getChildren().addAll(mediaName, close);
 
             root.setTop(top);
             root.setCenter(controller);
@@ -590,9 +590,12 @@ public class MusicsController implements Initializable {
                     new Image(getClass().getResourceAsStream("icons/icon32x32.png")),
                     new Image(getClass().getResourceAsStream("icons/icon16x16.png"))
             );
-            setOnCloseRequest(e ->{
+            setOnCloseRequest(e -> {
                 getMainStage().show();
-                close();
+                isMiniPlayerOpen = false;
+            });
+            iconifiedProperty().addListener((observableValue, aBoolean, t1) -> {
+                if (!t1) play2.setImage(isPlaying ? pauseImage : playImage);
             });
             setAnimation();
         }
@@ -620,75 +623,72 @@ public class MusicsController implements Initializable {
             timeline.play();
         }
 
-        public void setMediaTitle(String s){
+        public void setMediaTitle(String s) {
             mediaName.setText(s);
-        }
-
-        public void setImage(Image img){
-            play2.setImage(img);
         }
     }
 
-    public void createMiniPlayer(){
+    public void createMiniPlayer() {
         miniPlayer = new MiniPlayer();
         miniPlayer.setMediaTitle(list.getItems().get(songPosition).getTitle());
         miniPlayer.show();
+        isMiniPlayerOpen = true;
     }
 
-    public void setMainStage(Stage mainStage){
+    public void setMainStage(Stage mainStage) {
         this.mainStage = mainStage;
     }
 
-    public Stage getMainStage(){
+    public Stage getMainStage() {
         return mainStage;
     }
 
-    public void forwardMedia(){
+    public void forwardMedia() {
         if (mediaPlayer != null) {
             int index = songPosition;
             int size = list.getItems().size();
-            if (size >= 2){
+            if (size >= 2) {
                 mediaPlayer.stop();
-                if (index == size - 1){
+                if (index == size - 1) {
                     index = 0;
                     list.getSelectionModel().select(index);
-                    MediaPlayer(list.getItems().get(index).getMedia());
-                    if (miniPlayer != null && miniPlayer.isShowing()){
+                    createMediaPlayer(list.getItems().get(index).getMedia());
+                    if (isMiniPlayerOpen) {
                         miniPlayer.setMediaTitle(list.getItems().get(index).getTitle());
                     }
-                }else {
+                } else {
                     list.getSelectionModel().select(index + 1);
-                    MediaPlayer(list.getItems().get(index + 1).getMedia());
-                    if (miniPlayer != null && miniPlayer.isShowing()){
+                    createMediaPlayer(list.getItems().get(index + 1).getMedia());
+                    if (isMiniPlayerOpen) {
                         miniPlayer.setMediaTitle(list.getItems().get(index + 1).getTitle());
                     }
                 }
-            }else {
+            } else {
                 mediaPlayer.seek(mediaPlayer.getMedia().getDuration());
             }
         }
     }
 
-    public void rewindMedia(){
+    public void rewindMedia() {
         if (mediaPlayer != null) {
             int index = songPosition;
             int size = list.getItems().size();
-            if (size >= 2){
+            if (size >= 2) {
                 mediaPlayer.stop();
-                if (index == 0){
+                if (index == 0) {
                     list.getSelectionModel().select(size - 1);
-                    MediaPlayer(list.getItems().get(size - 1).getMedia());
-                    if (miniPlayer != null && miniPlayer.isShowing()){
+                    createMediaPlayer(list.getItems().get(size - 1).getMedia());
+                    if (isMiniPlayerOpen) {
                         miniPlayer.setMediaTitle(list.getItems().get(size - 1).getTitle());
                     }
-                }else {
+                } else {
                     list.getSelectionModel().select(index - 1);
-                    MediaPlayer(list.getItems().get(index - 1).getMedia());
-                    if (miniPlayer != null && miniPlayer.isShowing()){
+                    createMediaPlayer(list.getItems().get(index - 1).getMedia());
+                    if (isMiniPlayerOpen) {
                         miniPlayer.setMediaTitle(list.getItems().get(index - 1).getTitle());
                     }
                 }
-            }else {
+            } else {
                 mediaPlayer.seek(Duration.ZERO);
             }
         }
