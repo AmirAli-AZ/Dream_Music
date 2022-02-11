@@ -1,6 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.my.dreammusic.dream_music.utils.NumericField;
+import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.animation.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,14 +17,13 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -254,10 +254,6 @@ public class MusicsController implements Initializable {
         });
     }
 
-    public String getUserPath() {
-        return System.getProperty("user.home");
-    }
-
     public void getSongList() {
         try {
             list.getItems().clear();
@@ -344,6 +340,17 @@ public class MusicsController implements Initializable {
         }
     }
 
+    @FXML
+    public void listKeyPressed(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.UP) {
+            if (songBar.isVisible())
+                rewindMedia();
+        } else {
+            if (songBar.isVisible())
+                forwardMedia();
+        }
+    }
+
     private void createMenu() {
         Menu rate = new Menu("Rate");
         rateSlider.setMin(25);
@@ -427,7 +434,8 @@ public class MusicsController implements Initializable {
             progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
             play.setImage(pauseImage);
             mediaPlayer.setRate(rateSlider.getValue() * 0.01);
-            playMedia();
+            mediaPlayer.play();
+            isPlaying = true;
         });
 
         mediaPlayer.setOnEndOfMedia(() -> {
@@ -461,7 +469,6 @@ public class MusicsController implements Initializable {
 
         mediaPlayer.currentTimeProperty().addListener((observableValue, duration, t1) -> {
             if (!isChanging) {
-                //currentTime.setText(calculateTime(t1));
                 currentTimeProperty.set(calculateTime(t1));
                 progress.setValue(t1.toSeconds());
             }
@@ -479,7 +486,7 @@ public class MusicsController implements Initializable {
         private static final double height = 200, width = 400;
         private final BorderPane root = new BorderPane();
         private final Label mediaName = new Label();
-        public final ImageView play2 = new ImageView();
+        private final ImageView play2 = new ImageView();
         private double xOffset, yOffset;
 
         public MiniPlayer() {
@@ -651,7 +658,7 @@ public class MusicsController implements Initializable {
                 mediaPlayer.stop();
                 if (index == size - 1) {
                     index = 0;
-                    list.getSelectionModel().select(index);
+                    list.getSelectionModel().selectFirst();
                     createMediaPlayer(list.getItems().get(index).getMedia());
                     if (isMiniPlayerOpen) {
                         miniPlayer.setMediaTitle(list.getItems().get(index).getTitle());
@@ -676,7 +683,7 @@ public class MusicsController implements Initializable {
             if (size >= 2) {
                 mediaPlayer.stop();
                 if (index == 0) {
-                    list.getSelectionModel().select(size - 1);
+                    list.getSelectionModel().selectLast();
                     createMediaPlayer(list.getItems().get(size - 1).getMedia());
                     if (isMiniPlayerOpen) {
                         miniPlayer.setMediaTitle(list.getItems().get(size - 1).getTitle());

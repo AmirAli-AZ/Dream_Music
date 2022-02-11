@@ -1,6 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
+import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -44,7 +45,6 @@ public class FolderConfigController implements Initializable {
     private Listener listener;
     private SystemTray tray;
     private TrayIcon trayIcon;
-    private UserDataManager manager;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -73,8 +73,6 @@ public class FolderConfigController implements Initializable {
         String s = getUserPath() + File.separator + "Music";
         path.setText(s);
         musicFolder = new File(s);
-
-        manager = new UserDataManager();
 
         if (SystemTray.isSupported()) {
             tray = SystemTray.getSystemTray();
@@ -138,13 +136,12 @@ public class FolderConfigController implements Initializable {
             stage.setTitle("Dream Music");
 
             FXMLLoader loader = new FXMLLoader(FolderConfigController.class.getResource("home.fxml"));
-            Scene scene = new Scene(loader.load(), Home.width, Home.height);
+            Scene scene = new Scene(loader.load(), Home.getMinWidth(), Home.getMinHeight());
             scene.getStylesheets().add(FolderConfigController.class.getResource("Themes/light-theme.css").toExternalForm());
 
-            stage.setMinWidth(Home.width);
-            stage.setMinHeight(Home.height);
             stage.setScene(scene);
-
+            stage.setMinHeight(Home.getMinHeight());
+            stage.setMinWidth(Home.getMinWidth());
             stage.setOnCloseRequest(e -> {
                 Platform.exit();
                 System.exit(0);
@@ -193,17 +190,16 @@ public class FolderConfigController implements Initializable {
             }
         }
         if (!wrongPath) {
-            if (!musicFolder.exists()) {
+            UserDataManager manager = new UserDataManager();
+            if (!musicFolder.exists())
                 Files.createDirectories(Paths.get(musicFolder.getAbsolutePath()));
-            }
             userData.setPath(musicFolder.getAbsolutePath());
             manager.write(userData);
             removeTrayIcon();
             ((Stage) container.getScene().getWindow()).close();
             openHome(openHome);
-            if (listener != null) {
+            if (listener != null)
                 listener.onResult(Listener.OK);
-            }
         }
     }
 }

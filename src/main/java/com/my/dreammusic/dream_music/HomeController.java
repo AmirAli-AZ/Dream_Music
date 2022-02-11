@@ -1,6 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
+import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -94,7 +95,7 @@ public class HomeController implements Initializable {
     public void musics(MouseEvent mouseEvent) {
         if (musicsController != null && mouseEvent.getButton() == MouseButton.PRIMARY) {
             if (!musicsController.isPlaying) {
-                if (new File(UserDataManager.serFilePath).exists()) {
+                if (new File(UserDataManager.getSerFilePath()).exists()) {
                 /*
                 this listener check , if media player listeners is running or no with 0 and 1
                  */
@@ -121,7 +122,7 @@ public class HomeController implements Initializable {
             } else {
                 Dialog dialog = new Dialog(result -> {
                     if (result == Listener.OK) {
-                        if (new File(UserDataManager.folderPath).exists()) {
+                        if (new File(UserDataManager.getSerFilePath()).exists()) {
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
                             musicsController.refresh();
