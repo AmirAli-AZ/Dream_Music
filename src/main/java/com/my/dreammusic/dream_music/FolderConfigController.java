@@ -48,7 +48,6 @@ public class FolderConfigController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println(20/0);
         if (OsThemeDetector.isSupported()) {
             String light = FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
             String dark = FolderConfigController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
