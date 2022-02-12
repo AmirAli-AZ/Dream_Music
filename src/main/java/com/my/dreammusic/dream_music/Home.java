@@ -21,6 +21,7 @@ public class Home extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
         stage.setTitle("Dream Music");
         stage.getIcons().addAll(
                 new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),

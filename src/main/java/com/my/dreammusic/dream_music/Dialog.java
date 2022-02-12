@@ -6,7 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 public class Dialog {
 
-    private Listener listener;
+    private final Listener listener;
     private boolean cancelButton = false;
     private String title , message , btnCancelText = "Cancel" , btnOkText = "OK";
     private Image image;
@@ -67,7 +67,7 @@ public class Dialog {
         vBox.setAlignment(Pos.CENTER);
         HBox buttons = new HBox(10);
         buttons.setAlignment(Pos.CENTER_RIGHT);
-        buttons.setPadding(new Insets(5 , 5, 5, 5));
+        buttons.setPadding(new Insets(5));
 
         if (cancelButton){
             Button cancel = new Button(btnCancelText);
@@ -96,6 +96,7 @@ public class Dialog {
         imageView.setFitHeight(60);
         imageView.setFitWidth(60);
         Label text = new Label(message);
+        text.setWrapText(true);
         text.getStyleClass().add("message");
         vBox.getChildren().addAll(imageView , text);
 

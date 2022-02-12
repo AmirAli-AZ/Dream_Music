@@ -60,7 +60,6 @@ public class FolderConfigController implements Initializable {
                         img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_white.png")));
                     } else {
                         container.getScene().getStylesheets().set(0, light);
-
                         img_folderPicker.setImage(new Image(FolderConfigController.class.getResourceAsStream("icons/baseline_folder_black.png")));
                     }
                 });
