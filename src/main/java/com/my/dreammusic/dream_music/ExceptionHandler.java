@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         TextFlow textFlow = new TextFlow(text1 , link);
         HBox.setHgrow(textFlow , Priority.ALWAYS);
         textFlow.setMaxWidth(Double.MAX_VALUE);
-        ImageView icon = new ImageView(new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error.png")));
+        ImageView icon = new ImageView(new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error64x64.png")));
         icon.setFitWidth(50);
         icon.setFitHeight(50);
         header.getChildren().addAll(textFlow , icon);
@@ -75,6 +76,12 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         content.getChildren().add(errorDetails);
 
         dialogPane.setExpandableContent(content);
+        Stage stage = (Stage)dialogPane.getScene().getWindow();
+        stage.getIcons().addAll(
+                new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error64x64.png")),
+                new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error32x32.png")),
+                new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error16x16.png"))
+        );
         dialog.showAndWait();
     }
 }

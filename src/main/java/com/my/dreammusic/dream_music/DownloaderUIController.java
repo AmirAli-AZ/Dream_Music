@@ -54,15 +54,13 @@ public class DownloaderUIController implements Initializable {
             String light = DownloaderUIController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
             String dark = DownloaderUIController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
             final OsThemeDetector detector = OsThemeDetector.getDetector();
-            Consumer<Boolean> darkThemeListener = isDark -> {
-                Platform.runLater(() -> {
-                    if (isDark) {
-                        container.getScene().getStylesheets().set(0, dark);
-                    } else {
-                        container.getScene().getStylesheets().set(0, light);
-                    }
-                });
-            };
+            Consumer<Boolean> darkThemeListener = isDark -> Platform.runLater(() -> {
+                if (isDark) {
+                    container.getScene().getStylesheets().set(0, dark);
+                } else {
+                    container.getScene().getStylesheets().set(0, light);
+                }
+            });
             darkThemeListener.accept(detector.isDark());
             detector.registerListener(darkThemeListener);
         }

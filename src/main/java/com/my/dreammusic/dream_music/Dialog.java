@@ -112,15 +112,13 @@ public class Dialog {
             scene.getStylesheets().add(light);
 
             final OsThemeDetector detector = OsThemeDetector.getDetector();
-            Consumer<Boolean> darkThemeListener = isDark -> {
-                Platform.runLater(() -> {
-                    if (isDark) {
-                        scene.getStylesheets().set(0, dark);
-                    } else {
-                        scene.getStylesheets().set(0, light);
-                    }
-                });
-            };
+            Consumer<Boolean> darkThemeListener = isDark -> Platform.runLater(() -> {
+                if (isDark) {
+                    scene.getStylesheets().set(0, dark);
+                } else {
+                    scene.getStylesheets().set(0, light);
+                }
+            });
             darkThemeListener.accept(detector.isDark());
             detector.registerListener(darkThemeListener);
         }

@@ -44,17 +44,15 @@ public class HomeController implements Initializable {
             String light = HomeController.class.getResource("Themes/light-theme.css").toExternalForm();
             String dark = HomeController.class.getResource("Themes/dark-theme.css").toExternalForm();
             final OsThemeDetector detector = OsThemeDetector.getDetector();
-            Consumer<Boolean> darkThemeListener = isDark -> {
-                Platform.runLater(() -> {
-                    if (isDark) {
-                        borderLayout.getScene().getStylesheets().set(0, dark);
-                        img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
-                    } else {
-                        borderLayout.getScene().getStylesheets().set(0, light);
-                        img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
-                    }
-                });
-            };
+            Consumer<Boolean> darkThemeListener = isDark -> Platform.runLater(() -> {
+                if (isDark) {
+                    borderLayout.getScene().getStylesheets().set(0, dark);
+                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
+                } else {
+                    borderLayout.getScene().getStylesheets().set(0, light);
+                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
+                }
+            });
             darkThemeListener.accept(detector.isDark());
             detector.registerListener(darkThemeListener);
         }
