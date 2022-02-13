@@ -1,6 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
+import com.my.dreammusic.dream_music.logging.Logger;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -37,18 +38,27 @@ public class HomeController implements Initializable {
     private HBox tab_musics;
 
     private MusicsController musicsController;
+    private static final Logger logger = Logger.getLogger(HomeController.class);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            logger.setWriter(UserDataManager.getLogsPath() + File.separator + logger.getName() + ".log" , true);
+        } catch (IOException e) {
+            logger.error(e);
+        }
+        logger.info("Home initialize");
         if (OsThemeDetector.isSupported()) {
             String light = HomeController.class.getResource("Themes/light-theme.css").toExternalForm();
             String dark = HomeController.class.getResource("Themes/dark-theme.css").toExternalForm();
             final OsThemeDetector detector = OsThemeDetector.getDetector();
             Consumer<Boolean> darkThemeListener = isDark -> Platform.runLater(() -> {
                 if (isDark) {
+                    logger.info("theme changed to dark");
                     borderLayout.getScene().getStylesheets().set(0, dark);
                     img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
                 } else {
+                    logger.info("theme changed to light");
                     borderLayout.getScene().getStylesheets().set(0, light);
                     img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
                 }
@@ -82,9 +92,10 @@ public class HomeController implements Initializable {
                         data.setNotSupportDarkCount(1);
                         manager.write(data);
                     }
+                    logger.warn("theme not supported");
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e);
             }
         });
     }
@@ -102,6 +113,7 @@ public class HomeController implements Initializable {
                             tab_musics.setDisable(false);
                             // disable listener
                             musicsController.setListener(null);
+                            logger.info("musics refreshed");
                         } else {
                             tab_musics.setDisable(true);
                         }
@@ -114,7 +126,7 @@ public class HomeController implements Initializable {
                     try {
                         openFolderConfig(new Stage(), true);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error(e);
                     }
                 }
             } else {
@@ -124,6 +136,7 @@ public class HomeController implements Initializable {
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
                             musicsController.refresh();
+                            logger.info("musics refreshed");
                         } else {
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
@@ -131,7 +144,7 @@ public class HomeController implements Initializable {
                             try {
                                 openFolderConfig(new Stage(), true);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                logger.error(e);
                             }
                         }
                     }

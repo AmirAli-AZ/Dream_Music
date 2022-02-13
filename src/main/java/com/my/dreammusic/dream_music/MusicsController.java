@@ -1,5 +1,6 @@
 package com.my.dreammusic.dream_music;
 
+import com.my.dreammusic.dream_music.logging.Logger;
 import com.my.dreammusic.dream_music.utils.NumericField;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.animation.*;
@@ -88,8 +89,16 @@ public class MusicsController implements Initializable {
     private final StringProperty currentTimeProperty = new SimpleStringProperty("0:00:00");
     private final StringProperty totalTimeProperty = new SimpleStringProperty("0:00:00");
 
+    private static final Logger logger = Logger.getLogger(MusicsController.class);
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            logger.setWriter(UserDataManager.getLogsPath() + File.separator + logger.getName() + ".log" , true);
+        } catch (IOException e) {
+            logger.error(e);
+        }
+        logger.info("Music Controller initialize");
         songBarVisibility(false);
         loadFolder();
         getSongList();
@@ -233,7 +242,7 @@ public class MusicsController implements Initializable {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             song.setDate(dateFormat.format(fileTime.toMillis()));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         mp.setOnReady(() -> {

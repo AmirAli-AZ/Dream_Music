@@ -1,6 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
+import com.my.dreammusic.dream_music.logging.Logger;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -46,8 +47,16 @@ public class FolderConfigController implements Initializable {
     private SystemTray tray;
     private TrayIcon trayIcon;
 
+    private static final Logger logger = Logger.getLogger(FolderConfigController.class);
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            logger.setWriter(UserDataManager.getLogsPath() + File.separator + logger.getName() + ".log" , true);
+        } catch (IOException ex) {
+            logger.error(ex);
+        }
+        logger.info("Folder Config initialize");
         if (OsThemeDetector.isSupported()) {
             String light = FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
             String dark = FolderConfigController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
@@ -79,6 +88,7 @@ public class FolderConfigController implements Initializable {
             trayIcon.addActionListener(e -> {
                 removeTrayIcon();
             });
+            logger.info("create system tray");
         }
     }
 
@@ -116,9 +126,7 @@ public class FolderConfigController implements Initializable {
 
 
     private boolean isValidPath(String path) {
-        if (path.length() == 0) {
-            return false;
-        }
+        if (path.length() == 0) return false;
         try {
             Paths.get(path);
         } catch (InvalidPathException | NullPointerException e) {
@@ -166,6 +174,7 @@ public class FolderConfigController implements Initializable {
     public void removeTrayIcon() {
         if (SystemTray.isSupported() && tray.getTrayIcons().length > 0) {
             tray.remove(trayIcon);
+            logger.info("remove system tray");
         }
     }
 
@@ -192,6 +201,7 @@ public class FolderConfigController implements Initializable {
                 Files.createDirectories(Paths.get(musicFolder.getAbsolutePath()));
             userData.setPath(musicFolder.getAbsolutePath());
             manager.write(userData);
+            logger.info("new music folder location saved");
             removeTrayIcon();
             ((Stage) container.getScene().getWindow()).close();
             openHome(openHome);

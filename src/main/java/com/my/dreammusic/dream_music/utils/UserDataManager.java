@@ -44,4 +44,8 @@ public class UserDataManager {
         if (!Files.exists(Paths.get(getFolderPath())))
             Files.createDirectories(Paths.get(getFolderPath()));
     }
+
+    public static String getLogsPath() {
+        return getFolderPath() + File.separator + "logs";
+    }
 }

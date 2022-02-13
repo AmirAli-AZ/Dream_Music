@@ -1,5 +1,7 @@
 package com.my.dreammusic.dream_music;
 
+import com.my.dreammusic.dream_music.logging.Logger;
+import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
@@ -16,6 +18,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,9 +28,16 @@ import java.net.URISyntaxException;
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     private static final String issuesLink = "https://github.com/AmirAli-AZ/Dream_Music/issues";
+    private static final Logger logger = Logger.getLogger(ExceptionHandler.class);
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
+        try {
+            logger.setWriter(UserDataManager.getLogsPath() + File.separator + logger.getName() + ".log" , true);
+        } catch (IOException ex) {
+            logger.error(ex);
+        }
+        logger.error(e);
         show("Error" , e);
     }
 

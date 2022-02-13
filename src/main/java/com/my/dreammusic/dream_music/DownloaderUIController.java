@@ -1,6 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
+import com.my.dreammusic.dream_music.logging.Logger;
 import com.my.dreammusic.dream_music.utils.Downloader;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.application.Platform;
@@ -48,8 +49,16 @@ public class DownloaderUIController implements Initializable {
     private SystemTray tray;
     private TrayIcon trayIcon;
 
+    private static final Logger logger = Logger.getLogger(DownloaderUIController.class);
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            logger.setWriter(UserDataManager.getLogsPath() + File.separator + logger.getName() + ".log" , true);
+        } catch (IOException ex) {
+            logger.error(ex);
+        }
+        logger.info("Downloader UI initialize");
         if (OsThemeDetector.isSupported()) {
             String light = DownloaderUIController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
             String dark = DownloaderUIController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
@@ -80,11 +89,13 @@ public class DownloaderUIController implements Initializable {
             trayIcon.addActionListener(e -> {
                 removeTrayIcon();
             });
+            logger.info("create system tray");
         }
     }
 
     @FXML
     public void downloadClick() {
+        logger.info("download button clicked");
         download(urlInput.getText());
     }
 
@@ -100,6 +111,7 @@ public class DownloaderUIController implements Initializable {
 
     @FXML
     public void handleDragDropped(DragEvent event) {
+        logger.info("text drag dropped");
         Dragboard dragboard = event.getDragboard();
         if (event.getTransferMode() == TransferMode.COPY &&
                 dragboard.hasString()) {
@@ -111,6 +123,7 @@ public class DownloaderUIController implements Initializable {
 
     @FXML
     public void handleDragOver(DragEvent event) {
+        logger.info("text drag over");
         if (event.getDragboard().hasString()){
             event.acceptTransferModes(TransferMode.COPY);
         }
@@ -119,6 +132,7 @@ public class DownloaderUIController implements Initializable {
 
     public void showNotification(String title, String message, TrayIcon.MessageType type) {
         if (SystemTray.isSupported()) {
+            logger.info("show notification");
             try {
                 if (tray.getTrayIcons().length == 0) tray.add(trayIcon);
                 trayIcon.displayMessage(title, message, type);
@@ -131,6 +145,7 @@ public class DownloaderUIController implements Initializable {
     public void removeTrayIcon(){
         if (SystemTray.isSupported() && tray.getTrayIcons().length > 0){
             tray.remove(trayIcon);
+            logger.info("remove system tray");
         }
     }
 
@@ -169,13 +184,15 @@ public class DownloaderUIController implements Initializable {
                     downloadButton.setDisable(false);
                     hbox1.setVisible(false);
                     showNotification("Download Failed", "Music Download Failed", TrayIcon.MessageType.ERROR);
+                    logger.warn("Download Failed");
                 }
 
                 @Override
                 public void onCompleted() {
                     hbox1.setVisible(false);
                     downloadButton.setDisable(false);
-                    showNotification("Download Completed", "Music Downloaded", TrayIcon.MessageType.INFO);
+                    showNotification("Download Failed", "Music Downloaded", TrayIcon.MessageType.INFO);
+                    logger.info("Download Failed");
                 }
             });
             downloader.setDownloadPath(new File(userData.getPath()));
