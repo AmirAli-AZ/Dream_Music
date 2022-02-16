@@ -86,15 +86,15 @@ public class MusicsController implements Initializable {
     private final ContextMenu menu = new ContextMenu();
     private final NumericField numericField = new NumericField();
 
-    private final StringProperty currentTimeProperty = new SimpleStringProperty("0:00:00");
-    private final StringProperty totalTimeProperty = new SimpleStringProperty("0:00:00");
+    private final StringProperty currentTimeProperty = new SimpleStringProperty();
+    private final StringProperty totalTimeProperty = new SimpleStringProperty();
 
     private static final Logger logger = Logger.getLogger(MusicsController.class);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            logger.setWriter(UserDataManager.getLogsPath() + File.separator + logger.getName() + ".log" , true);
+            logger.setWriter(UserDataManager.getLogsPath() + File.separator + logger.getName() + ".log", true);
         } catch (IOException e) {
             logger.error(e);
         }
@@ -266,11 +266,11 @@ public class MusicsController implements Initializable {
     public void getSongList() {
         try {
             list.getItems().clear();
-            File file = new File(userData.getPath());
-            File[] files = file.listFiles();
-            if (files != null) {
-                Arrays.sort(files);
-                if (files.length > 0) {
+            if (userData != null) {
+                File file = new File(userData.getPath());
+                File[] files = file.listFiles();
+                if (files != null) {
+                    Arrays.sort(files);
                     for (File value : files) {
                         if (value.isFile()) {
                             if (FilenameUtils.getExtension(value.getAbsolutePath()).equals("mp3") ||
@@ -286,14 +286,20 @@ public class MusicsController implements Initializable {
                 }
             }
         } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
+            logger.error(interruptedException);
         }
         System.gc();
     }
 
     public String calculateTime(Duration time) {
-        long s = (long) time.toSeconds();
-        return String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+        long seconds = (long) time.toSeconds();
+        long HH = seconds / 3600;
+        long MM = (seconds % 3600) / 60;
+        long SS = seconds % 60;
+        if (seconds < 3600)
+            return String.format("%02d:%02d", MM, SS);
+        else
+            return String.format("%02d:%02d:%02d", HH, MM, SS);
     }
 
     public void songBarVisibility(boolean b) {
@@ -305,6 +311,7 @@ public class MusicsController implements Initializable {
         if (mediaPlayer != null && !isPlaying) {
             mediaPlayer.play();
             isPlaying = true;
+            logger.info("play");
         }
     }
 
@@ -312,6 +319,7 @@ public class MusicsController implements Initializable {
         if (mediaPlayer != null && isPlaying) {
             mediaPlayer.pause();
             isPlaying = false;
+            logger.info("pause");
         }
     }
 
@@ -445,6 +453,7 @@ public class MusicsController implements Initializable {
             mediaPlayer.setRate(rateSlider.getValue() * 0.01);
             mediaPlayer.play();
             isPlaying = true;
+            logger.info("play");
         });
 
         mediaPlayer.setOnEndOfMedia(() -> {
@@ -453,7 +462,7 @@ public class MusicsController implements Initializable {
                     if (isMiniPlayerOpen) {
                         mediaPlayer.seek(Duration.ZERO);
                         pauseMedia();
-                        currentTimeProperty.set("0:00:00");
+                        currentTimeProperty.set(calculateTime(Duration.ZERO));
                         play.setImage(playImage);
                         progress.setValue(0);
                     } else {
@@ -568,6 +577,7 @@ public class MusicsController implements Initializable {
                 getMainStage().show();
                 isMiniPlayerOpen = false;
                 close();
+                logger.info("close mini player");
             });
 
             HBox controller = new HBox(3);
@@ -609,6 +619,7 @@ public class MusicsController implements Initializable {
             setOnCloseRequest(e -> {
                 getMainStage().show();
                 isMiniPlayerOpen = false;
+                logger.info("close mini player");
             });
             iconifiedProperty().addListener((observableValue, aBoolean, t1) -> {
                 if (!t1) play2.setImage(isPlaying ? pauseImage : playImage);
@@ -649,6 +660,7 @@ public class MusicsController implements Initializable {
         miniPlayer.setMediaTitle(list.getItems().get(songPosition).getTitle());
         miniPlayer.show();
         isMiniPlayerOpen = true;
+        logger.info("Mini Player Created");
     }
 
     public void setMainStage(Stage mainStage) {
@@ -669,18 +681,19 @@ public class MusicsController implements Initializable {
                     index = 0;
                     list.getSelectionModel().selectFirst();
                     createMediaPlayer(list.getItems().get(index).getMedia());
-                    if (isMiniPlayerOpen) {
+                    if (isMiniPlayerOpen)
                         miniPlayer.setMediaTitle(list.getItems().get(index).getTitle());
-                    }
+                    logger.info("jump to first item");
                 } else {
                     list.getSelectionModel().select(index + 1);
                     createMediaPlayer(list.getItems().get(index + 1).getMedia());
-                    if (isMiniPlayerOpen) {
+                    if (isMiniPlayerOpen)
                         miniPlayer.setMediaTitle(list.getItems().get(index + 1).getTitle());
-                    }
+                    logger.info("forward");
                 }
             } else {
                 mediaPlayer.seek(mediaPlayer.getMedia().getDuration());
+                logger.info("forward seek to " + mediaPlayer.getMedia().getDuration().toSeconds());
             }
         }
     }
@@ -694,18 +707,19 @@ public class MusicsController implements Initializable {
                 if (index == 0) {
                     list.getSelectionModel().selectLast();
                     createMediaPlayer(list.getItems().get(size - 1).getMedia());
-                    if (isMiniPlayerOpen) {
+                    if (isMiniPlayerOpen)
                         miniPlayer.setMediaTitle(list.getItems().get(size - 1).getTitle());
-                    }
+                    logger.info("jump to last item");
                 } else {
                     list.getSelectionModel().select(index - 1);
                     createMediaPlayer(list.getItems().get(index - 1).getMedia());
-                    if (isMiniPlayerOpen) {
+                    if (isMiniPlayerOpen)
                         miniPlayer.setMediaTitle(list.getItems().get(index - 1).getTitle());
-                    }
+                    logger.info("rewind");
                 }
             } else {
                 mediaPlayer.seek(Duration.ZERO);
+                logger.info("rewind seek to zero");
             }
         }
     }
