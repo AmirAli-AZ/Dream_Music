@@ -1,6 +1,7 @@
 package com.my.dreammusic.dream_music;
 
 import com.my.dreammusic.dream_music.logging.Logger;
+import com.my.dreammusic.dream_music.utils.OSUtils;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -17,7 +18,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -58,7 +58,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         link.setFont(Font.font(16));
         link.setOnAction(event -> {
             try {
-                Desktop.getDesktop().browse(new URI(issuesLink));
+                OSUtils.browse(new URI(issuesLink));
             } catch (IOException | URISyntaxException ex) {
                 ex.printStackTrace();
             }

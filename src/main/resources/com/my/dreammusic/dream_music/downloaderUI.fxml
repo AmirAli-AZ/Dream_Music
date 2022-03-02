@@ -28,7 +28,7 @@
       </HBox>
       <HBox alignment="CENTER" layoutX="200.0" layoutY="150.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Button fx:id="downloadButton" mnemonicParsing="false" onAction="#downloadClick" prefHeight="38.0" prefWidth="82.0" styleClass="button-style-ok" text="Download">
+            <Button fx:id="downloadButton" mnemonicParsing="false" onAction="#downloadClick" prefHeight="40.0" prefWidth="116.0" styleClass="button-style-ok" text="Download" wrapText="true">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>

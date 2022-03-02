@@ -1,5 +1,6 @@
 package com.my.dreammusic.dream_music;
 
+import com.my.dreammusic.dream_music.utils.OSUtils;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,7 +17,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.html.HTMLAnchorElement;
 import org.w3c.dom.events.EventTarget;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -44,7 +44,7 @@ public class AboutController implements Initializable {
                         HTMLAnchorElement anchorElement = (HTMLAnchorElement) target;
                         String href = anchorElement.getHref();
                         try {
-                            Desktop.getDesktop().browse(new URI(href));
+                            OSUtils.browse(new URI(href));
                         } catch (IOException | URISyntaxException e) {
                             e.printStackTrace();
                         }

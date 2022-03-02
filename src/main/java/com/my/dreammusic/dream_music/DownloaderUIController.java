@@ -86,9 +86,7 @@ public class DownloaderUIController implements Initializable {
             Image image = Toolkit.getDefaultToolkit().createImage(DownloaderUIController.class.getResource("icons/icon64x64.png"));
             trayIcon = new TrayIcon(image, "Dream Music");
             trayIcon.setImageAutoSize(true);
-            trayIcon.addActionListener(e -> {
-                removeTrayIcon();
-            });
+            trayIcon.addActionListener(e -> removeTrayIcon());
             logger.info("create system tray");
         }
     }

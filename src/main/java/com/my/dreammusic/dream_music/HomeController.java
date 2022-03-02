@@ -2,6 +2,7 @@ package com.my.dreammusic.dream_music;
 
 import com.jthemedetecor.OsThemeDetector;
 import com.my.dreammusic.dream_music.logging.Logger;
+import com.my.dreammusic.dream_music.utils.OSUtils;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -18,7 +19,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.ResourceBundle;
@@ -220,7 +220,7 @@ public class HomeController implements Initializable {
 
     @FXML
     public void openGithubPage() throws URISyntaxException, IOException {
-        Desktop.getDesktop().browse(new URI("https://amirali-az.github.io/Dream_Music"));
+        OSUtils.browse(new URI("https://amirali-az.github.io/Dream_Music"));
     }
 
     @FXML
