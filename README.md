@@ -17,6 +17,7 @@ Features :
 
 You must first install java and javafx SDK (version 17 is recommended) 
 download and unzip javafx SDK from : https://gluonhq.com/products/javafx/
+
 then you have to run this command in your terminal 
 
 `java -jar --module-path [path to javafx lib] --add-modules=javafx.controls,javafx.fxml,javafx.web,javafx.media Dream_Music.jar`
