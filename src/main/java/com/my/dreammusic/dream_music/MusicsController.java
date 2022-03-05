@@ -4,10 +4,9 @@ import com.my.dreammusic.dream_music.logging.Logger;
 import com.my.dreammusic.dream_music.utils.NumericField;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.animation.*;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.application.Platform;
+import javafx.beans.property.*;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -66,6 +65,8 @@ public class MusicsController implements Initializable {
     public VBox container;
     @FXML
     public ImageView moreOption;
+    @FXML
+    public ProgressBar loading;
 
     protected MediaPlayer mediaPlayer;
     protected MiniPlayer miniPlayer;
@@ -73,9 +74,7 @@ public class MusicsController implements Initializable {
     public boolean isMiniPlayerOpen;
     private boolean isChanging;
     private boolean repeatMode;
-    private final Object object = new Object();
     private UserData userData;
-    private Listener listener;
     private int songPosition;
     private boolean isRandomPlayer;
     private final Image playImage = new Image(getClass().getResourceAsStream("icons/baseline_play_arrow_white.png"));
@@ -88,6 +87,7 @@ public class MusicsController implements Initializable {
 
     private final StringProperty currentTimeProperty = new SimpleStringProperty();
     private final StringProperty totalTimeProperty = new SimpleStringProperty();
+    private final BooleanProperty refreshing = new SimpleBooleanProperty(false);
 
     private static final Logger logger = Logger.getLogger(MusicsController.class);
 
@@ -101,7 +101,6 @@ public class MusicsController implements Initializable {
         logger.info("Music Controller initialize");
         songBarVisibility(false);
         loadFolder();
-        getSongList();
         list.setCellFactory(song -> {
             SongListCell songListCell = new SongListCell();
             songListCell.setOnMouseClicked(e -> {
@@ -156,6 +155,7 @@ public class MusicsController implements Initializable {
         totalTime.textProperty().bind(totalTimeProperty);
         currentTime.textProperty().bind(currentTimeProperty);
         createMenu();
+        getSongList();
     }
 
     public void listClick(MouseEvent mouseEvent) {
@@ -225,70 +225,92 @@ public class MusicsController implements Initializable {
         }
     }
 
-    public void createMedia(File file) {
-        if (listener != null) {
-            listener.onResult(Listener.CANCEL);
-        }
-        Media media = new Media(file.toURI().toString());
-        MediaPlayer mp = new MediaPlayer(media);
-        final Song song = new Song();
-        song.setMedia(media);
-        song.setPath(file.getAbsolutePath());
-        song.setTitle(FilenameUtils.getBaseName(file.getAbsolutePath()));
-        song.setDate("");
-        try {
-            Path path = Paths.get(file.getAbsolutePath());
-            FileTime fileTime = Files.getLastModifiedTime(path);
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            song.setDate(dateFormat.format(fileTime.toMillis()));
-        } catch (IOException e) {
-            logger.error(e);
-        }
-
-        mp.setOnReady(() -> {
-            song.setAlbum((String) mp.getMedia().getMetadata().get("album"));
-            song.setArtist((String) mp.getMedia().getMetadata().get("artist"));
-            if (mp.getMedia().getMetadata().get("title") != null) {
-                song.setTitle((String) mp.getMedia().getMetadata().get("title"));
-            }
-            song.setImage((Image) mp.getMedia().getMetadata().get("image"));
-            list.getItems().add(song);
-            if (listener != null) {
-                listener.onResult(Listener.OK);
-            }
-
-            synchronized (object) {
-                object.notify();
-            }
-        });
-    }
-
     public void getSongList() {
-        try {
-            list.getItems().clear();
-            if (userData != null) {
-                File file = new File(userData.getPath());
-                File[] files = file.listFiles();
-                if (files != null) {
-                    Arrays.sort(files);
-                    for (File value : files) {
-                        if (value.isFile()) {
-                            if (FilenameUtils.getExtension(value.getAbsolutePath()).equals("mp3") ||
+        // show completely
+        if (!loading.isManaged())
+            loading.setManaged(true);
+
+        // do in background
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                // create an object to synchronize the code
+                Object ob = new Object();
+                Platform.runLater(() -> list.getItems().clear());
+                if (userData != null) {
+                    // get list of files
+                    File file = new File(userData.getPath());
+                    File[] files = file.listFiles();
+                    if (files != null && files.length > 0) {
+                        // sort files
+                        Arrays.sort(files);
+                        for (File value : files) {
+                            if (value.isFile() &&
+                                    FilenameUtils.getExtension(value.getAbsolutePath()).equals("mp3") ||
                                     FilenameUtils.getExtension(value.getAbsolutePath()).equals("wav")) {
-                                createMedia(value);
-                                synchronized (object) {
-                                    object.wait(100);
+                                if (!refreshing.get())
+                                    refreshing.set(true);
+                                // set default values
+                                Media media = new Media(value.toURI().toString());
+                                MediaPlayer mp = new MediaPlayer(media);
+                                final Song song = new Song();
+                                song.setMedia(media);
+                                song.setPath(value.getAbsolutePath());
+                                song.setTitle(FilenameUtils.getBaseName(value.getAbsolutePath()));
+                                song.setDate("");
+
+                                // get file last modified time
+                                Path path = Paths.get(value.getAbsolutePath());
+                                FileTime fileTime = Files.getLastModifiedTime(path);
+                                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                                song.setDate(dateFormat.format(fileTime.toMillis()));
+
+                                mp.setOnReady(() -> {
+                                    // set values
+                                    song.setAlbum((String) mp.getMedia().getMetadata().get("album"));
+                                    song.setArtist((String) mp.getMedia().getMetadata().get("artist"));
+                                    if (mp.getMedia().getMetadata().get("title") != null) {
+                                        song.setTitle((String) mp.getMedia().getMetadata().get("title"));
+                                    }
+                                    song.setImage((Image) mp.getMedia().getMetadata().get("image"));
+                                    Platform.runLater(() -> list.getItems().add(song));
+
+                                    synchronized (ob) {
+                                        ob.notify();
+                                    }
+                                });
+
+                                synchronized (ob) {
+                                    ob.wait();
                                 }
                             }
                         }
+                        if (refreshing.get())
+                            refreshing.set(false);
                     }
-
                 }
+                System.gc();
+                return null;
             }
-        } catch (InterruptedException interruptedException) {
-            logger.error(interruptedException);
-        }
-        System.gc();
+
+            @Override
+            protected void succeeded() {
+                super.succeeded();
+                // hide completely
+                loading.setManaged(false);
+            }
+
+            @Override
+            protected void failed() {
+                super.failed();
+                // hide completely
+                loading.setManaged(false);
+            }
+        };
+        // add task to thread and start
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public String calculateTime(Duration time) {
@@ -323,17 +345,9 @@ public class MusicsController implements Initializable {
         }
     }
 
-    public void refresh() {
-        getSongList();
-    }
-
     public void loadFolder() {
         UserDataManager manager = new UserDataManager();
         userData = manager.read();
-    }
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
     }
 
     @FXML
@@ -724,4 +738,11 @@ public class MusicsController implements Initializable {
         }
     }
 
+    public boolean isRefreshing(){
+        return refreshing.get();
+    }
+
+    public BooleanProperty getRefreshingProperty() {
+        return refreshing;
+    }
 }

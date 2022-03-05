@@ -75,6 +75,7 @@ public class HomeController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("musics.fxml"));
                 borderLayout.setCenter(loader.load());
                 musicsController = loader.getController();
+                musicsController.getRefreshingProperty().addListener((observableValue, oldValue, newValue) -> tab_musics.setDisable(newValue));
                 musicsController.setMainStage((Stage) borderLayout.getScene().getWindow());
 
                 if (!OsThemeDetector.isSupported()) {
@@ -98,6 +99,8 @@ public class HomeController implements Initializable {
                 logger.error(e);
             }
         });
+
+
     }
 
     @FXML
@@ -105,22 +108,7 @@ public class HomeController implements Initializable {
         if (musicsController != null && mouseEvent.getButton() == MouseButton.PRIMARY) {
             if (!musicsController.isPlaying) {
                 if (new File(UserDataManager.getSerFilePath()).exists()) {
-                /*
-                this listener check , if media player listeners is running or no with 0 and 1
-                 */
-                    musicsController.setListener(result -> {
-                        if (result == Listener.OK) {
-                            tab_musics.setDisable(false);
-                            // disable listener
-                            musicsController.setListener(null);
-                            logger.info("musics refreshed");
-                        } else {
-                            tab_musics.setDisable(true);
-                        }
-                        System.out.println(result);
-                    });
-                    // handle listener
-                    musicsController.refresh();
+                    musicsController.getSongList();
                 } else {
                     ((Stage)borderLayout.getScene().getWindow()).close();
                     try {
@@ -135,7 +123,7 @@ public class HomeController implements Initializable {
                         if (new File(UserDataManager.getSerFilePath()).exists()) {
                             musicsController.pauseMedia();
                             musicsController.songBarVisibility(false);
-                            musicsController.refresh();
+                            musicsController.getSongList();
                             logger.info("musics refreshed");
                         } else {
                             musicsController.pauseMedia();
@@ -181,7 +169,7 @@ public class HomeController implements Initializable {
                     }
                     musicsController.songBarVisibility(false);
                     musicsController.loadFolder();
-                    musicsController.refresh();
+                    musicsController.getSongList();
                     if (musicsController.miniPlayer != null && musicsController.isMiniPlayerOpen) {
                         ((Stage) borderLayout.getScene().getWindow()).show();
                         musicsController.miniPlayer.close();

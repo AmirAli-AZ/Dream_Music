@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.MusicsController">
+<VBox fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.MusicsController">
    <children>
+      <ProgressBar fx:id="loading" maxHeight="15.0" maxWidth="1.7976931348623157E308" minHeight="15.0" prefHeight="15.0" />
       <ListView fx:id="list" onKeyReleased="#listKeyPressed" VBox.vgrow="ALWAYS" />
       <AnchorPane fx:id="songBar" minHeight="-Infinity" prefHeight="136.0" prefWidth="248.0" styleClass="animated-gradient">
          <children>
@@ -19,7 +26,7 @@
             <HBox fx:id="hbox" alignment="CENTER" layoutX="6.0" layoutY="52.0" prefHeight="24.0" prefWidth="200.0" spacing="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
                   <Label fx:id="currentTime" style="-fx-text-fill: white;" />
-                  <ImageView fx:id="rewind" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#rewindClick" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#rewindClick" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets left="2.0" />
                      </HBox.margin>
@@ -35,7 +42,7 @@
                         <Image url="@icons/baseline_play_arrow_white.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="forward" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#forwardClick" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#forwardClick" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets right="2.0" />
                      </HBox.margin>
