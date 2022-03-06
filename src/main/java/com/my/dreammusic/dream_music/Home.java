@@ -22,31 +22,13 @@ public class Home extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
-        stage.setTitle("Dream Music");
-        stage.getIcons().addAll(
-                new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(Home.class.getResourceAsStream("icons/icon16x16.png"))
-        );
-        if (new File(UserDataManager.getSerFilePath()).exists()){
-            FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
-            Scene scene = new Scene(loader.load(), getMinWidth() , getMinHeight());
-            scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.setMinHeight(getMinHeight());
-            stage.setMinWidth(getMinWidth());
-            stage.setOnCloseRequest(e ->{
-                Platform.exit();
-                System.exit(0);
-            });
-            stage.show();
-        }else {
+        if (new File(UserDataManager.getSerFilePath()).exists())
+            openHome(stage);
+        else
             openFolderConfig(stage , true);
-        }
     }
 
-    public void openFolderConfig(Stage stage , boolean openHome) throws IOException {
+    public static void openFolderConfig(Stage stage , boolean openHome) throws IOException {
         FXMLLoader loader = new FXMLLoader(Home.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
         scene.getStylesheets().add(Home.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
@@ -54,11 +36,36 @@ public class Home extends Application {
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);
 
+        stage.setTitle("FolderConfig");
         stage.setResizable(false);
-        stage.setOnCloseRequest(e ->{
-            controller.removeTrayIcon();
-        });
+        stage.setOnCloseRequest(e -> controller.removeTrayIcon());
         stage.setScene(scene);
+        stage.getIcons().addAll(
+                new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
+                new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),
+                new Image(Home.class.getResourceAsStream("icons/icon16x16.png"))
+        );
+        stage.show();
+    }
+
+    public static void openHome(Stage stage) throws IOException {
+        FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
+        Scene scene = new Scene(loader.load(), getMinWidth() , getMinHeight());
+        scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
+
+        stage.setTitle("Dream Music");
+        stage.setScene(scene);
+        stage.setMinHeight(getMinHeight());
+        stage.setMinWidth(getMinWidth());
+        stage.setOnCloseRequest(e ->{
+            Platform.exit();
+            System.exit(0);
+        });
+        stage.getIcons().addAll(
+                new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
+                new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),
+                new Image(Home.class.getResourceAsStream("icons/icon16x16.png"))
+        );
         stage.show();
     }
 

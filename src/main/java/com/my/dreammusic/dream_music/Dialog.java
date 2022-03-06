@@ -15,18 +15,22 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.function.Consumer;
 
 public class Dialog {
 
-    private final Listener listener;
     private boolean cancelButton = false;
-    private String title , message , btnCancelText = "Cancel" , btnOkText = "OK";
+    private String message = "" , btnCancelText = "Cancel" , btnOkText = "OK";
     private Image image;
+    private final Listener listener;
+    private final Window owner;
+    private final Stage window = new Stage();
 
-    public Dialog(Listener listener){
+    public Dialog(Listener listener , Window owner){
         this.listener = listener;
+        this.owner = owner;
     }
 
     public void setCancelButton(boolean cancelButton) {
@@ -34,7 +38,7 @@ public class Dialog {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        window.setTitle(title);
     }
 
     public void setMessage(String message) {
@@ -54,14 +58,46 @@ public class Dialog {
     }
 
     public void show(){
-        Stage window = new Stage();
-        window.setTitle(title);
+        Scene scene = createLayout();
+        // set themes
+        if (OsThemeDetector.isSupported()) {
+            String light = Dialog.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
+            String dark = Dialog.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
+            // default theme
+            scene.getStylesheets().add(light);
+
+            final OsThemeDetector detector = OsThemeDetector.getDetector();
+            Consumer<Boolean> darkThemeListener = isDark -> Platform.runLater(() -> {
+                if (isDark) {
+                    scene.getStylesheets().set(0, dark);
+                } else {
+                    scene.getStylesheets().set(0, light);
+                }
+            });
+            darkThemeListener.accept(detector.isDark());
+            detector.registerListener(darkThemeListener);
+        }
+
+        if (owner != null) window.initOwner(owner);
         window.initModality(Modality.APPLICATION_MODAL);
 
         window.setOnCloseRequest(e ->{
             if (listener != null) listener.onResult(Listener.CANCEL);
         });
 
+        window.setScene(scene);
+        window.setMinWidth(400);
+        window.setMinHeight(250);
+        window.setResizable(false);
+        window.getIcons().addAll(
+                new Image(Dialog.class.getResourceAsStream("icons/icon64x64.png")),
+                new Image(Dialog.class.getResourceAsStream("icons/icon32x32.png")),
+                new Image(Dialog.class.getResourceAsStream("icons/icon16x16.png"))
+        );
+        window.show();
+    }
+
+    private Scene createLayout() {
         BorderPane borderPane = new BorderPane();
         VBox vBox = new VBox(15);
         vBox.setAlignment(Pos.CENTER);
@@ -103,35 +139,6 @@ public class Dialog {
         borderPane.setBottom(buttons);
         borderPane.setCenter(vBox);
 
-        Scene scene = new Scene(borderPane , 400 , 250);
-
-        if (OsThemeDetector.isSupported()) {
-            String light = Dialog.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
-            String dark = Dialog.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
-            // default theme
-            scene.getStylesheets().add(light);
-
-            final OsThemeDetector detector = OsThemeDetector.getDetector();
-            Consumer<Boolean> darkThemeListener = isDark -> Platform.runLater(() -> {
-                if (isDark) {
-                    scene.getStylesheets().set(0, dark);
-                } else {
-                    scene.getStylesheets().set(0, light);
-                }
-            });
-            darkThemeListener.accept(detector.isDark());
-            detector.registerListener(darkThemeListener);
-        }
-
-        window.setScene(scene);
-        window.setMinWidth(400);
-        window.setMinHeight(250);
-        window.setResizable(false);
-        window.getIcons().addAll(
-                new Image(Dialog.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(Dialog.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(Dialog.class.getResourceAsStream("icons/icon16x16.png"))
-        );
-        window.show();
+        return new Scene(borderPane , 400 , 250);
     }
 }

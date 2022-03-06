@@ -134,28 +134,7 @@ public class FolderConfigController implements Initializable {
     }
 
     private void openHome(boolean b) throws IOException {
-        if (b) {
-            Stage stage = new Stage();
-            stage.setTitle("Dream Music");
-
-            FXMLLoader loader = new FXMLLoader(FolderConfigController.class.getResource("home.fxml"));
-            Scene scene = new Scene(loader.load(), Home.getMinWidth(), Home.getMinHeight());
-            scene.getStylesheets().add(FolderConfigController.class.getResource("Themes/light-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.setMinHeight(Home.getMinHeight());
-            stage.setMinWidth(Home.getMinWidth());
-            stage.setOnCloseRequest(e -> {
-                Platform.exit();
-                System.exit(0);
-            });
-            stage.getIcons().addAll(
-                    new Image(FolderConfigController.class.getResourceAsStream("icons/icon64x64.png")),
-                    new Image(FolderConfigController.class.getResourceAsStream("icons/icon32x32.png")),
-                    new Image(FolderConfigController.class.getResourceAsStream("icons/icon16x16.png"))
-            );
-            stage.show();
-        }
+        if (b) Home.openHome(new Stage());
     }
 
     private void showNotification(String title, String message, TrayIcon.MessageType type) {

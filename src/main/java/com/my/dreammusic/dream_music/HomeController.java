@@ -83,7 +83,7 @@ public class HomeController implements Initializable {
                     UserData data = manager.read();
 
                     if (data.getNotSupportDarkCount() == 0) {
-                        Dialog dialog = new Dialog(null);
+                        Dialog dialog = new Dialog(null , borderLayout.getScene().getWindow());
                         dialog.setTitle("Warning");
                         dialog.setMessage("Your Device Not Support Dark Theme");
                         dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
@@ -136,7 +136,7 @@ public class HomeController implements Initializable {
                             }
                         }
                     }
-                });
+                } , borderLayout.getScene().getWindow());
                 dialog.setTitle("Warning");
                 dialog.setMessage("Music is playing , are you sure to refresh musics?");
                 dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
