@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.converter.ConverterController">
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="8.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="590.0" spacing="5.0">
+               <children>
+                  <Label minWidth="50.0" text="Source">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="sourcePathText" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="imgMovie" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#pickSource" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/baseline_movie_black_24dp.png" />
+                     </image></ImageView>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="15.0" prefHeight="40.0" prefWidth="590.0" spacing="5.0">
+               <children>
+                  <Label minWidth="50.0" text="Target">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="targetPathText" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="imgMusic" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#pickTarget" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/ic_music_black.png" />
+                     </image></ImageView>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="590.0" spacing="5.0">
+               <children>
+                  <Label text="BitRate(Kbps)">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="bitRateSlider" max="320.0" maxWidth="1.7976931348623157E308" min="96.0" HBox.hgrow="ALWAYS">
+                     <tooltip>
+                        <Tooltip fx:id="toolTip" text="96" wrapText="true" />
+                     </tooltip>
+                  </Slider>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="5.0">
+               <children>
+                  <Label text="SampleRate(Khz)">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="sampleRates" prefWidth="150.0" />
+               </children>
+            </HBox>
+            <ProgressBar fx:id="progress" maxWidth="1.7976931348623157E308" progress="0.0" visible="false" />
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Button fx:id="convertBtn" mnemonicParsing="false" onAction="#convert" prefHeight="40.0" prefWidth="87.0" styleClass="button-style-ok" text="Convert">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </VBox>
+   </center>
+</BorderPane>

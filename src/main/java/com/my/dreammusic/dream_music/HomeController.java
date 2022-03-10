@@ -239,9 +239,7 @@ public class HomeController implements Initializable {
 
         stage.setResizable(false);
         stage.setScene(scene);
-        stage.setOnCloseRequest(e -> {
-            controller.removeTrayIcon();
-        });
+        stage.setOnCloseRequest(e -> controller.removeTrayIcon());
         stage.getIcons().addAll(
                 new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
                 new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
@@ -255,7 +253,7 @@ public class HomeController implements Initializable {
         stage.setTitle("Downloader");
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("downloaderUI.fxml"));
         Scene scene = new Scene(loader.load(), 600, 400);
-        scene.getStylesheets().add(FolderConfigController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+        scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
         DownloaderUIController downloaderUIController = loader.getController();
         stage.setOnCloseRequest(e -> {
             if (downloaderUIController.downloader != null &&
@@ -272,6 +270,24 @@ public class HomeController implements Initializable {
                 new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
                 new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
         );
+        stage.show();
+    }
+
+    @FXML
+    public void openConverter() throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Converter");
+        stage.getIcons().addAll(
+                new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
+                new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
+                new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+        );
+        stage.setMinWidth(600);
+        stage.setMinHeight(400);
+        FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("converter-view.fxml"));
+        Scene scene = new Scene(loader.load() , 600 , 400);
+        scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+        stage.setScene(scene);
         stage.show();
     }
 }

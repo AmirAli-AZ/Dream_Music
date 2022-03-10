@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="5" platform="JVM 1.8" allPlatforms="JVM [1.8]" useProjectSettings="false">
+        <compilerSettings />
+        <compilerArguments>
+          <stringArguments>
+            <stringArg name="apiVersion" arg="1.6" />
+            <stringArg name="languageVersion" arg="1.6" />
+          </stringArguments>
+          <arrayArguments>
+            <arrayArg name="pluginClasspaths" />
+            <arrayArg name="pluginOptions" />
+          </arrayArguments>
+        </compilerArguments>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -33,11 +50,25 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: de.jangassen:jfa:1.1.9" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.oshi:oshi-core:5.7.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: io.github.g00fy2:versioncompare:1.4.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jetbrains:annotations:19.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains:annotations:19.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.32" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.32" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.10.0" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-web:11.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-web:win:11.0.2" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-all-deps:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-core:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-nativebin-win32:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-nativebin-win64:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-nativebin-linux32:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-nativebin-linux64:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-nativebin-osx64:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-nativebin-linux-arm32:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ws.schild:jave-nativebin-linux-arm64:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20-RC" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.6.20-RC" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.6.20-RC" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20-RC" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test:1.6.20-RC" level="project" />
   </component>
 </module>

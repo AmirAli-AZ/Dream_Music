@@ -58,6 +58,11 @@
                         <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="ANY" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#openConverter" text="Converter">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="ANY" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">

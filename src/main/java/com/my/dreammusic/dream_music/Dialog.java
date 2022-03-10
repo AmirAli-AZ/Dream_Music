@@ -24,12 +24,17 @@ public class Dialog {
     private boolean cancelButton = false;
     private String message = "" , btnCancelText = "Cancel" , btnOkText = "OK";
     private Image image;
-    private final Listener listener;
+    private Listener listener;
     private final Window owner;
     private final Stage window = new Stage();
+    private boolean autoClose = true;
 
     public Dialog(Listener listener , Window owner){
         this.listener = listener;
+        this.owner = owner;
+    }
+
+    public Dialog(Window owner){
         this.owner = owner;
     }
 
@@ -57,6 +62,18 @@ public class Dialog {
         this.btnOkText = btnOkText;
     }
 
+    public void setAutoClose(boolean autoClose) {
+        this.autoClose = autoClose;
+    }
+
+    public void close(){
+        window.close();
+    }
+
+    public void setListener(Listener listener){
+        this.listener = listener;
+    }
+
     public void show(){
         Scene scene = createLayout();
         // set themes
@@ -81,7 +98,8 @@ public class Dialog {
         if (owner != null) window.initOwner(owner);
         window.initModality(Modality.APPLICATION_MODAL);
 
-        window.setOnCloseRequest(e ->{
+        window.setOnCloseRequest(e -> {
+            if (!autoClose) e.consume();
             if (listener != null) listener.onResult(Listener.CANCEL);
         });
 
@@ -112,7 +130,7 @@ public class Dialog {
             cancel.setMinWidth(60);
             cancel.setMinHeight(30);
             cancel.setOnAction(e ->{
-                window.close();
+                if (autoClose) window.close();
                 if (listener != null) listener.onResult(Listener.CANCEL);
             });
             buttons.getChildren().add(cancel);
@@ -123,7 +141,7 @@ public class Dialog {
         ok.setMinWidth(60);
         ok.setMinHeight(30);
         ok.setOnAction(e ->{
-            window.close();
+            if (autoClose) window.close();
             if (listener != null) listener.onResult(Listener.OK);
         });
         buttons.getChildren().add(ok);
