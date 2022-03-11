@@ -257,7 +257,6 @@ public class MusicsController implements Initializable {
                                 song.setMedia(media);
                                 song.setPath(value.getAbsolutePath());
                                 song.setTitle(FilenameUtils.getBaseName(value.getAbsolutePath()));
-                                song.setDate("");
 
                                 // get file last modified time
                                 Path path = Paths.get(value.getAbsolutePath());
