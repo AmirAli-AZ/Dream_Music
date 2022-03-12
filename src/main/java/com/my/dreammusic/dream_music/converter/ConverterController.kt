@@ -24,7 +24,6 @@ import java.util.function.Consumer
 import com.my.dreammusic.dream_music.Dialog
 import com.my.dreammusic.dream_music.Listener
 
-
 class ConverterController : Initializable {
 
     @FXML
@@ -106,10 +105,11 @@ class ConverterController : Initializable {
         val fileChooser = FileChooser()
         fileChooser.initialDirectory = File(System.getProperty("user.home"))
         fileChooser.title = "save file"
-        fileChooser.extensionFilters.add(ExtensionFilter("MP3 FILE" , "*.mp3"))
-        val file = fileChooser.showSaveDialog(root.scene.window)
+        fileChooser.extensionFilters.add(ExtensionFilter("MP3 FILE (.mp3)" , "*.mp3"))
+        var file = fileChooser.showSaveDialog(root.scene.window)
 
         if (file != null) {
+            file = fixFormat(file)
             if (source != null) convertBtn.isDisable = false
             target = file
             targetPathText.text = file.absolutePath
@@ -180,7 +180,7 @@ class ConverterController : Initializable {
         val fileChooser = FileChooser()
         fileChooser.initialDirectory = File(System.getProperty("user.home"))
         fileChooser.title = "choose source"
-        fileChooser.extensionFilters.add(ExtensionFilter("MP4 FILE" , "*.mp4"))
+        fileChooser.extensionFilters.add(ExtensionFilter("MP4 FILE (.mp4)" , "*.mp4"))
         val selectedFile = fileChooser.showOpenDialog(root.scene.window)
 
         if (selectedFile != null) {
@@ -190,5 +190,13 @@ class ConverterController : Initializable {
         }
 
         return selectedFile
+    }
+
+    private fun fixFormat(path:File):File {
+        val index = path.name.indexOf('.')
+        return if (index == -1)
+            File(path.parent , "${path.name}.mp3")
+        else
+            File(path.parent , "${path.name.substring(0 , index)}.mp3")
     }
 }
