@@ -71,8 +71,8 @@ class ConverterController : Initializable {
         }
         Platform.runLater {
             if (OsThemeDetector.isSupported()){
-                val light = ConverterController::class.java.getResource("/com/my/dreammusic/dream_music/Themes/dialog-light-theme.css").toExternalForm()
-                val dark = ConverterController::class.java.getResource("/com/my/dreammusic/dream_music/Themes/dialog-dark-theme.css").toExternalForm()
+                val light = ConverterController::class.java.getResource("/com/my/dreammusic/dream_music/Themes/dialog-light-theme.css")!!.toExternalForm()
+                val dark = ConverterController::class.java.getResource("/com/my/dreammusic/dream_music/Themes/dialog-dark-theme.css")!!.toExternalForm()
                 val scene = root.scene
                 val detector  = OsThemeDetector.getDetector()
                 val darkThemeListener:Consumer<Boolean> = Consumer {

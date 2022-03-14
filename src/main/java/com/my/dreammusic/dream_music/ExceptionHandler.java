@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
@@ -66,7 +67,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         TextFlow textFlow = new TextFlow(text1 , link);
         HBox.setHgrow(textFlow , Priority.ALWAYS);
         textFlow.setMaxWidth(Double.MAX_VALUE);
-        ImageView icon = new ImageView(new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error64x64.png")));
+        ImageView icon = new ImageView(new Image(Objects.requireNonNull(ExceptionHandler.class.getResourceAsStream("icons/ic_error64x64.png"))));
         icon.setFitWidth(50);
         icon.setFitHeight(50);
         header.getChildren().addAll(textFlow , icon);
@@ -88,9 +89,9 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         dialogPane.setExpandableContent(content);
         Stage stage = (Stage)dialogPane.getScene().getWindow();
         stage.getIcons().addAll(
-                new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error64x64.png")),
-                new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error32x32.png")),
-                new Image(ExceptionHandler.class.getResourceAsStream("icons/ic_error16x16.png"))
+                new Image(Objects.requireNonNull(ExceptionHandler.class.getResourceAsStream("icons/ic_error64x64.png"))),
+                new Image(Objects.requireNonNull(ExceptionHandler.class.getResourceAsStream("icons/ic_error32x32.png"))),
+                new Image(Objects.requireNonNull(ExceptionHandler.class.getResourceAsStream("icons/ic_error16x16.png")))
         );
         dialog.showAndWait();
     }

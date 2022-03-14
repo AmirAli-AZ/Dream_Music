@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Home extends Application {
 
@@ -31,7 +32,7 @@ public class Home extends Application {
     public static void openFolderConfig(Stage stage , boolean openHome) throws IOException {
         FXMLLoader loader = new FXMLLoader(Home.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
-        scene.getStylesheets().add(Home.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(Home.class.getResource("Themes/dialog-light-theme.css")).toExternalForm());
 
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);
@@ -41,9 +42,9 @@ public class Home extends Application {
         stage.setOnCloseRequest(e -> controller.removeTrayIcon());
         stage.setScene(scene);
         stage.getIcons().addAll(
-                new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(Home.class.getResourceAsStream("icons/icon16x16.png"))
+                new Image(Objects.requireNonNull(Home.class.getResourceAsStream("icons/icon64x64.png"))),
+                new Image(Objects.requireNonNull(Home.class.getResourceAsStream("icons/icon32x32.png"))),
+                new Image(Objects.requireNonNull(Home.class.getResourceAsStream("icons/icon16x16.png")))
         );
         stage.show();
     }
@@ -51,7 +52,7 @@ public class Home extends Application {
     public static void openHome(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(Home.class.getResource("home.fxml"));
         Scene scene = new Scene(loader.load(), getMinWidth() , getMinHeight());
-        scene.getStylesheets().add(Home.class.getResource("Themes/light-theme.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(Home.class.getResource("Themes/light-theme.css")).toExternalForm());
 
         stage.setTitle("Dream Music");
         stage.setScene(scene);
@@ -62,9 +63,9 @@ public class Home extends Application {
             System.exit(0);
         });
         stage.getIcons().addAll(
-                new Image(Home.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(Home.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(Home.class.getResourceAsStream("icons/icon16x16.png"))
+                new Image(Objects.requireNonNull(Home.class.getResourceAsStream("icons/icon64x64.png"))),
+                new Image(Objects.requireNonNull(Home.class.getResourceAsStream("icons/icon32x32.png"))),
+                new Image(Objects.requireNonNull(Home.class.getResourceAsStream("icons/icon16x16.png")))
         );
         stage.show();
     }

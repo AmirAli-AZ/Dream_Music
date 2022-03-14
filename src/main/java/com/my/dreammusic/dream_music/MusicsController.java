@@ -77,8 +77,8 @@ public class MusicsController implements Initializable {
     private UserData userData;
     private int songPosition;
     private boolean isRandomPlayer;
-    private final Image playImage = new Image(getClass().getResourceAsStream("icons/baseline_play_arrow_white.png"));
-    private final Image pauseImage = new Image(getClass().getResourceAsStream("icons/baseline_pause_white.png"));
+    private final Image playImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/baseline_play_arrow_white.png")));
+    private final Image pauseImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/baseline_pause_white.png")));
     private Stage mainStage;
 
     private final Slider rateSlider = new Slider();
@@ -144,11 +144,11 @@ public class MusicsController implements Initializable {
                 mediaPlayer.setVolume(volume.getValue() * 0.01);
                 long value = t1.longValue();
                 if (value == 0) {
-                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png")));
+                    img_volume.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_volume_mute_white.png"))));
                 } else if (value > 50) {
-                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png")));
+                    img_volume.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_volume_up_white.png"))));
                 } else {
-                    img_volume.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png")));
+                    img_volume.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_volume_down_white.png"))));
                 }
             }
         });
@@ -217,10 +217,10 @@ public class MusicsController implements Initializable {
         if (!isRandomPlayer && mouseEvent.getButton() == MouseButton.PRIMARY) {
             if (repeatMode) {
                 repeatMode = false;
-                repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png")));
+                repeat.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png"))));
             } else {
                 repeatMode = true;
-                repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_on_white.png")));
+                repeat.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_repeat_on_white.png"))));
             }
         }
     }
@@ -435,7 +435,7 @@ public class MusicsController implements Initializable {
                 // disable repeat mode if it's on
                 if (repeatMode) {
                     repeatMode = false;
-                    repeat.setImage(new Image(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png")));
+                    repeat.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png"))));
                 }
             }
         });
@@ -560,7 +560,7 @@ public class MusicsController implements Initializable {
                 }
             });
 
-            ImageView forwardButton = new ImageView(new Image(getClass().getResourceAsStream("icons/baseline_skip_next_white.png")));
+            ImageView forwardButton = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/baseline_skip_next_white.png"))));
             forwardButton.setPickOnBounds(true);
             forwardButton.setFitHeight(35);
             forwardButton.setFitWidth(35);
@@ -571,7 +571,7 @@ public class MusicsController implements Initializable {
                 }
             });
 
-            ImageView rewindButton = new ImageView(new Image(getClass().getResourceAsStream("icons/baseline_skip_previous_white.png")));
+            ImageView rewindButton = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/baseline_skip_previous_white.png"))));
             rewindButton.setPickOnBounds(true);
             rewindButton.setFitHeight(35);
             rewindButton.setFitWidth(35);
@@ -582,7 +582,7 @@ public class MusicsController implements Initializable {
                 }
             });
 
-            ImageView close = new ImageView(new Image(getClass().getResourceAsStream("icons/baseline_close_white.png")));
+            ImageView close = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/baseline_close_white.png"))));
             close.setPickOnBounds(true);
             close.setFitHeight(24);
             close.setFitWidth(24);
@@ -620,14 +620,14 @@ public class MusicsController implements Initializable {
 
             Scene scene = new Scene(root, width, height);
 
-            String light = getClass().getResource("Themes/light-theme.css").toExternalForm();
+            String light = Objects.requireNonNull(getClass().getResource("Themes/light-theme.css")).toExternalForm();
             scene.getStylesheets().add(light);
 
             setScene(scene);
             getIcons().addAll(
-                    new Image(getClass().getResourceAsStream("icons/icon64x64.png")),
-                    new Image(getClass().getResourceAsStream("icons/icon32x32.png")),
-                    new Image(getClass().getResourceAsStream("icons/icon16x16.png"))
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/icon64x64.png"))),
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/icon32x32.png"))),
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/icon16x16.png")))
             );
             setOnCloseRequest(e -> {
                 getMainStage().show();

@@ -17,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class Dialog {
@@ -78,8 +79,8 @@ public class Dialog {
         Scene scene = createLayout();
         // set themes
         if (OsThemeDetector.isSupported()) {
-            String light = Dialog.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
-            String dark = Dialog.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
+            String light = Objects.requireNonNull(Dialog.class.getResource("Themes/dialog-light-theme.css")).toExternalForm();
+            String dark = Objects.requireNonNull(Dialog.class.getResource("Themes/dialog-dark-theme.css")).toExternalForm();
             // default theme
             scene.getStylesheets().add(light);
 
@@ -108,9 +109,9 @@ public class Dialog {
         window.setMinHeight(250);
         window.setResizable(false);
         window.getIcons().addAll(
-                new Image(Dialog.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(Dialog.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(Dialog.class.getResourceAsStream("icons/icon16x16.png"))
+                new Image(Objects.requireNonNull(Dialog.class.getResourceAsStream("icons/icon64x64.png"))),
+                new Image(Objects.requireNonNull(Dialog.class.getResourceAsStream("icons/icon32x32.png"))),
+                new Image(Objects.requireNonNull(Dialog.class.getResourceAsStream("icons/icon16x16.png")))
         );
         window.show();
     }

@@ -20,6 +20,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -60,8 +61,8 @@ public class DownloaderUIController implements Initializable {
         }
         logger.info("Downloader UI initialize");
         if (OsThemeDetector.isSupported()) {
-            String light = DownloaderUIController.class.getResource("Themes/dialog-light-theme.css").toExternalForm();
-            String dark = DownloaderUIController.class.getResource("Themes/dialog-dark-theme.css").toExternalForm();
+            String light = Objects.requireNonNull(DownloaderUIController.class.getResource("Themes/dialog-light-theme.css")).toExternalForm();
+            String dark = Objects.requireNonNull(DownloaderUIController.class.getResource("Themes/dialog-dark-theme.css")).toExternalForm();
             final OsThemeDetector detector = OsThemeDetector.getDetector();
             Consumer<Boolean> darkThemeListener = isDark -> Platform.runLater(() -> {
                 if (isDark) {

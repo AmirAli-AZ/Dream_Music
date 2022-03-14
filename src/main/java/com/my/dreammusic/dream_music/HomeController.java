@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.*;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -49,18 +50,18 @@ public class HomeController implements Initializable {
         }
         logger.info("Home initialize");
         if (OsThemeDetector.isSupported()) {
-            String light = HomeController.class.getResource("Themes/light-theme.css").toExternalForm();
-            String dark = HomeController.class.getResource("Themes/dark-theme.css").toExternalForm();
+            String light = Objects.requireNonNull(HomeController.class.getResource("Themes/light-theme.css")).toExternalForm();
+            String dark = Objects.requireNonNull(HomeController.class.getResource("Themes/dark-theme.css")).toExternalForm();
             final OsThemeDetector detector = OsThemeDetector.getDetector();
             Consumer<Boolean> darkThemeListener = isDark -> Platform.runLater(() -> {
                 if (isDark) {
                     logger.info("theme changed to dark");
                     borderLayout.getScene().getStylesheets().set(0, dark);
-                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_white.png")));
+                    img_music.setImage(new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/ic_music_white.png"))));
                 } else {
                     logger.info("theme changed to light");
                     borderLayout.getScene().getStylesheets().set(0, light);
-                    img_music.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_music_black.png")));
+                    img_music.setImage(new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/ic_music_black.png"))));
                 }
             });
             darkThemeListener.accept(detector.isDark());
@@ -86,7 +87,7 @@ public class HomeController implements Initializable {
                         Dialog dialog = new Dialog(null , borderLayout.getScene().getWindow());
                         dialog.setTitle("Warning");
                         dialog.setMessage("Your Device Not Support Dark Theme");
-                        dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
+                        dialog.setImage(new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/ic_warning.png"))));
                         dialog.setBtnOkText("OK");
                         dialog.show();
 
@@ -139,7 +140,7 @@ public class HomeController implements Initializable {
                 } , borderLayout.getScene().getWindow());
                 dialog.setTitle("Warning");
                 dialog.setMessage("Music is playing , are you sure to refresh musics?");
-                dialog.setImage(new Image(HomeController.class.getResourceAsStream("icons/ic_warning.png")));
+                dialog.setImage(new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/ic_warning.png"))));
                 dialog.setCancelButton(true);
                 dialog.setBtnCancelText("No");
                 dialog.setBtnOkText("Yes");
@@ -156,7 +157,7 @@ public class HomeController implements Initializable {
 
             FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
             Scene scene = new Scene(loader.load(), 611, 288);
-            scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(HomeController.class.getResource("Themes/light-theme.css")).toExternalForm());
 
             FolderConfigController controller = loader.getController();
             controller.setOpenHome(false);
@@ -185,9 +186,9 @@ public class HomeController implements Initializable {
             stage.setResizable(false);
             stage.setScene(scene);
             stage.getIcons().addAll(
-                    new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
-                    new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
-                    new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+                    new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon64x64.png"))),
+                    new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon32x32.png"))),
+                    new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon16x16.png")))
             );
             stage.show();
         }
@@ -200,7 +201,7 @@ public class HomeController implements Initializable {
 
     @FXML
     public void miniPlayerAction() {
-        if (musicsController != null && musicsController.isPlaying || musicsController.songBar.isVisible()) {
+        if (musicsController != null && (musicsController.isPlaying || musicsController.songBar.isVisible())) {
             musicsController.createMiniPlayer();
             borderLayout.getScene().getWindow().hide();
         }
@@ -219,9 +220,9 @@ public class HomeController implements Initializable {
         Scene scene = new Scene(loader.load(), 810, 575);
         stage.setScene(scene);
         stage.getIcons().addAll(
-                new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon64x64.png"))),
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon32x32.png"))),
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon16x16.png")))
         );
         stage.setMinHeight(575);
         stage.setMinWidth(810);
@@ -232,7 +233,7 @@ public class HomeController implements Initializable {
         stage.setTitle("Folder Config");
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("folderConfig.fxml"));
         Scene scene = new Scene(loader.load(), 611, 288);
-        scene.getStylesheets().add(HomeController.class.getResource("Themes/light-theme.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(HomeController.class.getResource("Themes/light-theme.css")).toExternalForm());
 
         FolderConfigController controller = loader.getController();
         controller.setOpenHome(openHome);
@@ -241,9 +242,9 @@ public class HomeController implements Initializable {
         stage.setScene(scene);
         stage.setOnCloseRequest(e -> controller.removeTrayIcon());
         stage.getIcons().addAll(
-                new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon64x64.png"))),
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon32x32.png"))),
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon16x16.png")))
         );
         stage.show();
     }
@@ -253,7 +254,7 @@ public class HomeController implements Initializable {
         stage.setTitle("Downloader");
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("downloaderUI.fxml"));
         Scene scene = new Scene(loader.load(), 600, 400);
-        scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(HomeController.class.getResource("Themes/dialog-light-theme.css")).toExternalForm());
         DownloaderUIController downloaderUIController = loader.getController();
         stage.setOnCloseRequest(e -> {
             if (downloaderUIController.downloader != null &&
@@ -266,9 +267,9 @@ public class HomeController implements Initializable {
         stage.setMinWidth(600);
         stage.setScene(scene);
         stage.getIcons().addAll(
-                new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon64x64.png"))),
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon32x32.png"))),
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon16x16.png")))
         );
         stage.show();
     }
@@ -278,15 +279,15 @@ public class HomeController implements Initializable {
         Stage stage = new Stage();
         stage.setTitle("Converter");
         stage.getIcons().addAll(
-                new Image(HomeController.class.getResourceAsStream("icons/icon64x64.png")),
-                new Image(HomeController.class.getResourceAsStream("icons/icon32x32.png")),
-                new Image(HomeController.class.getResourceAsStream("icons/icon16x16.png"))
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon64x64.png"))),
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon32x32.png"))),
+                new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon16x16.png")))
         );
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("converter-view.fxml"));
         Scene scene = new Scene(loader.load() , 600 , 400);
-        scene.getStylesheets().add(HomeController.class.getResource("Themes/dialog-light-theme.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(HomeController.class.getResource("Themes/dialog-light-theme.css")).toExternalForm());
         stage.setScene(scene);
         stage.show();
     }

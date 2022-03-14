@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class AboutController implements Initializable {
@@ -32,7 +33,7 @@ public class AboutController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         webview.setContextMenuEnabled(false);
         WebEngine engine = webview.getEngine();
-        String page = AboutController.class.getResource("Docs/doc.html").toExternalForm();
+        String page = Objects.requireNonNull(AboutController.class.getResource("Docs/doc.html")).toExternalForm();
         engine.getLoadWorker().stateProperty().addListener((observableValue, state, t1) -> {
             if (t1 == Worker.State.SUCCEEDED){
                 NodeList nodeList = engine.getDocument().getElementsByTagName("a");

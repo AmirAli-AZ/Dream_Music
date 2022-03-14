@@ -12,6 +12,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class SongListCell extends ListCell<Song>{
 
@@ -49,7 +50,7 @@ public class SongListCell extends ListCell<Song>{
             if (song.getImage() != null){
                 img.setImage(song.getImage());
             }else {
-                img.setImage(new Image(SongListCell.class.getResourceAsStream("icons/ic_default_music.png")));
+                img.setImage(new Image(Objects.requireNonNull(SongListCell.class.getResourceAsStream("icons/ic_default_music.png"))));
             }
             setText(null);
             setGraphic(container);
