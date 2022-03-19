@@ -5,7 +5,10 @@ import com.my.dreammusic.dream_music.utils.NumericField;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -425,6 +428,13 @@ public class MusicsController implements Initializable {
         rate.getItems().add(rateSettings);
 
         MenuItem randomPlayer = new MenuItem("Random Player : Off");
+        randomPlayer.disableProperty().bind(Bindings.lessThan(Bindings.size(list.getItems()), 2));
+        randomPlayer.disableProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue && isRandomPlayer){
+                isRandomPlayer = false;
+                randomPlayer.setText("Random Player : Off");
+            }
+        });
         randomPlayer.setOnAction(e -> {
             if (isRandomPlayer) {
                 isRandomPlayer = false;
@@ -486,7 +496,7 @@ public class MusicsController implements Initializable {
                     }
                 } else {
                     isPlaying = false;
-                    int randomPosition = pickRandom(0, list.getItems().size() - 1);
+                    int randomPosition = pickRandom(list.getItems().size() - 1);
                     list.getSelectionModel().select(randomPosition);
                     if (isMiniPlayerOpen) {
                         miniPlayer.setMediaTitle(list.getItems().get(randomPosition).getTitle());
@@ -507,9 +517,8 @@ public class MusicsController implements Initializable {
 
     }
 
-    private int pickRandom(int min, int max) {
-        Random random = new Random();
-        return random.nextInt(max + 1 - min) + min;
+    private int pickRandom(int max) {
+        return (int)(Math.floor(Math.random() * max + 1));
     }
 
     public class MiniPlayer extends Stage {
