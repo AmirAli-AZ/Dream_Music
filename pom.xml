@@ -96,7 +96,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.my.dreammusic.dream_music/com.my.dreammusic.dream_music.HelloApplication
+                            <mainClass>com.my.dreammusic.dream_music/com.my.dreammusic.dream_music.Launcher
                             </mainClass>
                         </configuration>
                     </execution>
