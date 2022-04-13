@@ -140,11 +140,8 @@ public final class Logger {
     }
 
     private void createDirs(File parentFile) throws IOException {
-        if (!parentFile.exists()) {
+        if (!parentFile.exists())
             Files.createDirectories(Paths.get(parentFile.getAbsolutePath()));
-            if (!parentFile.getParentFile().exists())
-                createDirs(parentFile.getParentFile());
-        }
     }
 
     public String getAbsoluteName() {

@@ -94,7 +94,10 @@ public class FolderConfigController implements Initializable {
 
         Platform.runLater(() -> {
             Stage window = (Stage) container.getScene().getWindow();
-            window.setOnHiding(windowEvent -> logger.close());
+            window.setOnHiding(windowEvent -> {
+                removeTrayIcon();
+                logger.close();
+            });
         });
     }
 
@@ -126,11 +129,6 @@ public class FolderConfigController implements Initializable {
         this.listener = listener;
     }
 
-    public void shutDown() {
-        if (listener != null) listener.onResult(Listener.CANCEL);
-    }
-
-
     private boolean isValidPath(String path) {
         if (path.length() == 0) return false;
         try {
@@ -156,7 +154,7 @@ public class FolderConfigController implements Initializable {
         }
     }
 
-    public void removeTrayIcon() {
+    private void removeTrayIcon() {
         if (SystemTray.isSupported() && tray.getTrayIcons().length > 0) {
             tray.remove(trayIcon);
             logger.info("remove system tray");

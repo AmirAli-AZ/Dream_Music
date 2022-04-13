@@ -39,7 +39,6 @@ public class Home extends Application {
 
         stage.setTitle("FolderConfig");
         stage.setResizable(false);
-        stage.setOnCloseRequest(e -> controller.removeTrayIcon());
         stage.setScene(scene);
         stage.getIcons().addAll(
                 new Image(Objects.requireNonNull(Home.class.getResourceAsStream("icons/icon64x64.png"))),

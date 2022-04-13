@@ -181,11 +181,6 @@ public class HomeController implements Initializable {
                     controller.setListener(null);
                 }
             });
-
-            stage.setOnCloseRequest(e -> {
-                controller.removeTrayIcon();
-                controller.shutDown();
-            });
             stage.setResizable(false);
             stage.setScene(scene);
             stage.getIcons().addAll(
@@ -243,7 +238,6 @@ public class HomeController implements Initializable {
 
         stage.setResizable(false);
         stage.setScene(scene);
-        stage.setOnCloseRequest(e -> controller.removeTrayIcon());
         stage.getIcons().addAll(
                 new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon64x64.png"))),
                 new Image(Objects.requireNonNull(HomeController.class.getResourceAsStream("icons/icon32x32.png"))),
@@ -258,14 +252,6 @@ public class HomeController implements Initializable {
         FXMLLoader loader = new FXMLLoader(HomeController.class.getResource("downloaderUI.fxml"));
         Scene scene = new Scene(loader.load(), 600, 400);
         scene.getStylesheets().add(Objects.requireNonNull(HomeController.class.getResource("Themes/dialog-light-theme.css")).toExternalForm());
-        DownloaderUIController downloaderUIController = loader.getController();
-        stage.setOnCloseRequest(e -> {
-            if (downloaderUIController.downloader != null &&
-                    !downloaderUIController.downloader.isCancelled()) {
-                downloaderUIController.downloader.exit();
-            }
-            downloaderUIController.removeTrayIcon();
-        });
         stage.setMinHeight(400);
         stage.setMinWidth(600);
         stage.setScene(scene);

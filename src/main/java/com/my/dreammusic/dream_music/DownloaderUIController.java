@@ -94,7 +94,12 @@ public class DownloaderUIController implements Initializable {
 
         Platform.runLater(() -> {
             Stage window = (Stage) container.getScene().getWindow();
-            window.setOnHiding(windowEvent -> logger.close());
+            window.setOnHiding(windowEvent -> {
+                if (downloader != null && !downloader.isCancelled())
+                    downloader.exit();
+                removeTrayIcon();
+                logger.close();
+            });
         });
     }
 
@@ -147,7 +152,7 @@ public class DownloaderUIController implements Initializable {
         }
     }
 
-    public void removeTrayIcon(){
+    private void removeTrayIcon(){
         if (SystemTray.isSupported() && tray.getTrayIcons().length > 0){
             tray.remove(trayIcon);
             logger.info("remove system tray");
