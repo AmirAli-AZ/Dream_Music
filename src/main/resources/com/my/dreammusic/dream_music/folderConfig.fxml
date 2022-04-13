@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="container" maxHeight="288.0" maxWidth="611.0" minHeight="288.0" minWidth="611.0" prefHeight="288.0" prefWidth="611.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.FolderConfigController">
+<AnchorPane fx:id="container" id="rootNode" maxHeight="288.0" maxWidth="611.0" minHeight="288.0" minWidth="611.0" prefHeight="288.0" prefWidth="611.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.FolderConfigController">
    <children>
       <Label layoutX="14.0" layoutY="14.0" text="pick a folder for musics">
          <font>

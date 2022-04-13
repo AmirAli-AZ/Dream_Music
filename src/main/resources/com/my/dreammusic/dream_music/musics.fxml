@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.MusicsController">
+<VBox fx:id="container" id="rootNode" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my.dreammusic.dream_music.MusicsController">
    <children>
       <ProgressBar fx:id="loading" maxHeight="15.0" maxWidth="1.7976931348623157E308" minHeight="15.0" prefHeight="15.0" />
       <ListView fx:id="list" onKeyReleased="#listKeyPressed" VBox.vgrow="ALWAYS" />

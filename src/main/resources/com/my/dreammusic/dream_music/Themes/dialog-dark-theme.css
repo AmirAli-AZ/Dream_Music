@@ -1,66 +1,86 @@
-.root{
--fx-background-color : #212121;
+#rootNode {
+    -fx-background-color : #212121;
 }
+
 .button-style-ok{
--fx-background-color : #2196F3;
--fx-background-radius : 5px;
--fx-text-fill : white;
--fx-font-weight : bold;
--fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
+    -fx-background-color : #2196F3;
+    -fx-background-radius : 5px;
+    -fx-border-radius : 5px;
+    -fx-text-fill : white;
+    -fx-font-weight : bold;
+    -fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
 }
+
 .button-style-cancel{
--fx-background-color : #1c1c1c;
--fx-background-radius : 5px;
--fx-text-fill : white;
--fx-font-weight : bold;
--fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
+    -fx-background-color : #1c1c1c;
+    -fx-background-radius : 5px;
+    -fx-border-radius : 5px;
+    -fx-text-fill : white;
+    -fx-font-weight : bold;
+    -fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
 }
+
 .button-style-cancel:hover{
--fx-background-color : #121212;
+    -fx-background-color : #121212;
 }
+
 .button-style-ok:hover{
--fx-background-color : #185d94;
+    -fx-background-color : #185d94;
 }
+
 .text-field {
--fx-background-color: -fx-text-box-border, #424242;
--fx-background-radius: 5px;
--fx-text-fill : white;
+    -fx-background-color: -fx-text-box-border, #424242;
+    -fx-background-radius: 5px;
+    -fx-border-radius : 5px;
+    -fx-text-fill : white;
 }
+
 .text-field:focused {
--fx-background-color: -fx-focus-color, #212121;
+    -fx-background-color: -fx-focus-color, #212121;
 }
+
 .label{
--fx-text-fill : white;
+    -fx-text-fill : white;
 }
+
 .message{
--fx-text-fill : white;
--fx-font-size: 16px;
+    -fx-text-fill : white;
+    -fx-font-size: 16px;
 }
+
 .label{
--fx-text-fill : white;
+    -fx-text-fill : white;
 }
+
 .context-menu {
--fx-background-color: #212121;
--fx-background-radius: 5px;
+    -fx-background-color: #212121;
+    -fx-background-radius: 5px;
+    -fx-border-radius : 5px;
 }
+
 .menu-item .label {
--fx-text-fill: white;
+    -fx-text-fill: white;
 }
+
 .menu-item:focused {
--fx-background-color: #363636;
+    -fx-background-color: #363636;
 }
+
 .menu-item:focused .label {
--fx-text-fill: white;
+    -fx-text-fill: white;
 }
+
 .combo-box .combo-box-popup .list-view , .combo-box .combo-box-popup .list-cell {
--fx-background-color : #212121;
--fx-text-fill : white;
+    -fx-background-color : #212121;
+    -fx-text-fill : white;
 }
+
 .combo-box .combo-box-popup .list-cell:hover {
--fx-background-color : -fx-accent;
--fx-text-fill : white;
+    -fx-background-color : -fx-accent;
+    -fx-text-fill : white;
 }
+
 .combo-box .combo-box-popup .list-cell:selected {
--fx-background-color : -fx-accent;
--fx-text-fill : white;
+    -fx-background-color : -fx-accent;
+    -fx-text-fill : white;
 }

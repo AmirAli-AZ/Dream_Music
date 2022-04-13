@@ -1,66 +1,86 @@
-.root{
--fx-background-color : white;
+#rootNode {
+    -fx-background-color : white;
 }
+
 .button-style-ok{
--fx-background-color : #2196F3;
--fx-background-radius : 5px;
--fx-text-fill : white;
--fx-font-weight : bold;
--fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
+    -fx-background-color : #2196F3;
+    -fx-background-radius : 5px;
+    -fx-border-radius : 5px;
+    -fx-text-fill : white;
+    -fx-font-weight : bold;
+    -fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
 }
+
 .button-style-cancel{
--fx-background-color : #b5b5b5;
--fx-background-radius : 5px;
--fx-text-fill : black;
--fx-font-weight : bold;
--fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
+    -fx-background-color : #b5b5b5;
+    -fx-background-radius : 5px;
+    -fx-border-radius : 5px;
+    -fx-text-fill : black;
+    -fx-font-weight : bold;
+    -fx-background-insets : 0 0 -1 0, 0 , 1 , 2;
 }
+
 .button-style-cancel:hover{
--fx-background-color : #9e9e9e;
+    -fx-background-color : #9e9e9e;
 }
+
 .button-style-ok:hover{
--fx-background-color : #185d94;
+    -fx-background-color : #185d94;
 }
+
 .text-field {
--fx-background-color: -fx-text-box-border, #dfe4ed;
--fx-background-radius: 5px;
--fx-text-fill : black;
+    -fx-background-color: -fx-text-box-border, #dfe4ed;
+    -fx-background-radius: 5px;
+    -fx-border-radius : 5px;
+    -fx-text-fill : black;
 }
+
 .text-field:focused {
--fx-background-color: -fx-focus-color, white;
+    -fx-background-color: -fx-focus-color, white;
 }
+
 .label{
--fx-text-fill : black;
+    -fx-text-fill : black;
 }
+
 .message{
--fx-text-fill : black;
--fx-font-size: 16px;
+    -fx-text-fill : black;
+    -fx-font-size: 16px;
 }
+
 .label{
--fx-text-fill : black;
+    -fx-text-fill : black;
 }
+
 .context-menu {
--fx-background-color: white;
--fx-background-radius: 5px;
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-radius : 5px;
 }
+
 .menu-item .label {
--fx-text-fill: black;
+    -fx-text-fill: black;
 }
+
 .menu-item:focused {
--fx-background-color: -fx-accent;
+    -fx-background-color: -fx-accent;
 }
+
 .menu-item:focused .label {
--fx-text-fill: white;
+    -fx-text-fill: white;
 }
+
 .combo-box .combo-box-popup .list-view , .combo-box .combo-box-popup .list-cell {
--fx-background-color : white;
--fx-text-fill : black;
+    -fx-background-color : white;
+    -fx-text-fill : black;
 }
+
 .combo-box .combo-box-popup .list-cell:hover {
--fx-background-color : -fx-accent;
--fx-text-fill : white;
+    -fx-background-color : -fx-accent;
+    -fx-text-fill : white;
 }
+
 .combo-box .combo-box-popup .list-cell:selected {
--fx-background-color : -fx-accent;
--fx-text-fill : white;
+    -fx-background-color : -fx-accent;
+    -fx-text-fill : white;
 }

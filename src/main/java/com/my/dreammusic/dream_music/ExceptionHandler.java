@@ -94,5 +94,6 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
                 new Image(Objects.requireNonNull(ExceptionHandler.class.getResourceAsStream("icons/ic_error16x16.png")))
         );
         dialog.showAndWait();
+        logger.close();
     }
 }

@@ -33,7 +33,7 @@ public class UserDataManager {
     }
 
     public static String getFolderPath() {
-        return System.getProperty("user.home") + File.separator + "Dream Music";
+        return System.getenv("APPDATA") + File.separator + "Dream Music";
     }
 
     public static String getSerFilePath() {

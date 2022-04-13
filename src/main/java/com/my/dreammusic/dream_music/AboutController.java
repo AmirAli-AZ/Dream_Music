@@ -10,6 +10,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.w3c.dom.Node;
@@ -25,6 +26,9 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class AboutController implements Initializable {
+
+    @FXML
+    private AnchorPane root;
 
     @FXML
     private WebView webview;

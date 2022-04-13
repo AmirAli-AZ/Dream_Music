@@ -15,6 +15,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 
 import java.awt.*;
@@ -90,6 +91,11 @@ public class DownloaderUIController implements Initializable {
             trayIcon.addActionListener(e -> removeTrayIcon());
             logger.info("create system tray");
         }
+
+        Platform.runLater(() -> {
+            Stage window = (Stage) container.getScene().getWindow();
+            window.setOnHiding(windowEvent -> logger.close());
+        });
     }
 
     @FXML

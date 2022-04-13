@@ -29,12 +29,16 @@ public class HomeController implements Initializable {
 
     @FXML
     private ImageView img_music;
+
     @FXML
     private Label title1;
+
     @FXML
     private VBox items;
+
     @FXML
     public BorderPane borderLayout;
+
     @FXML
     private HBox tab_musics;
 
@@ -100,7 +104,6 @@ public class HomeController implements Initializable {
                 logger.error(e);
             }
         });
-
 
     }
 

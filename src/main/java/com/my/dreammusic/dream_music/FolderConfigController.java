@@ -30,12 +30,16 @@ import java.util.function.Consumer;
 
 
 public class FolderConfigController implements Initializable {
+
     @FXML
     private TextField path;
+
     @FXML
     private AnchorPane container;
+
     @FXML
     public Button create;
+
     @FXML
     private ImageView img_folderPicker;
 
@@ -87,6 +91,11 @@ public class FolderConfigController implements Initializable {
             trayIcon.addActionListener(e -> removeTrayIcon());
             logger.info("create system tray");
         }
+
+        Platform.runLater(() -> {
+            Stage window = (Stage) container.getScene().getWindow();
+            window.setOnHiding(windowEvent -> logger.close());
+        });
     }
 
     @FXML

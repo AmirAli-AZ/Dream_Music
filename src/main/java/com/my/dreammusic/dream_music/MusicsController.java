@@ -44,28 +44,40 @@ public class MusicsController implements Initializable {
 
     @FXML
     public ListView<Song> list;
+
     @FXML
     public AnchorPane songBar;
+
     @FXML
     public Slider progress;
+
     @FXML
     public Slider volume;
+
     @FXML
     public Label currentTime;
+
     @FXML
     public Label totalTime;
+
     @FXML
     public ImageView play;
+
     @FXML
     public ImageView img_volume;
+
     @FXML
     public ImageView repeat;
+
     @FXML
     public HBox hbox;
+
     @FXML
     public VBox container;
+
     @FXML
     public ImageView moreOption;
+
     @FXML
     public ProgressBar loading;
 

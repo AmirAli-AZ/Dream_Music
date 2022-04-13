@@ -120,6 +120,15 @@ public final class Logger {
         }
     }
 
+    public void close() {
+        try {
+            bufferedWriter.close();
+            bufferedWriter = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private boolean isValidPath(String path) {
         if (path.length() == 0) return false;
         try {

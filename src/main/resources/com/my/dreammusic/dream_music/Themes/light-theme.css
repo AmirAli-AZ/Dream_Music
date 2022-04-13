@@ -1,67 +1,84 @@
-.root{
--fx-background-color : white;
+#rootNode {
+    -fx-background-color : white;
 }
 .title{
--fx-font-weight : bold;
--fx-text-fill : black;
+    -fx-font-weight : bold;
+    -fx-text-fill : black;
 }
+
 .right-border{
--fx-border-style : hidden solid hidden hidden;
--fx-border-width : 2;
--fx-border-color : #BDBDBD;
+    -fx-border-style : hidden solid hidden hidden;
+    -fx-border-width : 2;
+    -fx-border-color : #BDBDBD;
 }
+
 .list-cell{
--fx-background-color : white;
+    -fx-background-color : white;
 }
+
 .list-cell:filled:hover{
--fx-background-color : #dbdbdb;
+    -fx-background-color : #dbdbdb;
 }
+
 .list-view{
--fx-background-color : white;
--fx-background-insets : 0;
--fx-padding : 0;
+    -fx-background-color : white;
+    -fx-background-insets : 0;
+    -fx-padding : 0;
 }
+
 .cell-text-color {
--fx-text-fill : black;
+    -fx-text-fill : black;
 }
+
 .list-view:focused .list-cell:filled:focused:selected {
--fx-background-color:  -fx-focus-color, -fx-cell-focus-inner-border, #3895bc;
--fx-background-insets: 0, 1, 2;
--fx-background: -fx-accent;
+    -fx-background-color:  -fx-focus-color, -fx-cell-focus-inner-border, #3895bc;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
 }
+
 .list-view:focused .list-cell:filled:focused:selected .cell-text-color{
--fx-text-fill : white;
+    -fx-text-fill : white;
 }
+
 .animated-gradient{
--gradient-base : #21dd8f;
--fx-background-color : linear-gradient(to right, -gradient-base, #2196F3);
+    -gradient-base : #21dd8f;
+    -fx-background-color : linear-gradient(to right, -gradient-base, #2196F3);
 }
+
 .menu-bar {
--fx-background-color: white;
+    -fx-background-color: white;
 }
+
 .menu-bar  .menu-button:hover, .menu-bar .menu-button:focused, .menu-bar .menu-button:showing{
--fx-background : -fx-accent;
--fx-text-fill : -fx-selection-bar-text;
+    -fx-background : -fx-accent;
+    -fx-text-fill : -fx-selection-bar-text;
 }
 
 .menu-item .label {
--fx-text-fill: black;
+    -fx-text-fill: black;
 }
+
 .menu-item:focused {
--fx-background-color: -fx-accent;
+    -fx-background-color: -fx-accent;
 }
+
 .menu-item:focused .label {
--fx-text-fill: white;
+    -fx-text-fill: white;
 }
+
 .context-menu {
--fx-background-color: white;
--fx-background-radius: 5px;
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-radius : 5px;
 }
+
 .text-field {
--fx-background-color: -fx-text-box-border, #dfe4ed;
--fx-background-radius: 5px;
--fx-text-fill : black;
+    -fx-background-color: -fx-text-box-border, #dfe4ed;
+    -fx-background-radius: 5px;
+    -fx-border-radius : 5px;
+    -fx-text-fill : black;
 }
+
 .text-field:focused {
--fx-background-color: -fx-focus-color, white;
+    -fx-background-color: -fx-focus-color, white;
 }

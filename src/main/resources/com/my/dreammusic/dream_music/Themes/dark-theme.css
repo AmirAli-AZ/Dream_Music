@@ -1,66 +1,85 @@
-.root{
--fx-background-color : #212121;
+#rootNode {
+    -fx-background-color : #212121;
 }
+
 .title{
--fx-font-weight : bold;
--fx-text-fill : white;
+    -fx-font-weight : bold;
+    -fx-text-fill : white;
 }
+
 .right-border{
--fx-border-style : hidden solid hidden hidden;
--fx-border-width : 2;
--fx-border-color : #403f3f;
+    -fx-border-style : hidden solid hidden hidden;
+    -fx-border-width : 2;
+    -fx-border-color : #403f3f;
 }
+
 .list-cell{
--fx-background-color : #212121;
+    -fx-background-color : #212121;
 }
+
 .list-cell:filled:hover{
--fx-background-color : #363636;
+    -fx-background-color : #363636;
 }
+
 .list-view{
--fx-background-color : #212121;
--fx-background-insets : 0;
--fx-padding : 0;
+    -fx-background-color : #212121;
+    -fx-background-insets : 0;
+    -fx-padding : 0;
 }
+
 .cell-text-color {
--fx-text-fill: white;
+    -fx-text-fill: white;
 }
+
 .list-view:focused .list-cell:filled:focused:selected {
--fx-background-color:  black, black, black;
--fx-background-insets: 0, 1, 2;
--fx-background: -fx-accent;
+    -fx-background-color:  black, black, black;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
 }
+
 .animated-gradient{
--gradient-base : #21dd8f;
--fx-background-color : linear-gradient(to right, -gradient-base, #2196F3);
+    -gradient-base : #21dd8f;
+    -fx-background-color : linear-gradient(to right, -gradient-base, #2196F3);
 }
+
 .menu-bar {
--fx-background-color: #212121;
+    -fx-background-color: #212121;
 }
+
 .menu-bar .label{
--fx-text-fill : white;
+    -fx-text-fill : white;
 }
+
 .menu-bar .menu-button:hover, .menu-bar .menu-button:focused, .menu-bar .menu-button:showing {
--fx-background : #363636;
--fx-text-fill : white;
+    -fx-background : #363636;
+    -fx-text-fill : white;
 }
+
 .menu-item .label {
--fx-text-fill: white;
+    -fx-text-fill: white;
 }
+
 .menu-item:focused {
--fx-background-color: #363636;
+    -fx-background-color: #363636;
 }
+
 .menu-item:focused .label {
--fx-text-fill: white;
+    -fx-text-fill: white;
 }
+
 .context-menu {
--fx-background-color: #212121;
--fx-background-radius: 5px;
+    -fx-background-color: #212121;
+    -fx-background-radius: 5px;
+    -fx-border-radius : 5px;
 }
+
 .text-field {
--fx-background-color: -fx-text-box-border, #424242;
--fx-background-radius: 5px;
--fx-text-fill : white;
+    -fx-background-color: -fx-text-box-border, #424242;
+    -fx-background-radius: 5px;
+    -fx-border-radius : 5px;
+    -fx-text-fill : white;
 }
+
 .text-field:focused {
--fx-background-color: -fx-focus-color, #212121;
+    -fx-background-color: -fx-focus-color, #212121;
 }
