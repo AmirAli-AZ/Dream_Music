@@ -33,7 +33,12 @@ public class UserDataManager {
     }
 
     public static String getFolderPath() {
-        return System.getenv("APPDATA") + File.separator + "Dream Music";
+        if (OSUtils.isWindows())
+            return System.getenv("APPDATA") + File.separator + "Dream Music";
+        else if (OSUtils.isLinux())
+            return System.getProperty("user.home") + File.separator + "Dream Music";
+        else
+            return "Dream Music";
     }
 
     public static String getSerFilePath() {
