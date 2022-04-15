@@ -97,10 +97,11 @@ public class MusicsController implements Initializable {
     private final Slider rateSlider = new Slider();
     private final ContextMenu menu = new ContextMenu();
     private final NumericField numericField = new NumericField();
+    private final MenuItem randomPlayerItem = new MenuItem("Random Player : Off");
 
     private final StringProperty currentTimeProperty = new SimpleStringProperty();
     private final StringProperty totalTimeProperty = new SimpleStringProperty();
-    private final BooleanProperty refreshing = new SimpleBooleanProperty(false);
+    private final BooleanProperty refreshing = new SimpleBooleanProperty();
 
     private static final Logger logger = Logger.getLogger(MusicsController.class);
 
@@ -227,7 +228,11 @@ public class MusicsController implements Initializable {
 
     @FXML
     public void repeatClick(MouseEvent mouseEvent) {
-        if (!isRandomPlayer && mouseEvent.getButton() == MouseButton.PRIMARY) {
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+            if (isRandomPlayer) {
+                isRandomPlayer = false;
+                randomPlayerItem.setText("Random Player : Off");
+            }
             if (repeatMode) {
                 repeatMode = false;
                 repeat.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png"))));
@@ -437,21 +442,20 @@ public class MusicsController implements Initializable {
         rateSettings.setHideOnClick(false);
         rate.getItems().add(rateSettings);
 
-        MenuItem randomPlayer = new MenuItem("Random Player : Off");
-        randomPlayer.disableProperty().bind(Bindings.lessThan(Bindings.size(list.getItems()), 2));
-        randomPlayer.disableProperty().addListener((observableValue, oldValue, newValue) -> {
+        randomPlayerItem.disableProperty().bind(Bindings.lessThan(Bindings.size(list.getItems()), 2));
+        randomPlayerItem.disableProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue && isRandomPlayer){
                 isRandomPlayer = false;
-                randomPlayer.setText("Random Player : Off");
+                randomPlayerItem.setText("Random Player : Off");
             }
         });
-        randomPlayer.setOnAction(e -> {
+        randomPlayerItem.setOnAction(e -> {
             if (isRandomPlayer) {
                 isRandomPlayer = false;
-                randomPlayer.setText("Random Player : Off");
+                randomPlayerItem.setText("Random Player : Off");
             } else {
                 isRandomPlayer = true;
-                randomPlayer.setText("Random Player : On");
+                randomPlayerItem.setText("Random Player : On");
                 // disable repeat mode if it's on
                 if (repeatMode) {
                     repeatMode = false;
@@ -471,7 +475,7 @@ public class MusicsController implements Initializable {
             }
         });
 
-        menu.getItems().addAll(rate, randomPlayer, separator, exit);
+        menu.getItems().addAll(rate, randomPlayerItem, separator, exit);
     }
 
     public void createMediaPlayer(Media media) {
@@ -491,12 +495,14 @@ public class MusicsController implements Initializable {
 
         mediaPlayer.setOnEndOfMedia(() -> {
             if (!repeatMode) {
-                if (!isRandomPlayer && !isChanging) {
+                if (!isRandomPlayer) {
                     if (isMiniPlayerOpen) {
                         mediaPlayer.seek(Duration.ZERO);
                         pauseMedia();
                         currentTimeProperty.set(calculateTime(Duration.ZERO));
                         play.setImage(playImage);
+                        if (!miniPlayer.isIconified())
+                            miniPlayer.setImage(playImage);
                         progress.setValue(0);
                     } else {
                         isPlaying = false;
@@ -504,7 +510,7 @@ public class MusicsController implements Initializable {
                         songBarVisibility(false);
                         list.getSelectionModel().clearSelection();
                     }
-                } else {
+                } else if (!isChanging) {
                     isPlaying = false;
                     int randomPosition = pickRandom(list.getItems().size() - 1);
                     list.getSelectionModel().select(randomPosition);
@@ -513,8 +519,8 @@ public class MusicsController implements Initializable {
                     }
                     createMediaPlayer(list.getItems().get(randomPosition).getMedia());
                 }
-            } else {
-                if (!isChanging && !isRandomPlayer) mediaPlayer.seek(Duration.ZERO);
+            } else if (!isChanging && !isRandomPlayer) {
+                mediaPlayer.seek(Duration.ZERO);
             }
         });
 
@@ -654,7 +660,7 @@ public class MusicsController implements Initializable {
                 logger.info("close mini player");
             });
             iconifiedProperty().addListener((observableValue, aBoolean, t1) -> {
-                if (!t1) play2.setImage(isPlaying ? pauseImage : playImage);
+                if (!t1) setImage(isPlaying ? pauseImage : playImage);
             });
             setAnimation();
         }
@@ -684,6 +690,10 @@ public class MusicsController implements Initializable {
 
         public void setMediaTitle(String s) {
             mediaName.setText(s);
+        }
+
+        public void setImage(Image image) {
+            play2.setImage(image);
         }
     }
 
