@@ -3,7 +3,10 @@ package com.my.dreammusic.dream_music;
 import com.my.dreammusic.dream_music.logging.Logger;
 import com.my.dreammusic.dream_music.utils.NumericField;
 import com.my.dreammusic.dream_music.utils.UserDataManager;
-import javafx.animation.*;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -30,7 +33,8 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +42,9 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class MusicsController implements Initializable {
 
@@ -83,13 +89,9 @@ public class MusicsController implements Initializable {
 
     protected MediaPlayer mediaPlayer;
     protected MiniPlayer miniPlayer;
-    public boolean isPlaying;
     public boolean isMiniPlayerOpen;
-    private boolean isChanging;
-    private boolean repeatMode;
     private UserData userData;
     private int songPosition;
-    private boolean isRandomPlayer;
     private final Image playImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/baseline_play_arrow_white.png")));
     private final Image pauseImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/baseline_pause_white.png")));
     private Stage mainStage;
@@ -97,11 +99,15 @@ public class MusicsController implements Initializable {
     private final Slider rateSlider = new Slider();
     private final ContextMenu menu = new ContextMenu();
     private final NumericField numericField = new NumericField();
-    private final MenuItem randomPlayerItem = new MenuItem("Random Player : Off");
 
+    // properties
     private final StringProperty currentTimeProperty = new SimpleStringProperty();
     private final StringProperty totalTimeProperty = new SimpleStringProperty();
     private final BooleanProperty refreshing = new SimpleBooleanProperty();
+    private final BooleanProperty seekProperty = new SimpleBooleanProperty();
+    private final BooleanProperty randomPlayerProperty = new SimpleBooleanProperty();
+    private final BooleanProperty playerProperty = new SimpleBooleanProperty();
+    private final BooleanProperty repeatModeProperty = new SimpleBooleanProperty();
 
     private static final Logger logger = Logger.getLogger(MusicsController.class);
 
@@ -135,7 +141,7 @@ public class MusicsController implements Initializable {
         Timeline timeline = new Timeline(keyFrame1, keyFrame2);
 
         baseColor.addListener((obs, oldColor, newColor) -> {
-            if (isPlaying) {
+            if (playerProperty.get()) {
                 songBar.setStyle(String.format("-gradient-base: #%02x%02x%02x; ",
                         (int) (newColor.getRed() * 255),
                         (int) (newColor.getGreen() * 255),
@@ -148,7 +154,7 @@ public class MusicsController implements Initializable {
         timeline.play();
 
         progress.valueProperty().addListener((observableValue, number, t1) -> {
-            if (mediaPlayer != null && isChanging) {
+            if (mediaPlayer != null && seekProperty.get()) {
                 currentTimeProperty.set(calculateTime(Duration.seconds(t1.doubleValue())));
             }
         });
@@ -176,15 +182,15 @@ public class MusicsController implements Initializable {
         // get selected item
         Song info = list.getSelectionModel().getSelectedItem();
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            if (!isPlaying) createMediaPlayer(info.getMedia());
+            if (!playerProperty.get()) createMediaPlayer(info.getMedia());
             // list.getSelectionModel().clearSelection();
         } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
             if (mediaPlayer != null) {
                 int clickedPosition = list.getSelectionModel().getSelectedIndex();
-                if (isPlaying) {
+                if (playerProperty.get()) {
                     if (clickedPosition == songPosition) {
                         mediaPlayer.stop();
-                        isPlaying = false;
+                        playerProperty.set(false);
                         play.setImage(playImage);
                         if (songBar.isVisible()) songBarVisibility(false);
                         list.getSelectionModel().clearSelection();
@@ -202,7 +208,7 @@ public class MusicsController implements Initializable {
     @FXML
     public void playMusic(MouseEvent mouseEvent) {
         if (mediaPlayer != null && mouseEvent.getButton() == MouseButton.PRIMARY) {
-            if (isPlaying) {
+            if (playerProperty.get()) {
                 pauseMedia();
                 play.setImage(playImage);
             } else {
@@ -214,30 +220,26 @@ public class MusicsController implements Initializable {
 
     @FXML
     public void rewindClick(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+        if (mouseEvent.getButton() == MouseButton.PRIMARY)
             rewindMedia();
-        }
     }
 
     @FXML
     public void forwardClick(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+        if (mouseEvent.getButton() == MouseButton.PRIMARY)
             forwardMedia();
-        }
     }
 
     @FXML
     public void repeatClick(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            if (isRandomPlayer) {
-                isRandomPlayer = false;
-                randomPlayerItem.setText("Random Player : Off");
-            }
-            if (repeatMode) {
-                repeatMode = false;
+            if (randomPlayerProperty.get())
+                randomPlayerProperty.set(false);
+            if (repeatModeProperty.get()) {
+                repeatModeProperty.set(false);
                 repeat.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png"))));
             } else {
-                repeatMode = true;
+                repeatModeProperty.set(true);
                 repeat.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_repeat_on_white.png"))));
             }
         }
@@ -312,21 +314,18 @@ public class MusicsController implements Initializable {
 
             @Override
             protected void succeeded() {
-                super.succeeded();
                 // hide completely
                 loading.setManaged(false);
             }
 
             @Override
             protected void failed() {
-                super.failed();
                 // hide completely
                 loading.setManaged(false);
             }
         };
         // add task to thread and start
         Thread thread = new Thread(task);
-        thread.setDaemon(true);
         thread.start();
     }
 
@@ -347,17 +346,17 @@ public class MusicsController implements Initializable {
     }
 
     public void playMedia() {
-        if (mediaPlayer != null && !isPlaying) {
+        if (mediaPlayer != null && !playerProperty.get()) {
             mediaPlayer.play();
-            isPlaying = true;
+            playerProperty.set(true);
             logger.info("play");
         }
     }
 
     public void pauseMedia() {
-        if (mediaPlayer != null && isPlaying) {
+        if (mediaPlayer != null && playerProperty.get()) {
             mediaPlayer.pause();
-            isPlaying = false;
+            playerProperty.set(false);
             logger.info("pause");
         }
     }
@@ -369,14 +368,14 @@ public class MusicsController implements Initializable {
 
     @FXML
     public void sliderPressed(Event event) {
-        if (mediaPlayer != null) isChanging = true;
+        if (mediaPlayer != null) seekProperty.set(true);
     }
 
     @FXML
     public void sliderReleased(Event event) {
         if (mediaPlayer != null) {
             mediaPlayer.seek(Duration.seconds(progress.getValue()));
-            isChanging = false;
+            seekProperty.set(false);
         }
     }
 
@@ -442,26 +441,31 @@ public class MusicsController implements Initializable {
         rateSettings.setHideOnClick(false);
         rate.getItems().add(rateSettings);
 
+        MenuItem randomPlayerItem = new MenuItem("Random Player : Off");
         randomPlayerItem.disableProperty().bind(Bindings.lessThan(Bindings.size(list.getItems()), 2));
         randomPlayerItem.disableProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue && isRandomPlayer){
-                isRandomPlayer = false;
-                randomPlayerItem.setText("Random Player : Off");
+            if (newValue && randomPlayerProperty.get()) {
+                randomPlayerProperty.set(false);
             }
         });
         randomPlayerItem.setOnAction(e -> {
-            if (isRandomPlayer) {
-                isRandomPlayer = false;
-                randomPlayerItem.setText("Random Player : Off");
+            if (randomPlayerProperty.get()) {
+                randomPlayerProperty.set(false);
             } else {
-                isRandomPlayer = true;
-                randomPlayerItem.setText("Random Player : On");
+                randomPlayerProperty.set(true);
                 // disable repeat mode if it's on
-                if (repeatMode) {
-                    repeatMode = false;
+                if (repeatModeProperty.get()) {
+                    repeatModeProperty.set(false);
                     repeat.setImage(new Image(Objects.requireNonNull(MusicsController.class.getResourceAsStream("icons/baseline_repeat_white.png"))));
                 }
             }
+        });
+
+        randomPlayerProperty.addListener((observableValue, oldValue, newValue) -> {
+            if (newValue)
+                randomPlayerItem.setText("Random Player : On");
+            else
+                randomPlayerItem.setText("Random Player : Off");
         });
 
         SeparatorMenuItem separator = new SeparatorMenuItem();
@@ -469,7 +473,7 @@ public class MusicsController implements Initializable {
         exit.setOnAction(e -> {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
-                isPlaying = false;
+                playerProperty.set(false);
                 songBarVisibility(false);
                 list.getSelectionModel().clearSelection();
             }
@@ -488,14 +492,12 @@ public class MusicsController implements Initializable {
             progress.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
             play.setImage(pauseImage);
             mediaPlayer.setRate(rateSlider.getValue() * 0.01);
-            mediaPlayer.play();
-            isPlaying = true;
-            logger.info("play");
+            playMedia();
         });
 
         mediaPlayer.setOnEndOfMedia(() -> {
-            if (!repeatMode) {
-                if (!isRandomPlayer) {
+            if (!repeatModeProperty.get()) {
+                if (!randomPlayerProperty.get()) {
                     if (isMiniPlayerOpen) {
                         mediaPlayer.seek(Duration.ZERO);
                         pauseMedia();
@@ -505,27 +507,26 @@ public class MusicsController implements Initializable {
                             miniPlayer.setImage(playImage);
                         progress.setValue(0);
                     } else {
-                        isPlaying = false;
+                        playerProperty.set(false);
                         play.setImage(playImage);
                         songBarVisibility(false);
                         list.getSelectionModel().clearSelection();
                     }
-                } else if (!isChanging) {
-                    isPlaying = false;
+                } else if (!seekProperty.get()) {
+                    playerProperty.set(false);
                     int randomPosition = pickRandom(list.getItems().size() - 1);
                     list.getSelectionModel().select(randomPosition);
-                    if (isMiniPlayerOpen) {
+                    if (isMiniPlayerOpen)
                         miniPlayer.setMediaTitle(list.getItems().get(randomPosition).getTitle());
-                    }
                     createMediaPlayer(list.getItems().get(randomPosition).getMedia());
                 }
-            } else if (!isChanging && !isRandomPlayer) {
+            } else if (!seekProperty.get() && !randomPlayerProperty.get()) {
                 mediaPlayer.seek(Duration.ZERO);
             }
         });
 
         mediaPlayer.currentTimeProperty().addListener((observableValue, duration, t1) -> {
-            if (!isChanging) {
+            if (!seekProperty.get()) {
                 currentTimeProperty.set(calculateTime(t1));
                 progress.setValue(t1.toSeconds());
             }
@@ -534,7 +535,7 @@ public class MusicsController implements Initializable {
     }
 
     private int pickRandom(int max) {
-        return (int)(Math.floor(Math.random() * max + 1));
+        return (int) (Math.floor(Math.random() * max + 1));
     }
 
     public class MiniPlayer extends Stage {
@@ -563,13 +564,13 @@ public class MusicsController implements Initializable {
             currentTime2.textProperty().bind(currentTimeProperty);
             currentTime2.setStyle("-fx-text-fill : white;");
 
-            play2.setImage(isPlaying ? pauseImage : playImage);
+            play2.setImage(playerProperty.get() ? pauseImage : playImage);
             play2.setPickOnBounds(true);
             play2.setFitWidth(35);
             play2.setFitHeight(35);
             play2.setOnMouseClicked(e -> {
                 if (mediaPlayer != null && e.getButton() == MouseButton.PRIMARY) {
-                    if (!isPlaying) {
+                    if (!playerProperty.get()) {
                         if (songBar.isVisible()) {
                             playMedia();
                             play2.setImage(pauseImage);
@@ -660,7 +661,7 @@ public class MusicsController implements Initializable {
                 logger.info("close mini player");
             });
             iconifiedProperty().addListener((observableValue, aBoolean, t1) -> {
-                if (!t1) setImage(isPlaying ? pauseImage : playImage);
+                if (!t1) setImage(playerProperty.get() ? pauseImage : playImage);
             });
             setAnimation();
         }
@@ -675,7 +676,7 @@ public class MusicsController implements Initializable {
             Timeline timeline = new Timeline(keyFrame1, keyFrame2);
 
             baseColor.addListener((obs, oldColor, newColor) -> {
-                if (isPlaying) {
+                if (playerProperty.get()) {
                     root.setStyle(String.format("-gradient-base: #%02x%02x%02x; ",
                             (int) (newColor.getRed() * 255),
                             (int) (newColor.getGreen() * 255),
@@ -766,11 +767,15 @@ public class MusicsController implements Initializable {
         }
     }
 
-    public boolean isRefreshing(){
-        return refreshing.get();
-    }
-
     public BooleanProperty getRefreshingProperty() {
         return refreshing;
+    }
+
+    public boolean isPlaying() {
+        return playerProperty.get();
+    }
+
+    public void setPlaying(boolean state) {
+        playerProperty.set(state);
     }
 }

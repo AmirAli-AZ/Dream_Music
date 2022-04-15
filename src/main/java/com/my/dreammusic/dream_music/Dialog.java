@@ -118,6 +118,7 @@ public class Dialog {
 
     private Scene createLayout() {
         BorderPane borderPane = new BorderPane();
+        borderPane.setId("rootNode");
         VBox vBox = new VBox(15);
         vBox.setAlignment(Pos.CENTER);
         HBox buttons = new HBox(10);

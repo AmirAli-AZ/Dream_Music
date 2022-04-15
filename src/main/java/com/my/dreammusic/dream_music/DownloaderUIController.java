@@ -209,7 +209,6 @@ public class DownloaderUIController implements Initializable {
             downloader.setFileURL(url);
             progress.progressProperty().bind(downloader.progressProperty());
             thread = new Thread(downloader);
-            thread.setDaemon(true);
             thread.start();
         } else {
             showNotification("Invalid data", "Please enter valid URL or mp3 / wav expansion" , TrayIcon.MessageType.WARNING);

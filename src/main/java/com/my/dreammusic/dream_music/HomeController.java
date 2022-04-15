@@ -110,7 +110,7 @@ public class HomeController implements Initializable {
     @FXML
     public void musics(MouseEvent mouseEvent) {
         if (musicsController != null && mouseEvent.getButton() == MouseButton.PRIMARY) {
-            if (!musicsController.isPlaying) {
+            if (!musicsController.isPlaying()) {
                 if (new File(UserDataManager.getSerFilePath()).exists()) {
                     musicsController.getSongList();
                 } else {
@@ -167,9 +167,9 @@ public class HomeController implements Initializable {
 
             controller.setListener(result -> {
                 if (result == Listener.OK) {
-                    if (musicsController.isPlaying) {
+                    if (musicsController.isPlaying()) {
                         musicsController.mediaPlayer.stop();
-                        musicsController.isPlaying = false;
+                        musicsController.setPlaying(false);
                     }
                     musicsController.songBarVisibility(false);
                     musicsController.loadFolder();
@@ -199,7 +199,7 @@ public class HomeController implements Initializable {
 
     @FXML
     public void miniPlayerAction() {
-        if (musicsController != null && (musicsController.isPlaying || musicsController.songBar.isVisible())) {
+        if (musicsController != null && (musicsController.isPlaying() || musicsController.songBar.isVisible())) {
             musicsController.createMiniPlayer();
             borderLayout.getScene().getWindow().hide();
         }
