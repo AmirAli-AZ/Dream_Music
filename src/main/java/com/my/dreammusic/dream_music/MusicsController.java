@@ -503,8 +503,6 @@ public class MusicsController implements Initializable {
                         pauseMedia();
                         currentTimeProperty.set(calculateTime(Duration.ZERO));
                         play.setImage(playImage);
-                        if (!miniPlayer.isIconified())
-                            miniPlayer.setImage(playImage);
                         progress.setValue(0);
                     } else {
                         playerProperty.set(false);
@@ -547,6 +545,7 @@ public class MusicsController implements Initializable {
         private double xOffset, yOffset;
 
         public MiniPlayer() {
+            setAlwaysOnTop(true);
             initStyle(StageStyle.UNDECORATED);
             setTitle("Mini Player");
             setMinHeight(height);
@@ -614,8 +613,8 @@ public class MusicsController implements Initializable {
             close.setFitWidth(24);
             close.setOnMouseClicked(e -> {
                 getMainStage().show();
-                isMiniPlayerOpen = false;
                 close();
+                isMiniPlayerOpen = false;
                 logger.info("close mini player");
             });
 
@@ -660,10 +659,16 @@ public class MusicsController implements Initializable {
                 isMiniPlayerOpen = false;
                 logger.info("close mini player");
             });
-            iconifiedProperty().addListener((observableValue, aBoolean, t1) -> {
-                if (!t1) setImage(playerProperty.get() ? pauseImage : playImage);
-            });
             setAnimation();
+            playerProperty.addListener((observableValue, oldValue, newValue) -> {
+                Image image = newValue ? pauseImage : playImage;
+                if (!play2.getImage().equals(image))
+                    play2.setImage(image);
+            });
+            iconifiedProperty().addListener((observableValue, oldValue, newValue) -> {
+                if (newValue)
+                    setIconified(false);
+            });
         }
 
         public void setAnimation() {
@@ -692,10 +697,6 @@ public class MusicsController implements Initializable {
         public void setMediaTitle(String s) {
             mediaName.setText(s);
         }
-
-        public void setImage(Image image) {
-            play2.setImage(image);
-        }
     }
 
     public void createMiniPlayer() {
@@ -720,6 +721,7 @@ public class MusicsController implements Initializable {
             int size = list.getItems().size();
             if (size >= 2) {
                 mediaPlayer.stop();
+                playerProperty.set(false);
                 if (index == size - 1) {
                     index = 0;
                     list.getSelectionModel().selectFirst();
@@ -747,6 +749,7 @@ public class MusicsController implements Initializable {
             int size = list.getItems().size();
             if (size >= 2) {
                 mediaPlayer.stop();
+                playerProperty.set(false);
                 if (index == 0) {
                     list.getSelectionModel().selectLast();
                     createMediaPlayer(list.getItems().get(size - 1).getMedia());
